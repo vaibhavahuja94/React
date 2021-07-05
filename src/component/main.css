@@ -1,0 +1,73 @@
+.active{
+    height:100%;
+    width:100%;
+    background-color: whitesmoke;
+}
+.active1{
+    height:100%;
+    width:100%;
+    background-color: whitesmoke;
+}
+#body{
+    padding-top: 70px;
+}
+#homebody{
+    padding-top: 50px;
+}
+.invalid-feedback{
+    color:red;
+}
+.flex-sm-column{
+    position:fixed;
+    background-color:black;
+    height:200vh;
+    width:16.1em
+}
+#blogbody{
+    margin-left: 17.3em;
+    padding-top: 5.5em;
+}
+#sidebar{
+    margin-left:17.3em
+}
+#bloghome{
+    margin-left: 91%;
+    padding-top: 3.95em;
+}
+.flex-sm-column>li {
+    border-bottom:2px solid #bbb;
+  }
+.flex-sm-column>li:last-child {
+    border-bottom: none;
+  }
+  #tablebody{
+      padding-top: 4em;
+      margin-left: 5em;
+  }
+  .photo{
+      height:24em;
+      width:21em;
+  }
+  #myblogbody{
+    padding-top:2em;
+    padding-left: 17.75em;
+}
+#distance{
+    padding-left:3em;
+}
+.photo1{
+    height:45vh;
+    width:25.5em;
+}
+.div1 {
+    width: auto;
+    height: auto;
+    background-color: gainsboro;
+  }
+  #distance1{
+    margin-left:30%;
+}
+.photo2{
+    height:30vh;
+    width:25.5em;
+}
