@@ -31,7 +31,8 @@
     margin-left:17.3em
 }
 #bloghome{
-    margin-left: 91%;
+    float:right !important;
+    margin-right:3%;
     padding-top: 3.95em;
 }
 .flex-sm-column>li {
@@ -49,8 +50,8 @@
       width:21em;
   }
   #myblogbody{
-    padding-top:2em;
-    padding-left: 17.75em;
+    padding-top:3%;
+    /* padding-left: 10% */
 }
 #distance{
     padding-left:3em;

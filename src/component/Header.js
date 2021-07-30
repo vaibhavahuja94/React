@@ -7,10 +7,10 @@ export default class Navigation extends Component {
         token:JSON.parse(localStorage.getItem('login'))
     }
     render(){
-        if(this.state.token===true){
+        // if(this.state.token===true){
           
-            return <Redirect to='/bloghome' />
-        }
+        //     return <Redirect to='/bloghome' />
+        // }
         return(
             <div>
             <nav className="navbar navbar-inverse navbar-fixed-top">

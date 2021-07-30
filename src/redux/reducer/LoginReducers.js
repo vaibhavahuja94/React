@@ -8,17 +8,11 @@ const initialState = {
 
 export default function LoginReducer(state = initialState, action) {
     switch(action.type) {
-            case 'LOGINUSERREQUEST':
-             
-            return {
-                ...state,
-                pending: true
-            }
         case 'LOGINUSERSUCCESS':
-            toast.success("Login SuccessFul")
             return {
                 ...state,
                 pending: false,
+                error: "", 
                 data: action.payload,
             }
         case 'LOGINUSERERROR':

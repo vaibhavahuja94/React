@@ -9,6 +9,7 @@ import ShowBlogById from './ShowBlogById';
 import moment from "moment"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AdminLayout from '../AdminLayout'
 
 class BlogHome extends Component {
     state={
@@ -28,14 +29,19 @@ class BlogHome extends Component {
             }
           };
            Modal.setAppElement('*')
-          const {user} = this.state;
+          const {user} = this.props;
           
         return (
             <>
-                <BlogNavBar />
+                <AdminLayout />
                 <div id="bloghome">
-                <button className="btn btn-primary" onClick={()=>this.setState({showModal:true})}>Create Blog</button>
+                <button className="btn btn-primary" onClick={()=>this.setState({showModal:true})}>Create Template</button>
                 </div>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
                 <div id="myblogbody">
                     <ShowBlogById />
                 </div>
@@ -128,7 +134,7 @@ class BlogHome extends Component {
 
 const mapStateToProps = (state) => {
     return {
-    
+    user:state.login && state.login.data
     }
   }
 
