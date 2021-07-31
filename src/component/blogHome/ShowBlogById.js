@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
+import {Link} from 'react-router-dom'
 import { Redirect } from 'react-router';
 
 
@@ -28,36 +29,12 @@ class ShowBlogById extends Component {
     }
     componentDidMount() {
         this.props.fetchIdBlog()
-        this.props.fetchStatusBlog()
-        this.props.fetchBlogComment()
     }
-    likeBlog = (id) => {
-        let data = {
-            user_id: this.state.user.id,
-            blog_id: id,
-            status: "like"
+    
+    handleView(){
+        window.open('http://localhost:8080', 'blank')
+    }
 
-        }
-
-        this.props.changeStatus(data);
-        this.componentDidMount();
-    }
-    disLikeBlog = (id) => {
-        let data = {
-            user_id: this.state.user.id,
-            blog_id: id,
-            status: "dislike"
-        }
-
-        this.props.changeStatus(data);
-        this.componentDidMount();
-    }
-    comment = (id1, img1, name1) => {
-        this.setState({ showModal: true })
-        this.setState({ id: id1 })
-        this.setState({ img: img1 })
-        this.setState({ name: name1 })
-    }
     render() {
 
         if (this.state.template) {
@@ -98,7 +75,7 @@ class ShowBlogById extends Component {
         Modal.setAppElement('*')
         return (
             <>
-                <div style={{ marginLeft: "5%" }}>
+                <div style={{ marginLeft: "17%" }} className="justify-content-center">
                     {this.props.blog.map(value =>
                         <div className="row">
                             <div className="col-sm-offset-2 col-sm-9 col-xs-offset-2 col-xs-9">
@@ -113,7 +90,7 @@ class ShowBlogById extends Component {
                                         </Typography>
                                         <br />
                                         <CardActions>
-                                            <button className="btn btn-primary">Template</button>
+                                            <button className="btn btn-primary" onClick={()=>this.handleView()}>Template</button>
                                         </CardActions>
                                     </CardContent>
                                 </Card>

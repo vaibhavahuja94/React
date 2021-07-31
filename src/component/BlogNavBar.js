@@ -45,33 +45,25 @@ class BlogNavBar extends Component {
         const { user } = this.props
         return (
             <>
-                <nav className="navbar navbar-default navbar-fixed-top" style={{backgroundColor:"black"}}>
-                    <div className="container-fluid">
-                        <div className="navbar-header">
-                            <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                            </button>
-                        </div>
-                        <div className="collapse navbar-collapse" id="myNavbar">
-                            <ul className="nav navbar-nav">
-                                <li ><NavLink to="/bloghome">
-                                    <span className="text-primary">Home</span></NavLink></li>
-                            </ul>
-                            <ul className="nav navbar-nav navbar-right" style={{marginRight:"2%"}}>
-                                <img src={user.imgSrc} className="img-circle" alt="profile" width="45" height="45" onClick={() => this.setState({ showModal: true })} />&nbsp;
-                                <Link to="/home" onClick={() => this.logOut()}
-                                className="btn btn-danger navbar-btn">Logout</Link>
-                            </ul>
-
-                        </div>
+                <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top justify-content-between">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <ul className="nav navbar-nav ml-auto" >
+                            <li className="nav-item">
+                            <img src={user.imgSrc} className="rounded-circle" alt="profile" width="45" height="45" onClick={() => this.setState({ showModal: true })} />&nbsp;
+                            </li>
+                            <li className="nav-item">
+                            <Link to="/home" onClick={() => this.logOut()} className="btn btn-danger">Back To Login</Link>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
                 <Modal isOpen={this.state.showModal} style={customStyles}>
                     <div className="panel panel-default ">
                         <div className="panel-heading">Change Profile
-                    <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
+                            <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
 
                         </div>
                         <div className="panel panel-body">
