@@ -57,17 +57,18 @@ export function createBlog(data1) {
     }
 }
 
-export function createComment(data1) {
+export function createSavedWebTemplate(data1) {
     return dispatch => {
         dispatch(getBlogIdPending());
-        axios.post(`http://localhost:3003/comments`,data1,HeaderWithToken())
+        axios.post(`http://localhost:3003/savedPageData`,data1,HeaderWithToken())
         .then(res => {
-            toast.success("Comment Successfully")
+            toast.success("Blog Created Successfully")
+            
             dispatch(fetchIdBlog());
             return res.data;
         })
         .catch(error => {
-            dispatch(getBlogIdError("Unable to Comment"));
+            dispatch(getBlogIdError("Unable to Register"));
         })
     }
 }

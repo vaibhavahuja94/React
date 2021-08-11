@@ -1,12 +1,13 @@
 
 //import useState hook to create menu collapse state
 import React, { useState } from "react";
-
+import { Link } from "react-router-dom";
 //import react pro sidebar components
 import {
   ProSidebar,
   Menu,
   MenuItem,
+  SubMenu,
   SidebarHeader,
   SidebarFooter,
   SidebarContent,
@@ -54,10 +55,26 @@ const Header = () => {
           </SidebarHeader>
           <SidebarContent>
             <Menu iconShape="square">
-              <MenuItem active={true} icon={<FiHome />}>
-                Recent
+              <MenuItem icon={<FiHome />}>
+                <SubMenu title="Recent">
+                <MenuItem>
+                <Link to="/recentWebTemplate">Web Template</Link>
+                </MenuItem>
+                <MenuItem>
+                <Link to="/recentPageTemplate">Page Template</Link>
+                </MenuItem>
+                </SubMenu>
               </MenuItem>
-              <MenuItem icon={<FaList />}>Templates</MenuItem>
+              <MenuItem icon={<FaList />}>
+              <SubMenu title="Template">
+                <MenuItem>
+                <Link to="/savedWebTemplate">Web Template</Link>
+                </MenuItem>
+                <MenuItem>
+                <Link to="/savedPageTemplate">Page Template</Link>
+                </MenuItem>
+                </SubMenu>
+              </MenuItem>
             </Menu>
           </SidebarContent>
         </ProSidebar>

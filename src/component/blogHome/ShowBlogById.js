@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../redux/actions/GetBlogByIdActions'
-import * as action from '../../redux/actions/BlogStatusAction'
 import Modal from 'react-modal'
 import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCardText, MDBCol } from 'mdbreact';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,7 +24,8 @@ class ShowBlogById extends Component {
         id: '',
         img: '',
         name: '',
-        template: false
+        template: false,
+        string:""
     }
     componentDidMount() {
         this.props.fetchIdBlog()
@@ -43,8 +43,9 @@ class ShowBlogById extends Component {
         if ((this.props.blogStatus === undefined) && (this.props.pending === true)) {
             <p>Loading...</p>
         }
-        const { blogStatus, comment } = this.props
+        const { blogStatus, comment, isWebPage } = this.props
         const { user } = this.state
+        console.log(isWebPage)
         const customStyles = {
             content: {
                 top: '50%',
@@ -71,7 +72,7 @@ class ShowBlogById extends Component {
                 marginBottom: 12,
             },
         });
-
+        debugger
         Modal.setAppElement('*')
         return (
             <>
@@ -90,7 +91,7 @@ class ShowBlogById extends Component {
                                         </Typography>
                                         <br />
                                         <CardActions>
-                                            <button className="btn btn-primary" onClick={()=>this.handleView()}>Template</button>
+                                            <button className="btn btn-primary" onClick={()=>this.handleView()}>{(isWebPage)?"Web Page":"Template"}</button>
                                         </CardActions>
                                     </CardContent>
                                 </Card>
@@ -173,20 +174,12 @@ const mapStateToProps = (state) => {
     return {
         user: state.login.data,
         blog: state.getBlogById.allBlog,
-        pending: state.blogStatus.pending,
-        blogStatus: state.blogStatus.blogStatus,
-        comment: state.blogStatus.comment
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         fetchIdBlog: () => dispatch(actions.fetchIdBlog()),
-        fetchBlogComment: () => dispatch(action.fetchCommentBlog()),
-        createComment: (data) => dispatch(actions.createComment(data)),
-        fetchStatusBlog: () => dispatch(action.fetchStatusBlog()),
-        changeStatus: (data) => dispatch(action.changeBlogStatus(data)),
-        deleteBlog: (id) => (dispatch(actions.deleteBlog(id)))
     }
 }
 

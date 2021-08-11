@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import BlogNavBar from '../BlogNavBar';
 import Modal from 'react-modal'
 import { Formik, Field, Form, ErrorMessage} from 'formik';
 import * as Yup from 'yup';
@@ -18,7 +19,6 @@ class BlogHome extends Component {
     }
    
     render() {
-        debugger
         const customStyles = {
             content : {
               top                   : '40%',
@@ -35,9 +35,9 @@ class BlogHome extends Component {
           const isWebPage = string.includes("Web")
         return (
             <>
-                <AdminLayout />
+                <AdminLayout isWebPage={isWebPage}/>
                 <div id="bloghome">
-                <button className="btn btn-primary" onClick={()=>this.setState({showModal:true})}>Create Template</button>
+                <button className="btn btn-primary" onClick={()=>this.setState({showModal:true})}>Create Web Template</button>
                 </div>
                 <br />
                 <br />
@@ -45,13 +45,13 @@ class BlogHome extends Component {
                 <br />
                 <br />
                 <div id="myblogbody">
-                    <ShowBlogById isWebPage={isWebPage} />
+                    <ShowBlogById isWebPage={isWebPage}/>
                 </div>
 
                 <ToastContainer />
             <Modal isOpen={this.state.showModal} style={customStyles}>
                     <div className="panel panel-default">
-                    <div className="panel-heading"><h3>Create Page Template
+                    <div className="panel-heading"><h3>Create Web Template
                     <button className="close" onClick={()=>this.setState({showModal:false})}>&times;</button>
                     </h3>
                     </div>
@@ -60,12 +60,14 @@ class BlogHome extends Component {
                 initialValues={{
                     blogTitle: '',
                     desc: '',
+                    blogImgSrc:''
                 }}
                 validationSchema={Yup.object().shape({
                     blogTitle: Yup.string()
                         .required('Blog Title is required'),
                     desc: Yup.string()
                         .required('Description is required'),
+                    blogImgSrc:Yup.string().required('Please Select Image')
                 })}
                 onSubmit={(fields,{resetForm,initialValues}) => {
                     let date = (moment().format('DD-MM-YYYY'))
@@ -95,9 +97,28 @@ class BlogHome extends Component {
                             <ErrorMessage name="desc" component="div" className="invalid-feedback" />
                         </div>
                         <div className="form-group">
+                            <label htmlFor="image">Template Profile-Image</label>
+                            <input name="blogImgSrc" type="file" accept="image/*" 
+                            onChange={(event)=>{ 
+                                if (event.target.files && event.target.files[0]) {
+                                    let reader = new FileReader(event.target.files[0]);
+                                    reader.onloadend = () => {
+                                        setFieldValue('blogImgSrc',reader.result)
+                                      }
+                                    reader.readAsDataURL(event.target.files[0]);
+
+                              }
+                              else{setFieldValue('blogImgSrc','')}
+                            }
+                        }
+                            ref={ref=> this.fileInput = ref}
+                            className={'form-control' + (errors.blogImgSrc && touched.blogImgSrc ? ' is-invalid' : '')} />
+                            <ErrorMessage name="blogImgSrc" component="div" className="invalid-feedback" />
+                        </div>
+                        <div className="form-group">
                             <button type="submit" 
                             className="btn btn-primary"
-                            >Create Page Template</button>
+                            >Create Web Template</button>
                             &nbsp;
                             <button type="reset" onClick={()=>this.fileInput.value=""} className="btn btn-secondary">Reset</button>
                         </div>

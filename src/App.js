@@ -9,8 +9,9 @@ import Login from './component/about/Login';
 import Register from './component/about/Register';
 import BlogHome from './component/blogHome/BlogHome';
 import Home from './component/home/Home';
+import WebTemplate from './component/blogHome/WebTemplate';
 import ProtectedRoute from './component/privateRoute/ProtectedRoute';
-
+import WebHome from './component/blogHome/WebHome';
 
   export default class App extends Component{
     componentDidMount(){
@@ -33,7 +34,11 @@ import ProtectedRoute from './component/privateRoute/ProtectedRoute';
               <Register />
             </Route>
            
-            <ProtectedRoute exact path="/bloghome" component={BlogHome} />
+            <ProtectedRoute exact path="/savedPageTemplate" component={WebHome}/>
+            <ProtectedRoute exact path="/savedWebTemplate" component={WebHome}/>
+            <ProtectedRoute exact path="/recentWebTemplate" component={BlogHome}/>
+            <ProtectedRoute exact path="/recentPageTemplate" component={BlogHome}/>
+            <ProtectedRoute exact path="/webTemplate" component={WebTemplate}/>
           </Switch>
         </div>
       </Router>
