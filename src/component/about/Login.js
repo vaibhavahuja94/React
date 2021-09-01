@@ -20,7 +20,6 @@ class Login extends Component {
     onSubmit = async (fields) => {
         delete fields.recap;
         this.captcha.reset();
-        debugger
         await postLogin(fields)
             .then((res) => {
                 if (res.data.success == 1) {
@@ -31,7 +30,7 @@ class Login extends Component {
                     localStorage.setItem('login', JSON.stringify(true))
                     localStorage.setItem('user', JSON.stringify(user1))
                     localStorage.setItem('token', (res.data.token))
-                    this.props.history.push('/bloghome')
+                    this.props.history.push('/recentWebTemplate')
 
                 }
                 else {

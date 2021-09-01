@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
-import {Link, withRouter} from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { Redirect } from 'react-router';
 
 
@@ -24,14 +24,11 @@ class ShowBlogById extends Component {
         img: '',
         name: '',
         template: false,
-        string:""
+        string: ""
     }
-    componentDidMount() {
-        this.props.fetchIdBlog(this.props.user.username)
-    }
-    
-    handleView(event, value){
-        this.props.history.push({pathname:'webTemplate', state:{template:value}})
+
+    handleView(event, value) {
+        window.open(`http://localhost:8080?${value.page_id}`)
     }
 
     render() {
@@ -67,20 +64,20 @@ class ShowBlogById extends Component {
                 marginBottom: 12,
             },
         });
-        console.log(this.props.blog)
+        console.log(this.props.blogData)
         Modal.setAppElement('*')
         return (
             <>
                 <div className="justify-content-center">
-                    {this.props.blog.length>0 && this.props.blog.map(value =>
+                    {this.props.blogData.length > 0 && this.props.blogData.map(value =>
                         <div className="row">
                             <div className="col-sm-offset-2 col-sm-9 col-xs-offset-2 col-xs-9">
-                                <Card className={classes.root} variant="outlined" style={{boxShadow:"0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"}}>
-                                        <CardContent>
+                                <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
+                                    <CardContent>
                                         <span >
-                                            <h4 style={{ display: "inline" }}>{value.title}</h4>
+                                            <h4 style={{ display: "inline" }}>{value.page_title}</h4>
                                             <span style={{ display: "inline" , float: "right" }}>
-                                                <button className="btn text-white" style={{ backgroundColor: "#1DABB8", borderRadius: "6px" }} onClick={(event) => this.handleView(event, value)}>{(isWebPage)?"Web Page":"View Template"}</button>
+                                                <button className="btn text-white" style={{ backgroundColor: "#1DABB8", borderRadius: "6px" }} onClick={(event) => this.handleView(event, value)}>View</button>
                                             </span>
                                         </span>
                                     </CardContent>

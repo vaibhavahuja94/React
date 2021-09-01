@@ -13,6 +13,7 @@ import WebTemplate from './component/blogHome/WebTemplate';
 import ProtectedRoute from './component/privateRoute/ProtectedRoute';
 import WebHome from './component/blogHome/WebHome';
 import RecentPage from './component/blogHome/RecentPage';
+import ProfileUpdate from './component/profile/ProfileUpdate';
 
   export default class App extends Component{
     componentDidMount(){
@@ -35,11 +36,12 @@ import RecentPage from './component/blogHome/RecentPage';
               <Register />
             </Route>
            
-            <ProtectedRoute exact path="/savedPageTemplate" component={WebHome}/>
-            <ProtectedRoute exact path="/savedWebTemplate" component={WebHome}/>
+            <ProtectedRoute exact path="/savedPageTemplate" component={BlogHome}/>
+            <ProtectedRoute exact path="/savedWebTemplate" component={BlogHome}/>
             <ProtectedRoute exact path="/recentWebTemplate" component={BlogHome}/>
             <ProtectedRoute exact path="/recentPageTemplate" component={BlogHome}/>
             <ProtectedRoute exact path="/webTemplate" component={RecentPage}/>
+            <ProtectedRoute exact path="/updateProfile" component={ProfileUpdate}/>
           </Switch>
         </div>
       </Router>

@@ -53,7 +53,8 @@ export function postApi(pathname, data) {
 
 export function patchApi(id, data) {
     return new Promise((resolve, reject) => {
-        axios.patch(`${url}/${id}`, data)
+        data.username = id
+        axios.post(`https://w3bizz.com/template/classes/updateUser.php`, data)
             .then((res) => resolve(res))
             .catch((err) => reject(err))
     })

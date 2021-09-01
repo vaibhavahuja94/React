@@ -32,11 +32,9 @@ function getBlogIdError(error) {
 //fetchBlog
 export function fetchIdTemplate(name) {
     return async (dispatch) => {
-        debugger
         console.log(name)
         await axios.get(`https://w3bizz.com/template/classes/getTemplate.php?username=${name}`)
             .then(res => {
-                debugger
                 dispatch(getBlogIdSuccess(res.data));
                 return res.data;
             })

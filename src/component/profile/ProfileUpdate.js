@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import { patchApi } from '../../Services/apiFunction'
 import 'react-toastify/dist/ReactToastify.css';
 import { loginUserSuccess } from '../../redux/actions/LoginActions'
+import AdminLayout from '../AdminLayout';
 
 
 class ProfileUpdate extends Component {
@@ -26,11 +27,22 @@ class ProfileUpdate extends Component {
     }
 
     onSubmit = async (fields) => {
-        fields.id = this.state.data.id
+        fields.id = this.state.data.username
         //console.log(fields, fields.id)
         await patchApi(fields.id, fields)
             .then((res) => {
-                this.props.loginUsersSuccess(res.data)
+                let obj = {}
+                obj = this.props.user
+                obj.fname = fields.fname
+                obj.lname = fields.lname
+                obj.country = fields.country
+                obj.state =  fields.state
+                obj.city = fields.city
+                obj.company = fields.company
+                obj.mobile = fields.mobile
+                obj.email = fields.email
+                obj.address = fields.address
+                this.props.loginUsersSuccess(obj)
             })
     }
 
@@ -49,34 +61,38 @@ class ProfileUpdate extends Component {
         const { country, region, data } = this.state;
         return (
             <>
-                <BlogNavBar />
+                <AdminLayout title="Update Profile">
                 <ToastContainer />
-                <div id="bloghome">
-                    <button className="btn btn-danger" onClick={() => this.setState({ showModal: true })}>PassWord Update</button>
-                </div>
-                <div id="myblogbody">
-                    <div className="col-sm-offset-1 col-sm-8">
+                <div>
+                    <div className="row">
+                        <div className="col-sm-2"></div>
+                    <div className="col-sm-8 card">
+                        <div className="card-body">
                         <Formik
                             initialValues={{
-                                name: data.name,
-                                age: data.age,
-                                Country: data.Country,
+                                fname: data.fname,
+                                lname: data.lname,
+                                country: data.country,
                                 state: data.state,
                                 city: data.city,
-                                gender: data.gender,
-                                hobby: data.hobby,
+                                company: data.company,
+                                mobile: data.mobile,
                                 email: data.email,
+                                address:data.address
                             }}
                             validationSchema={Yup.object().shape({
-                                name: Yup.string()
+                                fname: Yup.string()
                                     .required('First Name is required'),
-                                age: Yup.string()
-                                    .required('Age is required').min(0, 'Please Enter Greater Age').max(150, 'Please Enter Smaller Age'),
-                                Country: Yup.string().required('Please Select Country'),
+                                lname: Yup.string()
+                                    .required('Last Name is required'),
+                                mobile: Yup.string().required('Mobile Number is Required')
+                                .matches(/^[0-9]+$/, "Must be only digits")
+                                .min(10, "Must be exactly 10 digits")
+                                .max(10, "Must be exactly 10 digits"),
+                                country: Yup.string().required('Please Select Country'),
                                 state: Yup.string().required('Please Select State'),
                                 city: Yup.string().required('Please enter City'),
-                                gender: Yup.string().oneOf(["male", "female"]).required('Please Select Gender'),
-                                hobby: Yup.array().required('Please Select Hobby').min(1, 'Please Select Hobby'),
+                                address: Yup.string(),
                                 email: Yup.string()
                                     .email('Email is invalid')
                                     .required('Email is required'),
@@ -87,14 +103,19 @@ class ProfileUpdate extends Component {
                                     <div className="panel-body">
                                         <Form>
                                             <div className="form-group">
-                                                <label htmlFor="Name">Name</label>
-                                                <Field name="name" type="text" className={'form-control' + (errors.name && touched.name ? ' is-invalid' : '')} />
-                                                <ErrorMessage name="name" component="div" className="invalid-feedback" />
+                                                <label htmlFor="FName">First Name</label>
+                                                <Field name="fname" type="text" className={'form-control' + (errors.fname && touched.fname ? ' is-invalid' : '')} />
+                                                <ErrorMessage name="fname" component="div" className="invalid-feedback" />
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="age">Age</label>
-                                                <Field name="age" type="number" className={'form-control' + (errors.age && touched.age ? ' is-invalid' : '')} />
-                                                <ErrorMessage name="age" component="div" className="invalid-feedback" />
+                                                <label htmlFor="LName">Last Name</label>
+                                                <Field name="lname" type="text" className={'form-control' + (errors.lname && touched.lname ? ' is-invalid' : '')} />
+                                                <ErrorMessage name="lname" component="div" className="invalid-feedback" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label htmlFor="mobile">Mobile</label>
+                                                <Field name="mobile" type="text" className={'form-control' + (errors.mobile && touched.mobile ? ' is-invalid' : '')} />
+                                                <ErrorMessage name="mobile" component="div" className="invalid-feedback" />
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="email">Email</label>
@@ -102,30 +123,14 @@ class ProfileUpdate extends Component {
                                                 <ErrorMessage name="email" component="div" className="invalid-feedback" />
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="Country">Country</label>
-                                                <CountryDropdown name="Country"
-                                                    value={country}
-                                                    onChange={(val) => {
-                                                        this.setState({ country: val })
-                                                        setFieldValue('Country', val)
-                                                        if (this.state.region !== '') {
-                                                            setFieldValue('state', '')
-                                                        }
-                                                    }}
-                                                    className={'form-control' + (errors.Country && touched.Country ? ' is-invalid' : '')} />
-                                                <ErrorMessage name="Country" component="div" className="invalid-feedback" />
+                                                <label htmlFor="company">Company</label>
+                                                <Field name="company" type="text" className={'form-control' + (errors.company && touched.company ? ' is-invalid' : '')} />
+                                                <ErrorMessage name="company" component="div" className="invalid-feedback" />
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="State">State</label>
-                                                <RegionDropdown name="state"
-                                                    country={country}
-                                                    value={region}
-                                                    onChange={(val) => {
-                                                        this.setState({ region: val })
-                                                        setFieldValue('state', val)
-                                                    }}
-                                                    className={'form-control' + (errors.state && touched.state ? ' is-invalid' : '')} />
-                                                <ErrorMessage name="state" component="div" className="invalid-feedback" />
+                                                <label htmlFor="address">Address</label>
+                                                <Field name="address" type="textarea" className={'form-control' + (errors.address && touched.address ? ' is-invalid' : '')} />
+                                                <ErrorMessage name="address" component="div" className="invalid-feedback" />
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="City">City</label>
@@ -133,41 +138,29 @@ class ProfileUpdate extends Component {
                                                 <ErrorMessage name="city" component="div" className="invalid-feedback" />
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="gender">Gender</label>
-                                                <br />
-                            &nbsp;
-                            Male:
-                            <Field name="gender" type="radio" value="male" className={(errors.gender && touched.gender ? ' is-invalid' : '')} />
-                            &nbsp;&nbsp;
-                            Female:
-                            <Field name="gender" type="radio" value="female" className={(errors.gender && touched.gender ? ' is-invalid' : '')} />
-                                                <ErrorMessage name="gender" component="div" className="invalid-feedback" />
+                                                <label htmlFor="state">State</label>
+                                                <Field name="state" type="text" className={'form-control' + (errors.state && touched.state ? ' is-invalid' : '')} />
+                                                <ErrorMessage name="state" component="div" className="invalid-feedback" />
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="hobby">Hobby</label>
-                                                <br />
-                            &nbsp;
-                            Reading:
-                            <Field name="hobby" type="checkbox" value="Reading" className={(errors.hobby && touched.hobby ? ' is-invalid' : '')} />
-                            &nbsp;&nbsp;
-                            Sports:
-                            <Field name="hobby" type="checkbox" value="Sports" className={(errors.hobby && touched.hobby ? ' is-invalid' : '')} />
-                            &nbsp;&nbsp;
-                            Driving:
-                            <Field name="hobby" type="checkbox" value="Driving" className={(errors.hobby && touched.hobby ? ' is-invalid' : '')} />
-                                                <ErrorMessage name="hobby" component="div" className="invalid-feedback" />
+                                                <label htmlFor="country">Country</label>
+                                                <Field name="country" type="text" className={'form-control' + (errors.country && touched.country ? ' is-invalid' : '')} />
+                                                <ErrorMessage name="country" component="div" className="invalid-feedback" />
                                             </div>
+                                            
                                             <div className="form-group">
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>
-
                                             </div>
                                         </Form>
                                     </div>
                                 </div>
                             )}
                         />
+                        </div>
                     </div>
                 </div>
+                </div>
+                </AdminLayout>
 
                 <Modal isOpen={this.state.showModal} style={customStyles}>
                     <div className="panel panel-default ">

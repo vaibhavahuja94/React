@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -24,6 +25,11 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import { Home } from '@material-ui/icons';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { NavLink } from 'react-router-dom';
+import Popover from '@material-ui/core/Popover';
+import Button from '@material-ui/core/Button';
+import { Link } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import { loginUserSuccess } from '../redux/actions/LoginActions'
 
 const drawerWidth = 240;
 
@@ -90,6 +96,10 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  typography: {
+    padding: theme.spacing(2),
+    cursor:"default",
+  },
   activeListItem: {
     borderLeft: `4px solid ${theme.palette.primary.main}`,
     borderRadius: '4px',
@@ -110,11 +120,17 @@ export default function AdminLayout(props) {
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const history = useHistory()
+  const dispatch = useDispatch()
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
 
+  const openAnchor = Boolean(anchorEl);
+  const id = openAnchor ? 'simple-popover' : undefined;
+  
   function handleClick() {
     setOpen1(!open1)
   }
@@ -123,6 +139,22 @@ export default function AdminLayout(props) {
     setOpen2(!open2)
   }
 
+  const handleClickAnchor = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseAnchor = () => {
+    setAnchorEl(null);
+  };
+
+  const logout = () => {
+        localStorage.removeItem('user')
+        localStorage.removeItem('token')
+        localStorage.setItem('login', JSON.stringify(false))
+        let obj = {}
+        dispatch(loginUserSuccess(obj))
+        history.push('/login')
+  }
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -150,9 +182,13 @@ export default function AdminLayout(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
+          <Typography variant="h6" noWrap style={{flex:1}}>
             {props.title}
           </Typography>
+          <div>
+            <img src="/humanavtar.jpg" height="75em" aria-describedby={id} variant="contained" color="info" onClick={handleClickAnchor}/>
+            <Button className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }} onClick={()=>{logout()}}>Logout</Button>
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -213,7 +249,6 @@ export default function AdminLayout(props) {
         </List>
       </Collapse>
         </List>
-        
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
@@ -221,6 +256,22 @@ export default function AdminLayout(props) {
         {props.children}
         </div>
       </main>
+      <Popover
+        id={id}
+        open={openAnchor}
+        anchorEl={anchorEl}
+        onClose={handleCloseAnchor}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Typography className={classes.typography} onClick={()=>{history.push('/updateProfile')}}>User-Profile</Typography>
+      </Popover>
     </div>
   );
 }
