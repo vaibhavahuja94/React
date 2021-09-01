@@ -4,7 +4,7 @@ import Modal from 'react-modal'
 import { Formik, Field, Form, ErrorMessage} from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import {createBlog} from '../../redux/actions/GetBlogByIdActions'
+import {createTemplate} from '../../redux/actions/GetBlogByIdActions'
 import ShowBlogById from './ShowBlogById';
 import moment from "moment"
 import { ToastContainer } from 'react-toastify';
@@ -58,26 +58,20 @@ class BlogHome extends Component {
                     <div className="panel panel-body">
             <Formik
                 initialValues={{
-                    blogTitle: '',
-                    desc: '',
-                    blogImgSrc:''
+                    title: '',
+                    publish_name: '',
                 }}
                 validationSchema={Yup.object().shape({
-                    blogTitle: Yup.string()
-                        .required('Blog Title is required'),
-                    desc: Yup.string()
-                        .required('Description is required'),
-                    blogImgSrc:Yup.string().required('Please Select Image')
+                    title: Yup.string()
+                        .required('Title is required'),
                 })}
                 onSubmit={(fields,{resetForm,initialValues}) => {
-                    let date = (moment().format('DD-MM-YYYY'))
-                    fields.user_id = user.id
-                    fields.date = date
-                    fields.created_by = user.name 
-                   
+                    fields.username = user.username
+                    fields.id = Math.floor(Math.random()*1000000)
+                    fields.category = "new category"
+                    fields.tags = "new tags" 
                     this.props.createBlog(fields)
                     resetForm(initialValues)
-                    this.fileInput.value=""
                     this.setState({showModal:false})
                     setTimeout(() => {
                         window.location.reload()
@@ -87,40 +81,26 @@ class BlogHome extends Component {
                     
                     <Form>
                         <div className="form-group">
-                            <label htmlFor="blogTitle">Title</label>
-                            <Field name="blogTitle" type="text" className={'form-control' + (errors.blogTitle && touched.blogTitle ? ' is-invalid' : '')} />
-                            <ErrorMessage name="blogTitle" component="div" className="invalid-feedback" />
+                            <label htmlFor="title">Title</label>
+                            <Field name="title" type="text" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')} />
+                            <ErrorMessage name="title" component="div" className="invalid-feedback" />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="desc">Description</label>
-                            <Field name="desc" as="textarea" className={'form-control' + (errors.desc && touched.desc ? ' is-invalid' : '')} />
-                            <ErrorMessage name="desc" component="div" className="invalid-feedback" />
+                            <label htmlFor="category">Category</label>
+                            <Field name="category" type="text" className={'form-control' + (errors.category && touched.category ? ' is-invalid' : '')} />
+                            <ErrorMessage name="category" component="div" className="invalid-feedback" />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="image">Template Profile-Image</label>
-                            <input name="blogImgSrc" type="file" accept="image/*" 
-                            onChange={(event)=>{ 
-                                if (event.target.files && event.target.files[0]) {
-                                    let reader = new FileReader(event.target.files[0]);
-                                    reader.onloadend = () => {
-                                        setFieldValue('blogImgSrc',reader.result)
-                                      }
-                                    reader.readAsDataURL(event.target.files[0]);
-
-                              }
-                              else{setFieldValue('blogImgSrc','')}
-                            }
-                        }
-                            ref={ref=> this.fileInput = ref}
-                            className={'form-control' + (errors.blogImgSrc && touched.blogImgSrc ? ' is-invalid' : '')} />
-                            <ErrorMessage name="blogImgSrc" component="div" className="invalid-feedback" />
+                            <label htmlFor="tags">Category</label>
+                            <Field name="tags" type="text" className={'form-control' + (errors.tags && touched.tags ? ' is-invalid' : '')} />
+                            <ErrorMessage name="tags" component="div" className="invalid-feedback" />
                         </div>
                         <div className="form-group">
                             <button type="submit" 
                             className="btn btn-primary"
                             >Create Web Template</button>
                             &nbsp;
-                            <button type="reset" onClick={()=>this.fileInput.value=""} className="btn btn-secondary">Reset</button>
+                            <button type="reset" className="btn btn-secondary">Reset</button>
                         </div>
                     </Form>
                 )}
@@ -142,7 +122,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
   return{
-    createBlog:(data)=>dispatch(createBlog(data))
+    createBlog:(data)=>dispatch(createTemplate(data))
   }
 }
 

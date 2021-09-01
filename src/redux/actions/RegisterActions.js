@@ -45,7 +45,7 @@ function updateUsersPasswordSuccess(data){
 export function registerUsers(data1) {
     return dispatch => {
         dispatch(registerUsersPending());
-        axios.post('http://localhost:3003/userData',data1)
+        axios.post('https://w3bizz.com/template/register.php',data1)
         .then(res => {
             dispatch(registerUsersSuccess("Data Inserted SuccessFully"));
             return res.data;

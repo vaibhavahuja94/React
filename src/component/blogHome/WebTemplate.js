@@ -31,6 +31,9 @@ class ShowBlogById extends Component {
         blog:[]
     }
     componentDidMount() {
+        if(this.props.location){
+            console.log(this.props.location.state)
+        }
         //this.props.fetchIdBlog()
     }
 
@@ -194,7 +197,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchIdBlog: () => dispatch(actions.fetchIdBlog()),
+        fetchIdPage: () => dispatch(actions.fetchIdTemplate()),
     }
 }
 

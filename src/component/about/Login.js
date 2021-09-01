@@ -8,7 +8,7 @@ import { loginUserError, loginUserSuccess } from '../../redux/actions/LoginActio
 import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { GetApiWithParams } from '../../Services/apiFunction'
+import { postLogin } from '../../Services/apiFunction'
 
 class Login extends Component {
     state = {
@@ -20,17 +20,19 @@ class Login extends Component {
     onSubmit = async (fields) => {
         delete fields.recap;
         this.captcha.reset();
-        await GetApiWithParams(fields)
+        debugger
+        await postLogin(fields)
             .then((res) => {
-                if (res.data.length > 0) {
+                if (res.data.success == 1) {
                     this.setState({ loginError: false })
-                    console.log(res.data)
-                    let user1 = res.data[0]
+                    console.log(res.data.data)
+                    let user1 = res.data.data
                     this.props.loginUsersSuccess(user1)
                     localStorage.setItem('login', JSON.stringify(true))
                     localStorage.setItem('user', JSON.stringify(user1))
-                    localStorage.setItem('token', (user1.id))
+                    localStorage.setItem('token', (res.data.token))
                     this.props.history.push('/bloghome')
+
                 }
                 else {
                     this.setState({ loginError: true })
@@ -55,7 +57,9 @@ class Login extends Component {
 
         return (
             <>
-                <div className="col-sm-offset-3 col-sm-5 container" id="body" style={{marginLeft:"28%"}}>
+                <div className="row container">
+                <div className="col-sm-7" style={{marginTop:"7%"}}></div>
+                <div className="col-sm-5 col-xs-12" style={{marginTop:"7%"}}>
                     <Formik
                         initialValues={{
                             email: '',
@@ -73,7 +77,7 @@ class Login extends Component {
                         })}
                         onSubmit={this.onSubmit}
                         render={({ errors, status, touched, setFieldValue }) => (
-                            <div className="card">
+                            <div className="card" style={{width:"80%"}}>
                                 <div className="card-body container" >
                                     <Form>
                                         <div className="form-group">
@@ -96,14 +100,14 @@ class Login extends Component {
                                             <ErrorMessage name="recap" component="div" className="invalid-feedback" />
                                         </div>
                                         <div className="form-group">
-                                            <button type="submit" className="btn btn-primary mr-2">Login</button>
-                            &nbsp;
-                            <button type="reset" className="btn btn-secondary"
+                                            <button style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }} type="submit" className="btn mr-2">Login</button>
+                                            &nbsp;
+                                            <button type="reset" className="btn" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}
                                                 onClick={() => this.captcha.reset()}
                                             >Reset</button>
                                         </div>
                                         <div className="form-group">
-                                            <Link to="/register" className="btn btn-success">Sign-Up</Link>
+                                            <Link to="/register" className="btn" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}>Sign-Up</Link>
                                         </div>
                                         <div>
                                             {this.state.loginError === true && <p style={{ "color": "red" }}>{this.state.loginMessage}</p>}
@@ -116,7 +120,7 @@ class Login extends Component {
                     />
                     <ToastContainer />
                 </div>
-
+            </div>
             </>
         );
     }

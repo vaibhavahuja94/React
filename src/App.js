@@ -12,6 +12,7 @@ import Home from './component/home/Home';
 import WebTemplate from './component/blogHome/WebTemplate';
 import ProtectedRoute from './component/privateRoute/ProtectedRoute';
 import WebHome from './component/blogHome/WebHome';
+import RecentPage from './component/blogHome/RecentPage';
 
   export default class App extends Component{
     componentDidMount(){
@@ -38,7 +39,7 @@ import WebHome from './component/blogHome/WebHome';
             <ProtectedRoute exact path="/savedWebTemplate" component={WebHome}/>
             <ProtectedRoute exact path="/recentWebTemplate" component={BlogHome}/>
             <ProtectedRoute exact path="/recentPageTemplate" component={BlogHome}/>
-            <ProtectedRoute exact path="/webTemplate" component={WebTemplate}/>
+            <ProtectedRoute exact path="/webTemplate" component={RecentPage}/>
           </Switch>
         </div>
       </Router>

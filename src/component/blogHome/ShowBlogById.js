@@ -11,9 +11,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 import { Redirect } from 'react-router';
-
 
 
 class ShowBlogById extends Component {
@@ -28,18 +27,16 @@ class ShowBlogById extends Component {
         string:""
     }
     componentDidMount() {
-        this.props.fetchIdBlog()
+        debugger
+        this.props.fetchIdBlog(this.props.user.username)
     }
     
-    handleView(){
-        window.open('http://localhost:8080', 'blank')
+    handleView(event, value){
+        debugger
+        this.props.history.push({pathname:'webTemplate', state:{template:value}})
     }
 
     render() {
-
-        if (this.state.template) {
-            window.open('http://localhost:8080')
-        }
         if ((this.props.blogStatus === undefined) && (this.props.pending === true)) {
             <p>Loading...</p>
         }
@@ -73,26 +70,22 @@ class ShowBlogById extends Component {
             },
         });
         debugger
+        console.log(this.props.blog)
         Modal.setAppElement('*')
         return (
             <>
-                <div style={{ marginLeft: "17%" }} className="justify-content-center">
-                    {this.props.blog.map(value =>
+                <div className="justify-content-center">
+                    {this.props.blog.length>0 && this.props.blog.map(value =>
                         <div className="row">
                             <div className="col-sm-offset-2 col-sm-9 col-xs-offset-2 col-xs-9">
-                                <Card className={classes.root} variant="outlined">
-                                    <CardContent>
-                                        <Typography variant="h5" component="h2">
-                                            Title:{value.blogTitle}
-                                        </Typography>
-                                        <br />
-                                        <Typography variant="h5" component="h2">
-                                            Description:{value.desc}
-                                        </Typography>
-                                        <br />
-                                        <CardActions>
-                                            <button className="btn btn-primary" onClick={()=>this.handleView()}>{(isWebPage)?"Web Page":"Template"}</button>
-                                        </CardActions>
+                                <Card className={classes.root} variant="outlined" style={{boxShadow:"0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)"}}>
+                                        <CardContent>
+                                        <span >
+                                            <h4 style={{ display: "inline" }}>{value.title}</h4>
+                                            <span style={{ display: "inline" , float: "right" }}>
+                                                <button className="btn text-white" style={{ backgroundColor: "#1DABB8", borderRadius: "6px" }} onClick={(event) => this.handleView(event, value)}>{(isWebPage)?"Web Page":"View Template"}</button>
+                                            </span>
+                                        </span>
                                     </CardContent>
                                 </Card>
                                 <br />
@@ -179,8 +172,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchIdBlog: () => dispatch(actions.fetchIdBlog()),
+        fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShowBlogById);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ShowBlogById));

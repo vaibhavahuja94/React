@@ -48,40 +48,7 @@
       "id": 2
     }
   ],
-  "blogData": [
-    {
-      "blogTitle": "Amitabh Bachan",
-      "desc": "Senior Actor",
-      "user_id": 1,
-      "date": "28-01-2021",
-      "created_by": "Vaibhav Ahuja",
-      "id": 1
-    },
-    {
-      "blogTitle": "Shradhha Kapoor",
-      "desc": "Smart And Cool",
-      "user_id": 2,
-      "date": "02-02-2021",
-      "created_by": "Pooja Ahuja",
-      "id": 12
-    },
-    {
-      "blogTitle": "Shahid Kapoor",
-      "desc": "HandSome Guy",
-      "user_id": 2,
-      "date": "02-02-2021",
-      "created_by": "Pooja Ahuja",
-      "id": 13
-    },
-    {
-      "blogTitle": "Hritik_Roshan",
-      "desc": "Handsome Hunk",
-      "user_id": 1,
-      "date": "03-02-2021",
-      "created_by": "Vaibhav Gupta",
-      "id": 14
-    }
-  ],
+  "blogData": [],
   "savedWebData":[],
   "recentWebData":[],
   "savedPageData":[]

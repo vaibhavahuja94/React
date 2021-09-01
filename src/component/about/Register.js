@@ -20,13 +20,14 @@ class Register extends React.Component {
         return (
             <>
             <ToastContainer />
-             <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+             <nav className="navbar navbar-expand-lg navbar-default bg-light fixed-top">
                 <div className="container-fluid float-right" style={{marginLeft:"82.5%"}}>
                 <ul className="nav navbar-nav" >
                 <Link to="/login" className="btn btn-info navbar-btn">Back To Login</Link>
                 </ul>
                 </div>
             </nav>
+            <br />
             <div className="col-sm-offset-2 col-sm-8" id="body" style={{marginLeft:"15%"}}>
             <Formik
                 initialValues={{
@@ -36,8 +37,10 @@ class Register extends React.Component {
                     confirmPassword: '',
                 }}
                 validationSchema={Yup.object().shape({
-                    name: Yup.string()
+                    fame: Yup.string()
                         .required('First Name is required'),
+                    lname:Yup.string()
+                    .required('Last Name is required'),
                     email: Yup.string()
                         .email('Email is invalid')
                         .required('Email is required'),
@@ -47,15 +50,14 @@ class Register extends React.Component {
                             /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
                             "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
                           ),
-                    confirmPassword: Yup.string()
-                        .oneOf([Yup.ref('password'), null], 'Passwords must match')
-                        .required('Confirm Password is required'),
+                    // confirmPassword: Yup.string()
+                    //     .oneOf([Yup.ref('password'), null], 'Passwords must match')
+                    //     .required('Confirm Password is required'),
                 })}
                 onSubmit={fields => {
-                    delete fields.confirmPassword
                     this.props.registerUser(fields)
                     setInterval(() => {
-                        
+                        this.setState({isSign:true})  
                     }, 500);
                     if(this.props.error.length>0)
                     {
@@ -67,13 +69,18 @@ class Register extends React.Component {
                     }
                 }}
                 render={({ errors, touched ,setFieldValue }) => (
-                    <div className="card">
+                    <div className="card" style={{width:"50%"}}>
                         <div className = "card-body">
                     <Form>
                         <div className="form-group">
-                            <label htmlFor="Name">Name</label>
-                            <Field name="name" type="text" className={'form-control' + (errors.name && touched.name ? ' is-invalid' : '')} />
-                            <ErrorMessage name="name" component="div" className="invalid-feedback" />
+                            <label htmlFor="First Name">First Name</label>
+                            <Field name="fname" type="text" className={'form-control' + (errors.fname && touched.fname ? ' is-invalid' : '')} />
+                            <ErrorMessage name="fname" component="div" className="invalid-feedback" />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="Last Name">Last Name</label>
+                            <Field name="lname" type="text" className={'form-control' + (errors.lname && touched.lname ? ' is-invalid' : '')} />
+                            <ErrorMessage name="lname" component="div" className="invalid-feedback" />
                         </div>
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
@@ -86,12 +93,7 @@ class Register extends React.Component {
                             <ErrorMessage name="password" component="div" className="invalid-feedback" />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="confirmPassword">Confirm Password</label>
-                            <Field name="confirmPassword" type="password" className={'form-control' + (errors.confirmPassword && touched.confirmPassword ? ' is-invalid' : '')} />
-                            <ErrorMessage name="confirmPassword" component="div" className="invalid-feedback" />
-                        </div>
-                        <div className="form-group">
-                            <button type="submit" className="btn btn-primary mr-2">Register</button>
+                            <button type="submit" className="btn btn-info mr-2">Register</button>
                             &nbsp;
                             <button type="reset" className="btn btn-secondary" 
                             onClick={this.ResetFunction}>Reset</button>
