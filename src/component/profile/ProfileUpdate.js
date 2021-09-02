@@ -5,7 +5,6 @@ import * as Yup from 'yup';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import Modal from 'react-modal'
 import { connect } from 'react-redux'
-import { updateUserPassword, updateUser } from '../../redux/actions/RegisterActions'
 import { ToastContainer } from 'react-toastify';
 import { patchApi } from '../../Services/apiFunction'
 import 'react-toastify/dist/ReactToastify.css';
@@ -223,16 +222,13 @@ class ProfileUpdate extends Component {
 const mapStateToProps = (state) => {
     return {
         data: state.register.data,
-        window: state.register.window,
         user: state.login.data
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        loginUsersSuccess: (data) => dispatch(loginUserSuccess(data)),
-        updatePassword: (data) => dispatch(updateUserPassword(data)),
-        updateUser: (data) => dispatch(updateUser(data))
+        loginUsersSuccess: (data) => dispatch(loginUserSuccess(data))
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileUpdate);

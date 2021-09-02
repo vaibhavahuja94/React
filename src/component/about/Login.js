@@ -99,14 +99,14 @@ class Login extends Component {
                                             <ErrorMessage name="recap" component="div" className="invalid-feedback" />
                                         </div>
                                         <div className="form-group">
-                                            <button style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }} type="submit" className="btn mr-2">Login</button>
+                                            <button style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }} type="submit" className="btn mr-2 text-white">Login</button>
                                             &nbsp;
-                                            <button type="reset" className="btn" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}
+                                            <button type="reset" className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}
                                                 onClick={() => this.captcha.reset()}
                                             >Reset</button>
                                         </div>
                                         <div className="form-group">
-                                            <Link to="/register" className="btn" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}>Sign-Up</Link>
+                                            <Link to="/register" className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}>Sign-Up</Link>
                                         </div>
                                         <div>
                                             {this.state.loginError === true && <p style={{ "color": "red" }}>{this.state.loginMessage}</p>}

@@ -1,16 +1,5 @@
 import axios from 'axios';
 
-const url = "http://localhost:3003/userData"
-
-export function GetApi(pathname) {
-    return new Promise((resolve, reject) => {
-        axios.get(url)
-            .then((res) => resolve(res))
-            .catch((err) => reject(err))
-    })
-}
-
-
 export function postLogin(fields) {
     return new Promise((resolve, reject) => {
         axios.post("https://w3bizz.com/template/login.php", fields)
@@ -43,9 +32,9 @@ export function getTemplate(username) {
     })
 }
 
-export function postApi(pathname, data) {
+export function registerApi(data) {
     return new Promise((resolve, reject) => {
-        axios.post(url, data)
+        axios.post('https://w3bizz.com/template/register.php', data)
             .then((res) => resolve(res))
             .catch((err) => reject(err))
     })

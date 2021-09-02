@@ -2,10 +2,9 @@ import React from 'react';
 import { Formik, Field, Form, ErrorMessage} from 'formik';
 import * as Yup from 'yup';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
-import {Link,Redirect} from 'react-router-dom'
-import { connect } from 'react-redux';
-import {registerUsers} from '../../redux/actions/RegisterActions'
-import { ToastContainer } from 'react-toastify';
+import {Link,Redirect , withRouter} from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify';
+import { registerApi } from '../../Services/apiFunction';
 import 'react-toastify/dist/ReactToastify.css';
 
 class Register extends React.Component {
@@ -31,13 +30,13 @@ class Register extends React.Component {
             <div className="col-sm-offset-2 col-sm-8" id="body" style={{marginLeft:"15%"}}>
             <Formik
                 initialValues={{
-                    name: '',
+                    fname:'',
+                    lname: '',
                     email: '',
                     password: '',
-                    confirmPassword: '',
                 }}
                 validationSchema={Yup.object().shape({
-                    fame: Yup.string()
+                    fname: Yup.string()
                         .required('First Name is required'),
                     lname:Yup.string()
                     .required('Last Name is required'),
@@ -50,22 +49,14 @@ class Register extends React.Component {
                             /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
                             "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
                           ),
-                    // confirmPassword: Yup.string()
-                    //     .oneOf([Yup.ref('password'), null], 'Passwords must match')
-                    //     .required('Confirm Password is required'),
                 })}
-                onSubmit={fields => {
-                    this.props.registerUser(fields)
-                    setInterval(() => {
-                        this.setState({isSign:true})  
-                    }, 500);
-                    if(this.props.error.length>0)
-                    {
-                      this.setState({isSign:false})
-                        
-                    }
-                    else{
-                    this.setState({isSign:true})
+                onSubmit={async (fields) => {
+                    const response = await registerApi(fields)
+                    if(response.data.success == "1"){
+                        toast.success('Registration Successfully')
+                        this.props.history.push('/login')
+                    }else{
+                        toast.error('Registration Unsuccessfully')
                     }
                 }}
                 render={({ errors, touched ,setFieldValue }) => (
@@ -109,15 +100,4 @@ class Register extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        error:state.register.error
-
-    }
-  }
-
-const mapDispatchToProps = dispatch => {
-  return{registerUser:(data)=>dispatch(registerUsers(data))}
-}
-
-export default connect(mapStateToProps,mapDispatchToProps)(Register);
+export default withRouter(Register);
