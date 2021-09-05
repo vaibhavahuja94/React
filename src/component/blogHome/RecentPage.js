@@ -3,21 +3,19 @@ import Modal from 'react-modal'
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import { getBlogIdSuccess } from '../../redux/actions/GetBlogByIdActions'
-import ShowBlogById from './ShowBlogById';
-import moment from "moment"
-import BlogNavBar from '../BlogNavBar'
-import Header from '../Header/Header'
-import { ToastContainer } from 'react-toastify';
+import { getBlogIdSuccess, getAdminBlogIdSuccess } from '../../redux/actions/GetBlogByIdActions'
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminLayout from '../AdminLayout';
 import RecentPageById from './RecentPageById';
-import { BiPolygon } from 'react-icons/bi';
 import { addPage, getTemplate } from '../../Services/apiFunction';
+import { CircularProgress } from '@material-ui/core'
+import AdminRecentPageById from './AdminRecentPageById';
 
 class BlogHome extends Component {
     state = {
         showModal: false,
+        loader: false,
         string: window.location.pathname.split("/")[1],
         user: JSON.parse(localStorage.getItem('user'))
     }
@@ -34,9 +32,14 @@ class BlogHome extends Component {
             }
         };
         Modal.setAppElement('*')
-        const {user, blog} = this.props
-        const { template } = this.props.location.state;
-        const blogData = blog.find(x=>x.s_no == template.s_no)
+        const { user, blog, adminBlog } = this.props
+        const { template, type } = this.props.location.state;
+        let blogData
+        if (type == "USER") {
+            blogData = blog.find(x => x.s_no == template.s_no)
+        } else {
+            blogData = adminBlog.find(x => x.s_no == template.s_no)
+        }
         const string = window.location.pathname.split("/")[1]
         const isWebPage = string.includes("Web")
         return (
@@ -46,20 +49,25 @@ class BlogHome extends Component {
                         <button style={{ float: "right", borderRadius: "6px", backgroundColor: "#1DABB8" }} className="btn text-white" onClick={() => this.setState({ showModal: true })}>Create Page</button>
                     </div>
                     <br />
-                    <RecentPageById blogData={blogData.pageData}/>
+                    {type == "DEFAULT" ?
+                        <AdminRecentPageById blogData={blogData.pageData} /> :
+                        <RecentPageById blogData={blogData.pageData} type={type} />
+                    }
                 </AdminLayout>
                 <ToastContainer />
                 <Modal isOpen={this.state.showModal} style={customStyles}>
                     <div className="panel panel-default">
-                        <div className="panel-heading"><h3>Create Page
-                            <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
-                        </h3>
-                        </div>
+                        {this.state.loader ? <CircularProgress /> :
+                            <div className="panel-heading"><h3>Create Page
+                                <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
+                            </h3>
+                            </div>
+                        }
                         <div className="panel panel-body">
                             <Formik
                                 initialValues={{
                                     title: '',
-                                    publish_name:''
+                                    publish_name: ''
                                 }}
                                 validationSchema={Yup.object().shape({
                                     title: Yup.string()
@@ -68,16 +76,26 @@ class BlogHome extends Component {
                                         .required('Publish Name is required'),
                                 })}
                                 onSubmit={async (fields, { resetForm, initialValues }) => {
+                                    this.setState({ loader: true })
                                     fields.template_id = blogData.id
                                     fields.id = Math.floor(Math.random() * 1000000)
                                     fields.code = "new title"
                                     await addPage(fields)
                                     const template = await getTemplate(user.username)
-                                    if(template){
-                                        this.props.createPage(template)
+                                    if (template.STATUS) {
+                                        toast.success("Page Created Successfully")
+                                        resetForm(initialValues)
+                                        this.setState({ showModal: false })
+                                        if (type == "USER") {
+                                            this.props.createPage(template.USER_TEMPLATE)
+                                        }
+                                        else {
+                                            this.props.createAdminPage(template.DEFAULT_TEMPLATE)
+                                        }
                                     }
-                                    resetForm(initialValues)
-                                    this.setState({ showModal: false })
+                                    else {
+                                        this.setState({ showModal: false })
+                                    }
                                 }}
                                 render={({ errors, touched, setFieldValue }) => (
 
@@ -112,13 +130,15 @@ class BlogHome extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.login && state.login.data,
-        blog: state.getBlogById && state.getBlogById.allBlog
+        blog: state.getBlogById && state.getBlogById.allBlog,
+        adminBlog: state.getBlogById && state.getBlogById.allAdminBlog
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createPage: (data) => dispatch(getBlogIdSuccess(data))
+        createPage: (data) => dispatch(getBlogIdSuccess(data)),
+        createAdminPage: (data) => dispatch(getAdminBlogIdSuccess(data))
     }
 }
 

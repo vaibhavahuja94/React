@@ -9,6 +9,13 @@ export function getBlogIdSuccess(data) {// Template Redux
     }
 }
 
+export function getAdminBlogIdSuccess(data) {// Template Redux
+    return {
+        type: 'GETADMINBLOGIDSUCCESS',
+        payload: data
+    }
+}
+
 function getPageIdSuccess(data) {
     return {
         type: 'GETPAGEIDSUCCESS',
@@ -32,10 +39,10 @@ function getBlogIdError(error) {
 //fetchBlog
 export function fetchIdTemplate(name) {
     return async (dispatch) => {
-        console.log(name)
         await axios.get(`https://w3bizz.com/template/classes/getTemplate.php?username=${name}`)
             .then(res => {
-                dispatch(getBlogIdSuccess(res.data));
+                const data = res.data
+                dispatch(getBlogIdSuccess(data.DEFAULT_TEMPLATE));
                 return res.data;
             })
             .catch(error => {
@@ -71,56 +78,3 @@ export async function createTemplate(data1) {
             })
     }
 }
-
-// export function createPage(data1, username) {
-//         return async (dispatch) => {
-//             await axios.post(`https://w3bizz.com/template/classes/addPage.php`, data1)
-//                 .then(async (res) => {
-//                     toast.success("Page Created Successfully")
-//                     debugger
-//                     await axios.get(`https://w3bizz.com/template/classes/getTemplate.php?username=${username}`)
-//                         .then(res => {
-//                             debugger
-//                             dispatch(getBlogIdSuccess(res.data));
-//                         })
-//                 })
-//                 .catch(error => {
-//                     getBlogIdError("Unable to Register");
-//                 })
-//         }
-// }
-
-// export function delete(id){
-//     return dispatch => {
-//         dispatch(getBlogIdPending());
-//         axios.delete(`http://localhost:3003/blogData/${id}`,HeaderWithToken())
-//         .then(res => {
-//             axios.get('http://localhost:3003/status',HeaderWithToken())
-//             .then(res=>{
-//                 var data1 = res.data.filter(val=>val.blog_id===id);
-//                 if(data1){
-//                     data1.map(val=>
-//                     axios.delete(`http://localhost:3003/status/${val.id}`,HeaderWithToken())
-//                     );
-//                 }
-
-//             })
-//             axios.get('http://localhost:3003/comments',HeaderWithToken())
-//             .then(res=>{
-//                 var data2 = res.data.filter(val=>val.blog_id===id)
-//                 if(data2){
-//                 data2.map(val=>
-//                 axios.delete(`http://localhost:3003/comments/${val.id}`,HeaderWithToken())
-//                 );
-//                 }
-
-//             })
-//             toast.warn("Blog Deleted Successfully")
-//             dispatch(fetchIdBlog());
-//             return res.data;
-//         })
-//         .catch(error => {
-//             dispatch(getBlogIdError("Unable to Register"));
-//         })
-//     }
-// }

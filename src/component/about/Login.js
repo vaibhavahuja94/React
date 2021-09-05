@@ -9,10 +9,12 @@ import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { postLogin } from '../../Services/apiFunction'
+import {CircularProgress} from '@material-ui/core'
 
 class Login extends Component {
     state = {
         loginError: false,
+        loader:false,
         loginMessage: "Username or Paasword is Incorrect",
         token: JSON.parse(localStorage.getItem('login'))
     }
@@ -20,21 +22,20 @@ class Login extends Component {
     onSubmit = async (fields) => {
         delete fields.recap;
         this.captcha.reset();
+        this.setState({loader:true})
         await postLogin(fields)
             .then((res) => {
                 if (res.data.success == 1) {
                     this.setState({ loginError: false })
-                    console.log(res.data.data)
                     let user1 = res.data.data
                     this.props.loginUsersSuccess(user1)
                     localStorage.setItem('login', JSON.stringify(true))
-                    localStorage.setItem('user', JSON.stringify(user1))
                     localStorage.setItem('token', (res.data.token))
                     this.props.history.push('/recentWebTemplate')
-
                 }
                 else {
                     this.setState({ loginError: true })
+                    this.setState({loader:false})
                 }
             })
             .catch(err => { console.log(err) })
@@ -53,7 +54,6 @@ class Login extends Component {
     //     }
     // }
     render() {
-
         return (
             <>
                 <div className="row container">
@@ -99,7 +99,10 @@ class Login extends Component {
                                             <ErrorMessage name="recap" component="div" className="invalid-feedback" />
                                         </div>
                                         <div className="form-group">
+                                            {this.state.loader?
+                                            <CircularProgress />:
                                             <button style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }} type="submit" className="btn mr-2 text-white">Login</button>
+                                        }
                                             &nbsp;
                                             <button type="reset" className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}
                                                 onClick={() => this.captcha.reset()}
@@ -126,7 +129,6 @@ class Login extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state.login.data)
     return {
         error: state.login && state.login.error,
         data: state.login && state.login.data

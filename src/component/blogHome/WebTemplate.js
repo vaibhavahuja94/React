@@ -30,12 +30,6 @@ class ShowBlogById extends Component {
         string: "",
         blog:[]
     }
-    componentDidMount() {
-        if(this.props.location){
-            console.log(this.props.location.state)
-        }
-        //this.props.fetchIdBlog()
-    }
 
     handleView() {
         window.open('http://localhost:8080', 'blank')
@@ -51,7 +45,6 @@ class ShowBlogById extends Component {
         }
         const { blogStatus, comment, isWebPage } = this.props
         const { user } = this.state
-        console.log(isWebPage)
         const customStyles = {
             content: {
                 top: '50%',

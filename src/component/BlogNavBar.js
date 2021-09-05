@@ -30,7 +30,6 @@ class BlogNavBar extends Component {
         this.setState({ showModal: false })
     }
     render() {
-        console.log(this.state.user, this.props.user)
         const customStyles = {
             content: {
                 top: '43%',

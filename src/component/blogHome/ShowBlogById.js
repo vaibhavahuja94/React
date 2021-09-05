@@ -13,6 +13,11 @@ import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
 import {Link, withRouter} from 'react-router-dom'
 import { Redirect } from 'react-router';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import Tooltip from '@material-ui/core/Tooltip';
+import { updateHide } from '../../Services/apiFunction';
 
 
 class ShowBlogById extends Component {
@@ -25,14 +30,33 @@ class ShowBlogById extends Component {
         name: '',
         template: false,
         string:""
-    }
-    componentDidMount() {
-        this.props.fetchIdBlog(this.props.user.username)
-    }
-    
+    }    
     handleView(event, value){
-        this.props.history.push({pathname:'webTemplate', state:{template:value}})
+        this.props.history.push({pathname:'webTemplate', state:{template:value, type:"USER"}})
     }
+
+    handleHide = async(value) => {
+        let obj = {}
+        obj.username = value.username
+        obj.id = value.id
+        obj.is_hidden = (value.is_hidden === "FALSE"?"TRUE":"FALSE")
+        const response = await updateHide(obj)
+        if(response.STATUS == "SUCCESS"){
+         let blog = this.props.blog
+         var list = []
+         blog.forEach((el)=>{
+             if(el.id == value.id){
+                 el.is_hidden = obj.is_hidden
+                 list.push(el)
+             }
+             else{
+                 list.push(el)
+             }
+         })
+         this.props.createBlog(list)   
+        }
+    }
+
 
     render() {
         if ((this.props.blogStatus === undefined) && (this.props.pending === true)) {
@@ -40,7 +64,6 @@ class ShowBlogById extends Component {
         }
         const { blogStatus, comment, isWebPage } = this.props
         const { user } = this.state
-        console.log(isWebPage)
         const customStyles = {
             content: {
                 top: '50%',
@@ -67,7 +90,6 @@ class ShowBlogById extends Component {
                 marginBottom: 12,
             },
         });
-        console.log(this.props.blog)
         Modal.setAppElement('*')
         return (
             <>
@@ -80,7 +102,15 @@ class ShowBlogById extends Component {
                                         <span >
                                             <h4 style={{ display: "inline" }}>{value.title}</h4>
                                             <span style={{ display: "inline" , float: "right" }}>
-                                                <button className="btn text-white" style={{ backgroundColor: "#1DABB8", borderRadius: "6px" }} onClick={(event) => this.handleView(event, value)}>{(isWebPage)?"Web Page":"View Template"}</button>
+                                            <span style={{color:"#1DABB8"}} onClick={(event) => this.handleView(event, value)}>{''}{<Tooltip title="View Pages"><ArrowForwardIosIcon /></Tooltip>}</span>
+                                                <span
+                                                style={{color:"#1DABB8"}}
+                                                    onClick={() => {
+                                                        this.handleHide(value);
+                                                    }}>
+                                                    {' '}
+                                                        {value.is_hidden == "FALSE" ? <Tooltip title="Hide"><VisibilityOffIcon /></Tooltip> : <Tooltip title="Show"><VisibilityIcon /></Tooltip>}
+                                                </span>
                                             </span>
                                         </span>
                                     </CardContent>
@@ -170,6 +200,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
     return {
         fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
+        createBlog: (data) => dispatch(actions.getBlogIdSuccess(data))
     }
 }
 

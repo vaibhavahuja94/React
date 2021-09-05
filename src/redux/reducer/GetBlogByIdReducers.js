@@ -17,6 +17,12 @@ export default function getBlogByIdReducer(state = initialState, action) {
                 pending: false,
                 allBlog: action.payload
             }
+        case 'GETADMINBLOGIDSUCCESS':
+            return {
+                ...state,
+                pending: false,
+                allAdminBlog: action.payload
+            }
         case 'GETBLOGIDERROR':
             return {
                 ...state,

@@ -5,19 +5,26 @@ import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import { getBlogIdSuccess } from '../../redux/actions/GetBlogByIdActions'
 import ShowBlogById from './ShowBlogById';
-import moment from "moment"
-import BlogNavBar from '../BlogNavBar'
-import Header from '../Header/Header'
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminLayout from '../AdminLayout';
-import { addTemplate, getTemplate } from '../../Services/apiFunction';
+import { addPage, addTemplate, getTemplate } from '../../Services/apiFunction';
+import {CircularProgress} from '@material-ui/core'
 
 class BlogHome extends Component {
     state = {
         showModal: false,
+        loader:true,
         string: window.location.pathname.split("/")[1],
-        user: JSON.parse(localStorage.getItem('user'))
+    }
+
+    async componentDidMount() {
+        const response = await getTemplate(this.props.user.username)
+        if(response.STATUS == "SUCCESS"){
+            this.props.createBlog(response.USER_TEMPLATE)
+            this.setState({loader:false})
+        }
+        
     }
 
     render() {
@@ -33,9 +40,16 @@ class BlogHome extends Component {
         };
         Modal.setAppElement('*')
         const { user } = this.props;
+        const {loader} = this.state
         const string = window.location.pathname.split("/")[1]
         const isWebPage = string.includes("Web")
-        return (
+        return loader ? 
+        (
+        <div style={{display: 'flex', justifyContent: 'center', paddingTop:"10%"}}>
+        <CircularProgress size="8em"/>
+        </div>
+        ):
+        (
             <>
                 <AdminLayout title="All Templates">
                     <div style={{ boxSizing: "border-box", width: "100%", height: "4em" }}>
@@ -48,7 +62,10 @@ class BlogHome extends Component {
                 <Modal isOpen={this.state.showModal} style={customStyles}>
                     <div className="panel panel-default">
                         <div className="panel-heading"><h3>Create Template
+                            {this.state.loader?
+                            <CircularProgress />:
                             <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
+                            }
                         </h3>
                         </div>
                         <div className="panel panel-body">
@@ -61,17 +78,34 @@ class BlogHome extends Component {
                                         .required('Template Title is required'),
                                 })}
                                 onSubmit={async(fields, { resetForm, initialValues }) => {
+                                    this.setState({loader:true})
                                     fields.username = user.username
                                     fields.id = Math.floor(Math.random() * 1000000)
                                     fields.category = "new category"
                                     fields.tags = "new tags"
-                                    await addTemplate(fields)
-                                    const tempData = await getTemplate(user.username)
-                                    if(tempData){
-                                    this.props.createBlog(tempData)
-                                    }
+                                    fields.type = "USER"
+                                    const resp = await addTemplate(fields)
+                                    if(resp){
                                     resetForm(initialValues)
-                                    this.setState({ showModal: false })
+                                    toast.success("Template Created Successfully")
+                                    let obj = {}
+                                    obj.title = "Home Page"
+                                    obj.publish_name = "New Template"
+                                    obj.template_id = fields.id
+                                    obj.id = Math.floor(Math.random() * 1000000)
+                                    obj.code = "new title"
+                                    await addPage(obj)
+                                    const tempData1 = await getTemplate(user.username)
+                                    if(tempData1.STATUS == "SUCCESS"){
+                                        this.setState({ showModal: false })
+                                        this.setState({loader:false})
+                                        this.props.createBlog(tempData1.USER_TEMPLATE)
+                                    }
+                                }
+                                    else{
+                                    this.setState({loader:false})
+                                    toast.success(resp.data.message)
+                                    }
                                 }}
                                 render={({ errors, touched, setFieldValue }) => (
 

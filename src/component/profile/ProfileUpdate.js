@@ -20,10 +20,6 @@ class ProfileUpdate extends Component {
         showModal: false,
         submitCount: 0
     }
-    componentDidMount() {
-        this.setState({ country: this.state.data.Country })
-        this.setState({ region: this.state.data.state })
-    }
 
     onSubmit = async (fields) => {
         fields.id = this.state.data.username
@@ -221,7 +217,6 @@ class ProfileUpdate extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        data: state.register.data,
         user: state.login.data
     }
 }

@@ -148,9 +148,7 @@ export default function AdminLayout(props) {
   };
 
   const logout = () => {
-        localStorage.removeItem('user')
-        localStorage.removeItem('token')
-        localStorage.setItem('login', JSON.stringify(false))
+        localStorage.clear()
         let obj = {}
         dispatch(loginUserSuccess(obj))
         history.push('/login')
@@ -159,7 +157,6 @@ export default function AdminLayout(props) {
     setOpen(false);
   };
 
-  console.log(open)
   return (
     <div className={classes.root}>
       <CssBaseline />

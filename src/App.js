@@ -14,11 +14,9 @@ import ProtectedRoute from './component/privateRoute/ProtectedRoute';
 import WebHome from './component/blogHome/WebHome';
 import RecentPage from './component/blogHome/RecentPage';
 import ProfileUpdate from './component/profile/ProfileUpdate';
+import AdminBlogHome from './component/blogHome/AdminBlogHome';
 
-  export default class App extends Component{
-    componentDidMount(){
-      return <Redirect to="/home"/>
-    }  
+  export default class App extends Component{  
     render(){
     return (
       <Router>
@@ -26,18 +24,18 @@ import ProfileUpdate from './component/profile/ProfileUpdate';
             {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
           <Switch>
-            <Route path="/login">
+            <Route exact path="/login">
               <Login />
             </Route>
-            <Route path="/home">
+            <Route exact path="/">
               <Home />
             </Route>
-            <Route path="/register">
+            <Route exact path="/register">
               <Register />
             </Route>
            
-            <ProtectedRoute exact path="/savedPageTemplate" component={BlogHome}/>
-            <ProtectedRoute exact path="/savedWebTemplate" component={BlogHome}/>
+            <ProtectedRoute exact path="/savedPageTemplate" component={AdminBlogHome}/>
+            <ProtectedRoute exact path="/savedWebTemplate" component={AdminBlogHome}/>
             <ProtectedRoute exact path="/recentWebTemplate" component={BlogHome}/>
             <ProtectedRoute exact path="/recentPageTemplate" component={BlogHome}/>
             <ProtectedRoute exact path="/webTemplate" component={RecentPage}/>
