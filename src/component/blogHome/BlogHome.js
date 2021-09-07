@@ -11,6 +11,7 @@ import AdminLayout from '../AdminLayout';
 import { addPage, addTemplate, getTemplate } from '../../Services/apiFunction';
 import {CircularProgress} from '@material-ui/core'
 
+
 class BlogHome extends Component {
     state = {
         showModal: false,

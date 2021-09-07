@@ -13,7 +13,7 @@ import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
 import { Link, withRouter } from 'react-router-dom'
 import { Redirect } from 'react-router';
-import { updateHidePage } from '../../Services/apiFunction';
+import { updateHidePage, getTemplate } from '../../Services/apiFunction';
 import EditIcon from '@material-ui/icons/Edit';
 import Tooltip from '@material-ui/core/Tooltip';
 import SlideshowIcon from '@material-ui/icons/Slideshow';
@@ -21,12 +21,15 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EditAttributesIcon from '@material-ui/icons/EditAttributes';
+import {CircularProgress} from '@material-ui/core'
 
 class ShowBlogById extends Component {
 
     state = {
         showModal: false,
         id: '',
+        editDetails:{},
         img: '',
         name: '',
         template: false,
@@ -56,6 +59,12 @@ class ShowBlogById extends Component {
          })
          this.setState({blogdata:list})
         }
+    }
+
+    handleEdit = (e, value) => {
+        this.setState({showModal:true})
+        this.setState({editDetails:value})
+        e.preventDefault()
     }
 
     preView = async(e, link) => {
@@ -111,8 +120,8 @@ class ShowBlogById extends Component {
                                         <span >
                                             <h4 style={{ display: "inline" }}>{value.page_title}</h4>
                                             <span style={{ display: "inline" , float: "right" }}>
-                                            <Tooltip title="Preview of Page"><SlideshowIcon onClick={(e)=>{this.preView(e, value.preview_link)}}/></Tooltip>
-                                                <Tooltip title="Edit Page"><EditIcon onClick={(event) => this.handleView(event, value)} /></Tooltip>
+                                            <Tooltip title="Preview of Page"><SlideshowIcon style={{color:"#1DABB8"}} onClick={(e)=>{this.preView(e, value.preview_link)}}/></Tooltip>
+                                                <Tooltip title="Edit Page"><EditIcon style={{color:"#1DABB8"}} onClick={(event) => this.handleView(event, value)} /></Tooltip>
                                                 <span
                                                 style={{color:"#1DABB8"}}
                                                     onClick={() => {
@@ -121,6 +130,7 @@ class ShowBlogById extends Component {
                                                     {' '}
                                                         {value.is_hidden == "FALSE" ? <Tooltip title="Hide"><VisibilityOffIcon /></Tooltip> : <Tooltip title="Show"><VisibilityIcon /></Tooltip>}
                                                 </span>
+                                                <Tooltip title="Edit Page Details"><EditAttributesIcon style={{color:"#1DABB8"}} onClick={(event) => this.handleEdit(event, value)} /></Tooltip>
                                             </span>
                                         </span>
                                     </CardContent>
@@ -130,70 +140,67 @@ class ShowBlogById extends Component {
                         </div>
                     )}
                 </div>
-                {/* {this.state.id!==''&&
-            <Modal isOpen={this.state.showModal} style={customStyles}>
-                    <div className="panel panel-default ">
-                    <div className="panel-heading">Change Profile
-                    <button className="close" onClick={()=>this.setState({showModal:false})}>&times;</button>
-                    
-                    </div>
-                    <div className="panel panel-body">
-                    <div className="col-sm-4">
-                    <img src={this.state.img} alt="profile" className="img-responsive photo2" />
-                    </div>
-                    <div className="col-sm-8 container">
-                        <div className="panel panel-default ">
-                            <div className="panel-heading">
-                                {this.state.name}
+                <Modal isOpen={this.state.showModal} style={customStyles}>
+                    <div className="panel panel-default">
+                        {this.state.loader ? <CircularProgress /> :
+                            <div className="panel-heading"><h3>Edit Page
+                                <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
+                            </h3>
                             </div>
-                            <div className="panel-body">
-                                {comment.filter(val=>(val.blog_id===this.state.id)).map(values=>
-                                <div className="div1">
-                                    <div style={{fontWeight:'bold'}}>{values.user_name}</div>
-                                    <div>{values.comment}</div>
-                                </div>
+                        }
+                        <div className="panel panel-body">
+                            <Formik
+                                initialValues={{
+                                    title: this.state.editDetails.page_title,
+                                    publish_name: this.state.editDetails.publish_name
+                                }}
+                                validationSchema={Yup.object().shape({
+                                    title: Yup.string()
+                                        .required('Template Title is required'),
+                                    publish_name: Yup.string()
+                                        .required('Publish Name is required'),
+                                })}
+                                onSubmit={async (fields, { resetForm, initialValues }) => {
+                                    this.setState({ loader: true })
+                                    fields.id = this.state.editDetails.page_id
+                                    const resp = await updateHidePage(fields)
+                                    if(resp.STATUS == "SUCCESS"){
+                                    const template = await getTemplate(user.username)
+                                    if (template.STATUS == "SUCCESS") {
+                                        toast.success("Page Updated Successfully")
+                                        resetForm(initialValues)
+                                        this.setState({ showModal: false })
+                                        this.props.createPage(template.USER_TEMPLATE)
+                                    }
+                                    }
+                                    else {
+                                        this.setState({ showModal: false })
+                                    }
+                                }}
+                                render={({ errors, touched, setFieldValue }) => (
+
+                                    <Form>
+                                        <div className="form-group">
+                                            <label htmlFor="title">Title</label>
+                                            <Field name="title" type="text" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')} />
+                                            <ErrorMessage name="title" component="div" className="invalid-feedback" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="publish_name">Publish Name</label>
+                                            <Field name="publish_name" type="text" className={'form-control' + (errors.publish_name && touched.publish_name ? ' is-invalid' : '')} />
+                                            <ErrorMessage name="publish_name" component="div" className="invalid-feedback" />
+                                        </div>
+                                        <div className="form-group">
+                                            <button type="submit" className="btn btn-primary">Create Page Template</button>
+                                            &nbsp;
+                                            <button type="reset" onClick={() => this.fileInput.value = ""} className="btn btn-secondary">Reset</button>
+                                        </div>
+                                    </Form>
                                 )}
-                            </div>
+                            />
                         </div>
                     </div>
-                    </div>
-                    <div className="panel panel-footer">
-            <Formik
-                initialValues={{
-                    
-                    comment:''
-                }}
-                validationSchema={Yup.object().shape({
-                   comment:Yup.string().required('Please Enter Comment ')
-                })}
-                onSubmit={(fields,{resetForm,initialValues}) => {
-                    fields.blog_id = this.state.id
-                    fields.user_name = user.name
-                    this.props.createComment(fields)
-                    resetForm(initialValues)
-                    this.componentDidMount()
-                    this.setState({showModal:false})
-                }}
-                render={({ errors, touched}) => (
-                    
-                    <Form>
-                        <div className="form-group">
-                            <Field as="textarea" name="comment"
-                            className={'form-control' + (errors.comment && touched.comment ? ' is-invalid' : '')} />
-                            <ErrorMessage name="comment" component="div" className="invalid-feedback" />
-                        </div>
-                        <div className="form-group">
-                            <button type="submit" 
-                            className="btn btn-primary"
-                            >Comment</button>
-                        </div>
-                    </Form>
-                )}
-            />
-            </div>
-            </div>
-            </Modal>
-            } */}
+                </Modal>
             </>
         )
     }
@@ -209,6 +216,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        createPage: (data) => dispatch(actions.getBlogIdSuccess(data)),
         fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
     }
 }

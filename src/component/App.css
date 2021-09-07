@@ -21,3 +21,13 @@
     color: #09d3ac;
   }
   
+  .card-Width {
+   width: 50%; 
+  }
+
+  @media screen and (max-width: 600px) 
+  {
+    .card-Width {
+      width: 90%; 
+     }  
+  }

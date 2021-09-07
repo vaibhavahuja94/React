@@ -18,9 +18,11 @@ import Tooltip from '@material-ui/core/Tooltip';
 import SlideshowIcon from '@material-ui/icons/Slideshow';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import { updateHidePage } from '../../Services/apiFunction';
+import { getTemplate, updateHidePage } from '../../Services/apiFunction';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EditAttributesIcon from '@material-ui/icons/EditAttributes';
+import {CircularProgress} from '@material-ui/core'
 
 class ShowBlogById extends Component {
 
@@ -31,6 +33,7 @@ class ShowBlogById extends Component {
         name: '',
         template: false,
         string: "",
+        editDetails:'',
         blogdata:this.props.blogData
     }
 
@@ -68,6 +71,12 @@ class ShowBlogById extends Component {
         }
     }
 
+    handleEdit = (e, value) => {
+        this.setState({showModal:true})
+        this.setState({editDetails:value})
+        e.preventDefault()
+    }
+
     render() {
         if ((this.props.blogStatus === undefined) && (this.props.pending === true)) {
             <p>Loading...</p>
@@ -84,7 +93,7 @@ class ShowBlogById extends Component {
                 transform: 'translate(-50%, -50%)'
             }
         };
-
+        console.log(this.state.blogdata)
         const classes = makeStyles({
             root: {
                 minWidth: 275,
@@ -114,10 +123,11 @@ class ShowBlogById extends Component {
                                         <span >
                                             <h4 style={{ display: "inline" }}>{value.page_title}</h4>
                                             <span style={{ display: "inline" , float: "right" }}>
-                                            <Tooltip title="Preview of Page"><SlideshowIcon onClick={(e)=>{this.preView(e, value.preview_link)}} /></Tooltip>
+                                            <Tooltip title="Preview of Page"><SlideshowIcon style={{color:"#1DABB8"}} onClick={(e)=>{this.preView(e, value.preview_link)}} /></Tooltip>
                                                 {user.type == "ADMIN" && 
                                                 <>
-                                                <Tooltip title="Edit Page"><EditIcon onClick={(event) => this.handleView(event, value)} /></Tooltip>
+                                                <Tooltip title="Edit Page"><EditIcon style={{color:"#1DABB8"}} onClick={(event) => this.handleView(event, value)} /></Tooltip>
+                                                <Tooltip title="Edit Page Details"><EditAttributesIcon style={{color:"#1DABB8"}} onClick={(event) => this.handleEdit(event, value)} /></Tooltip>                   
                                                 </>
                                                 }
                                                 <span
@@ -137,6 +147,67 @@ class ShowBlogById extends Component {
                         </div>
                     )}
                 </div>
+                <Modal isOpen={this.state.showModal} style={customStyles}>
+                    <div className="panel panel-default">
+                        {this.state.loader ? <CircularProgress /> :
+                            <div className="panel-heading"><h3>Edit Page
+                                <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
+                            </h3>
+                            </div>
+                        }
+                        <div className="panel panel-body">
+                            <Formik
+                                initialValues={{
+                                    title: this.state.editDetails.page_title,
+                                    publish_name: this.state.editDetails.publish_name
+                                }}
+                                validationSchema={Yup.object().shape({
+                                    title: Yup.string()
+                                        .required('Template Title is required'),
+                                    publish_name: Yup.string()
+                                        .required('Publish Name is required'),
+                                })}
+                                onSubmit={async (fields, { resetForm, initialValues }) => {
+                                    this.setState({ loader: true })
+                                    fields.id = this.state.editDetails.page_id
+                                    const resp = await updateHidePage(fields)
+                                    if(resp.STATUS == "SUCCESS"){
+                                    const template = await getTemplate(user.username)
+                                    if (template.STATUS == "SUCCESS") {
+                                        toast.success("Page Updated Successfully")
+                                        resetForm(initialValues)
+                                        this.setState({ showModal: false })
+                                        this.props.createAdminPage(template.DEFAULT_TEMPLATE)
+                                    }
+                                    }
+                                    else {
+                                        this.setState({ showModal: false })
+                                    }
+                                }}
+                                render={({ errors, touched, setFieldValue }) => (
+
+                                    <Form>
+                                        <div className="form-group">
+                                            <label htmlFor="title">Title</label>
+                                            <Field name="title" type="text" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')} />
+                                            <ErrorMessage name="title" component="div" className="invalid-feedback" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="publish_name">Publish Name</label>
+                                            <Field name="publish_name" type="text" className={'form-control' + (errors.publish_name && touched.publish_name ? ' is-invalid' : '')} />
+                                            <ErrorMessage name="publish_name" component="div" className="invalid-feedback" />
+                                        </div>
+                                        <div className="form-group">
+                                            <button type="submit" className="btn btn-primary">Create Page Template</button>
+                                            &nbsp;
+                                            <button type="reset" onClick={() => this.fileInput.value = ""} className="btn btn-secondary">Reset</button>
+                                        </div>
+                                    </Form>
+                                )}
+                            />
+                        </div>
+                    </div>
+                </Modal>
             </>
         )
     }
@@ -146,13 +217,13 @@ const mapStateToProps = (state) => {
 
     return {
         user: state.login.data,
-        blog: state.getBlogById.allBlog,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
+        createAdminPage: (data) => dispatch(actions.getAdminBlogIdSuccess(data))
     }
 }
 
