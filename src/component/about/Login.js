@@ -113,7 +113,7 @@ class Login extends Component {
                                                 >Reset</button>
                                             </div>
                                             <div className="form-group">
-                                                <Link to="/register" className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}>Sign-Up</Link>
+                                                <Link className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}>Forgot Password?</Link>
                                             </div>
                                             <div>
                                                 {this.state.loginError === true && <p style={{ "color": "red" }}>{this.state.loginMessage}</p>}
