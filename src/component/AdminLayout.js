@@ -12,6 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import PageviewIcon from '@material-ui/icons/Pageview';
+import WebAssetIcon from '@material-ui/icons/WebAsset';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
@@ -87,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     display: 'flex',
     alignItems: 'center',
+    height:"5.35em",
     justifyContent: 'flex-end',
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
@@ -219,10 +222,16 @@ export default function AdminLayout(props) {
         <Divider />
         <List component="div" disablePadding>
           <ListItem button component={NavLink} to="/recentWebTemplate" className={classes.menuItem}>
-            <ListItemText inset primary="Template" />
+          <ListItemIcon className={classes.menuItemIcon}>
+          <WebAssetIcon />
+        </ListItemIcon>
+            <ListItemText primary="Template" />
           </ListItem>
           <ListItem button component={NavLink} to="/recentPageTemplate" className={classes.menuItem}>
-            <ListItemText inset primary="Web Page" />
+          <ListItemIcon className={classes.menuItemIcon}>
+          <PageviewIcon />
+        </ListItemIcon>
+            <ListItemText primary="Web Page" />
           </ListItem>
         </List>
       </Collapse>
@@ -238,10 +247,16 @@ export default function AdminLayout(props) {
         <Divider />
         <List component="div" disablePadding>
           <ListItem button component={NavLink} to="/savedWebTemplate" className={classes.menuItem}>
-            <ListItemText inset primary="Template" />
+          <ListItemIcon className={classes.menuItemIcon}>
+          <WebAssetIcon />
+        </ListItemIcon>
+          <ListItemText primary="Template" />
           </ListItem>
           <ListItem button component={NavLink} to="/savedPageTemplate" className={classes.menuItem}>
-            <ListItemText inset primary="Web Page" />
+          <ListItemIcon className={classes.menuItemIcon}>
+          <PageviewIcon />
+        </ListItemIcon>
+            <ListItemText primary="Web Page" />
           </ListItem>
         </List>
       </Collapse>

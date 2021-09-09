@@ -111,14 +111,16 @@ class ShowBlogById extends Component {
         return (
             <>
                 <ToastContainer />
-                <div className="justify-content-center">
-                    {this.props.blogData.length > 0 && this.props.blogData.map(value =>
-                        <div className="row">
-                            <div className="col-sm-offset-2 col-sm-9 col-xs-offset-2 col-xs-9">
+                <div className="container-fluid">
+                <div className="row">
+                    {this.props.blogData.length > 0 && this.props.blogData.map(value =>  
+                            <div className="col-sm-4 col-xs-9">
                                 <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
+                                <img src={value.image ? value.image : "/page.png"} style={{ height: "15em", width: "100%" }} />
                                     <CardContent>
                                         <span >
                                             <h4 style={{ display: "inline" }}>{value.page_title}</h4>
+                                            <br />
                                             <span style={{ display: "inline" , float: "right" }}>
                                             <Tooltip title="Preview of Page"><SlideshowIcon style={{color:"#1DABB8"}} onClick={(e)=>{this.preView(e, value.preview_link)}}/></Tooltip>
                                                 <Tooltip title="Edit Page"><EditIcon style={{color:"#1DABB8"}} onClick={(event) => this.handleView(event, value)} /></Tooltip>
@@ -137,8 +139,8 @@ class ShowBlogById extends Component {
                                 </Card>
                                 <br />
                             </div>
-                        </div>
                     )}
+                </div>
                 </div>
                 <Modal isOpen={this.state.showModal} style={customStyles}>
                     <div className="panel panel-default">

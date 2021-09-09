@@ -37,6 +37,8 @@ class ProfileUpdate extends Component {
                 obj.mobile = fields.mobile
                 obj.email = fields.email
                 obj.address = fields.address
+                obj.pincode = fields.pincode
+                obj.publish_name = fields.publish_name
                 this.props.loginUsersSuccess(obj)
             })
     }
@@ -73,7 +75,9 @@ class ProfileUpdate extends Component {
                                 company: data.company,
                                 mobile: data.mobile,
                                 email: data.email,
-                                address:data.address
+                                address:data.address,
+                                pincode:data.pincode,
+                                publish_name:data.publish_name
                             }}
                             validationSchema={Yup.object().shape({
                                 fname: Yup.string()
@@ -142,7 +146,14 @@ class ProfileUpdate extends Component {
                                                 <Field name="country" type="text" className={'form-control' + (errors.country && touched.country ? ' is-invalid' : '')} />
                                                 <ErrorMessage name="country" component="div" className="invalid-feedback" />
                                             </div>
-                                            
+                                            <div className="form-group">
+                                                <label htmlFor="pincode">PinCode</label>
+                                                <Field name="pincode" type="text" className={'form-control' + (errors.pincode && touched.pincode ? ' is-invalid' : '')} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label htmlFor="publishname">Publish Name</label>
+                                                <Field name="publishname" type="text" className={'form-control' + (errors.publishname && touched.publishname ? ' is-invalid' : '')} />
+                                            </div>
                                             <div className="form-group">
                                                 <button type="submit" className="btn btn-primary mr-2">Update</button>
                                             </div>

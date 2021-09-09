@@ -105,24 +105,18 @@ class ShowBlogById extends Component {
         return (
             <>
                 <ToastContainer />
-                <div className="justify-content-center">
+                <div className="container-fluid">
+                    <div className="row">
                     {this.props.blog.length > 0 && this.props.blog.map(value =>
-                        <div className="row">
-                            <div className="col-sm-offset-2 col-sm-9 col-xs-offset-2 col-xs-9">
+                            <div className="col-sm-4 col-xs-4">
                                 <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
+                                <img src={value.image ? value.image : "/template.jpg"} style={{ height: "15em", width: "100%" }} />
                                     <CardContent>
-                                        <span >
+                                        <span>
                                             <h4 style={{ display: "inline" }}>{value.title}</h4>
+                                            <br />
                                             <span style={{ display: "inline", float: "right" }}>
                                                 <span style={{ color: "#1DABB8" }} onClick={(event) => this.handleView(event, value)}>{''}{<Tooltip title="View Pages"><ArrowForwardIosIcon /></Tooltip>}</span>
-                                                <span
-                                                    style={{ color: "#1DABB8" }}
-                                                    onClick={() => {
-                                                        this.handleHide(value);
-                                                    }}>
-                                                    {' '}
-                                                    {value.is_hidden == "FALSE" ? <Tooltip title="Hide"><VisibilityOffIcon /></Tooltip> : <Tooltip title="Show"><VisibilityIcon /></Tooltip>}
-                                                </span>
                                                 <span style={{ color: "#1DABB8" }} onClick={(e)=>{this.handleEdit(e,value)}}>{''}{<Tooltip title="Edit Template"><EditAttributesIcon /></Tooltip>}</span>
                                             </span>
                                         </span>
@@ -130,8 +124,8 @@ class ShowBlogById extends Component {
                                 </Card>
                                 <br />
                             </div>
-                        </div>
                     )}
+                    </div>
                 </div>
 
                 <Modal isOpen={this.state.showModal} style={customStyles}>

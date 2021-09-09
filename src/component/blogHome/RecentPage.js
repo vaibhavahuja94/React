@@ -11,6 +11,7 @@ import RecentPageById from './RecentPageById';
 import { addPage, getTemplate } from '../../Services/apiFunction';
 import { CircularProgress } from '@material-ui/core'
 import AdminRecentPageById from './AdminRecentPageById';
+import moment from 'moment'
 
 class BlogHome extends Component {
     state = {
@@ -78,7 +79,7 @@ class BlogHome extends Component {
                                 onSubmit={async (fields, { resetForm, initialValues }) => {
                                     this.setState({ loader: true })
                                     fields.template_id = blogData.id
-                                    fields.id = Math.floor(Math.random() * 1000000)
+                                    fields.id = moment(new Date()).unix()
                                     fields.code = "new title"
                                     await addPage(fields)
                                     const template = await getTemplate(user.username)

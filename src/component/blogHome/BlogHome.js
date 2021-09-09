@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import AdminLayout from '../AdminLayout';
 import { addPage, addTemplate, getTemplate } from '../../Services/apiFunction';
 import {CircularProgress} from '@material-ui/core'
-
+import moment from 'moment'
 
 class BlogHome extends Component {
     state = {
@@ -79,9 +79,10 @@ class BlogHome extends Component {
                                         .required('Template Title is required'),
                                 })}
                                 onSubmit={async(fields, { resetForm, initialValues }) => {
+                                    debugger
                                     this.setState({loader:true})
                                     fields.username = user.username
-                                    fields.id = Math.floor(Math.random() * 1000000)
+                                    fields.id = moment(new Date()).unix()
                                     fields.category = "new category"
                                     fields.tags = "new tags"
                                     fields.type = "USER"
@@ -93,7 +94,7 @@ class BlogHome extends Component {
                                     obj.title = "Home Page"
                                     obj.publish_name = "New Template"
                                     obj.template_id = fields.id
-                                    obj.id = Math.floor(Math.random() * 1000000)
+                                    obj.id = moment(new Date()).unix()
                                     obj.code = "new title"
                                     await addPage(obj)
                                     const tempData1 = await getTemplate(user.username)
