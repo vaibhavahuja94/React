@@ -16,6 +16,14 @@ export function getAdminBlogIdSuccess(data) {// Template Redux
     }
 }
 
+export function defaultPagesSuccess(data) {// Template Redux
+    return {
+        type: 'GETDEFAULTPAGESUCCESS',
+        payload: data
+    }
+}
+
+
 function getPageIdSuccess(data) {
     return {
         type: 'GETPAGEIDSUCCESS',

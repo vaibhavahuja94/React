@@ -8,7 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import { Button, Typography } from '@material-ui/core';
 import { Link, withRouter } from 'react-router-dom'
-import { getTemplate, mergeTemplate, updateHide, updateTemplate, uploadImage } from '../../Services/apiFunction';
+import { getTemplate, mergeTemplate, publishTemplate, updateHide, updateTemplate, uploadImage } from '../../Services/apiFunction';
 import { toast, ToastContainer } from 'react-toastify';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
@@ -18,20 +18,41 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Tooltip from '@material-ui/core/Tooltip';
 import { CircularProgress } from '@material-ui/core';
-import EditAttributesIcon from '@material-ui/icons/EditAttributes';
+import Lottie from 'react-lottie';
+import { visiblityOptions, copyDefaultOptions, editDefaultOptions, menuDefaultOptions, loadDefaultOptions } from './LottieIcon'
+
 
 class ShowBlogById extends Component {
-
+    _lottieHeartRef;
     state = {
+        lottieRef:React.createRef(null),
         user: this.props.user,
         template: false,
         editDetails: {},
         file: "",
-        showModal: ""
+        showModal: "",
+        isStopped: true,
+        isPaused: true
     }
-
+    
+    handleClickToPause = () => {
+        this.state.lottieRef?.current?.handleClickToPause?.();
+    }
     handleView(event, value) {
         this.props.history.push({ pathname: 'webTemplate', state: { template: value, type: "DEFAULT" } })
+    }
+
+    publishTemplateFunc = async (e, value) => {
+        let obj = {}
+        obj.username = value.username
+        obj.template_id = value.id
+        const response = await publishTemplate(obj)
+        if (response.STATUS == "SUCCESS") {
+            toast.success("Template Published Successfully")
+        }
+        else {
+            toast.error("Template Not Published")
+        }
     }
 
     handleMergeTemplate = async (event, value) => {
@@ -75,11 +96,12 @@ class ShowBlogById extends Component {
     }
 
     render() {
+
         if ((this.props.blogStatus === undefined) && (this.props.pending === true)) {
             <p>Loading...</p>
         }
         const { blogStatus, comment, isWebPage } = this.props
-        const { user, file } = this.state
+        const { user, file, lottieRef } = this.state
         const customStyles = {
             content: {
                 top: '40%',
@@ -119,29 +141,71 @@ class ShowBlogById extends Component {
                                     <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
                                         <img src={value.image ? value.image : "/template.jpg"} style={{ height: "15em", width: "100%" }} />
                                         <CardContent>
-                                            <span >
-                                                <h4 style={{ display: "inline" }}>{value.title}</h4>
-                                                <br />
-                                                <div style={{ float: "right" }}>
-                                                    <button className="btn text-white" style={{ backgroundColor: "#1DABB8", borderRadius: "6px" }} onClick={(event) => this.handleMergeTemplate(event, value)}>Use Now</button>
-                                                    &nbsp;
-                                                    <span style={{ color: "#1DABB8" }} onClick={(event) => this.handleView(event, value)}>{''}{<Tooltip title="View Pages"><ArrowForwardIosIcon /></Tooltip>}</span>
+                                            <h4 style={{ display: "inline" }}>{value.title}</h4>
+                                            <br />
+                                            <div style={{ display: "flex" }}>
+                                                <Tooltip title="Use Now">
+                                                    <span onClick={(e) => { this.handleMergeTemplate(e, value) }}
+                                                    onMouseEnter={this.handleClickToPause}
+                                                    onMouseLeave={this.handleClickToPause}
+                                                    >
+                                                        <Lottie options={copyDefaultOptions}
+                                                            height={30}
+                                                            width={30}
+                                                            style={{ margin: "0 0 0 0" }}
+                                                            isClickToPauseDisabled
+                                                            ref={lottieRef}
+                                                            isStopped={this.state.isStopped}
+                                                            isPaused={this.state.isPaused} />
+                                                    </span>
+                                                </Tooltip>
+                                                <div style={{ float: "right", display: "flex" }}>
+                                                    <span 
+                                                    onMouseEnter={this.handleClickToPause}
+                                                    onMouseLeave={this.handleClickToPause}
+                                                    style={{ color: "#1DABB8" }} onClick={(event) => this.handleView(event, value)}>
+                                                        <Tooltip title="View Pages">
+                                                            <span>
+                                                                <Lottie options={menuDefaultOptions}
+                                                                    height={30}
+                                                                    width={30}
+                                                                    isClickToPauseDisabled
+                                                                    ref={lottieRef}
+                                                                    style={{ margin: "0 0 0 0" }}
+                                                                    isStopped={this.state.isStopped}
+                                                                    isPaused={this.state.isPaused} />
+                                                            </span>
+                                                        </Tooltip>
+                                                    </span>
                                                     {user.type == "ADMIN" &&
                                                         <>
                                                             <span
-                                                                style={{ color: "#1DABB8" }}
                                                                 onClick={() => {
                                                                     this.handleHide(value);
                                                                 }}>
                                                                 {' '}
                                                                 {value.is_hidden == "FALSE" ? <Tooltip title="Hide"><VisibilityOffIcon /></Tooltip> : <Tooltip title="Show"><VisibilityIcon /></Tooltip>}
                                                             </span>
-                                                            <span style={{ color: "#1DABB8" }} onClick={(e) => { this.handleEdit(e, value) }}>{''}{<Tooltip title="Edit Template"><EditAttributesIcon /></Tooltip>}</span>
+                                                            <span onClick={(e) => { this.handleEdit(e, value) }} style={{ color: "#1DABB8" }}>
+                                                                <Tooltip title="Edit Template">
+                                                                    <span
+                                                                    onMouseEnter={this.handleClickToPause}
+                                                                    onMouseLeave={this.handleClickToPause}                
+                                                                    >
+                                                                        <Lottie options={editDefaultOptions}
+                                                                            height={30}
+                                                                            width={30}
+                                                                            isClickToPauseDisabled
+                                                                            ref={lottieRef}
+                                                                            isStopped={this.state.isStopped}
+                                                                            isPaused={this.state.isPaused} />
+                                                                    </span>
+                                                                </Tooltip>
+                                                            </span>
                                                         </>
                                                     }
                                                 </div>
-                                            </span>
-                                            <br />
+                                            </div>
                                         </CardContent>
                                     </Card>
                                     <br />
@@ -150,7 +214,13 @@ class ShowBlogById extends Component {
                                     <div className="panel panel-default">
                                         <div className="panel-heading"><h3>Create Template
                                             {this.state.loader ?
-                                                <CircularProgress /> :
+                                                <Lottie options={loadDefaultOptions}
+                                                height={200}
+                                                width={200}
+                                                style={{ margin: "0 0 0 0" }}
+                                                isStopped={this.state.isStopped}
+                                                isPaused={this.state.isPaused} /> 
+                                                :
                                                 <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
                                             }
                                         </h3>
@@ -190,7 +260,7 @@ class ShowBlogById extends Component {
                                                             }
                                                         })
                                                         resetForm(initialValues)
-                                                        this.setState({file:''})
+                                                        this.setState({ file: '' })
                                                         this.props.fetchIdBlog(list)
                                                     }
                                                     else {
@@ -209,7 +279,7 @@ class ShowBlogById extends Component {
                                                         <div className="form-group">
                                                             <label htmlFor="title">Images</label>
                                                             <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
-                                                            <img src={this.state.editDetails.image} style={{width:"10em", height:"6em"}}/>
+                                                            <img src={this.state.editDetails.image} style={{ width: "10em", height: "6em" }} />
                                                         </div>
                                                         <div className="form-group">
                                                             <button type="submit" className="btn btn-primary">Edit Page Template</button>

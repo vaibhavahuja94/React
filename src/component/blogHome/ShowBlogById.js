@@ -2,26 +2,18 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../redux/actions/GetBlogByIdActions'
 import Modal from 'react-modal'
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCardText, MDBCol } from 'mdbreact';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
 import { Link, withRouter } from 'react-router-dom'
-import { Redirect } from 'react-router';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Tooltip from '@material-ui/core/Tooltip';
-import { updateHide, updateHidePage, updateTemplate } from '../../Services/apiFunction';
-import EditAttributesIcon from '@material-ui/icons/EditAttributes';
-import {CircularProgress} from '@material-ui/core';
+import { mergeTemplate, publishTemplate, updateHide, updateHidePage, updateTemplate, uploadImage } from '../../Services/apiFunction';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { visiblityOptions, copyDefaultOptions, editDefaultOptions, menuDefaultOptions, loadDefaultOptions } from './LottieIcon'
+import Lottie from 'react-lottie';
 
 class ShowBlogById extends Component {
 
@@ -31,12 +23,26 @@ class ShowBlogById extends Component {
         id: '',
         img: '',
         name: '',
+        file: '',
         template: false,
         string: "",
         editDetails: {},
     }
     handleView(event, value) {
         this.props.history.push({ pathname: 'webTemplate', state: { template: value, type: "USER" } })
+    }
+
+    publishTemplateFunc = async (e, value) => {
+        let obj = {}
+        obj.username = value.username
+        obj.template_id = value.id
+        const response = await publishTemplate(obj)
+        if(response.STATUS == "SUCCESS"){
+            toast.success("Template Published Successfully")
+        }
+        else{
+            toast.error("Template Not Published")
+        }
     }
 
     handleHide = async (value) => {
@@ -57,9 +63,22 @@ class ShowBlogById extends Component {
                     list.push(el)
                 }
             })
-            
+
             this.props.createBlog(list)
         }
+    }
+
+    handleFileCopy = async (event, value) => {
+        let obj = {}
+        obj.username = this.state.user.username
+        obj.id = value.id
+        const response = await mergeTemplate(obj)
+        if (response.STATUS == "SUCCESS") {
+            toast.success(response.MESSAGE)
+        } else {
+            toast.error(response.MESSAGE)
+        }
+        event.preventDefault()
     }
 
 
@@ -73,14 +92,14 @@ class ShowBlogById extends Component {
             <p>Loading...</p>
         }
         const { blogStatus, comment, isWebPage } = this.props
-        const { user } = this.state
+        const { user, file } = this.state
         const customStyles = {
             content: {
                 top: '40%',
                 left: '40%',
                 right: '56%',
                 bottom: 'auto',
-                marginRight:'-50%',
+                marginRight: '-50%',
                 transform: 'translate(-50%, -50%)'
             }
         };
@@ -107,24 +126,56 @@ class ShowBlogById extends Component {
                 <ToastContainer />
                 <div className="container-fluid">
                     <div className="row">
-                    {this.props.blog.length > 0 && this.props.blog.map(value =>
+                        {this.props.blog.length > 0 && this.props.blog.map(value =>
                             <div className="col-sm-4 col-xs-4">
                                 <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
-                                <img src={value.image ? value.image : "/template.jpg"} style={{ height: "15em", width: "100%" }} />
+                                    <img src={value.image ? value.image : "/template.jpg"} style={{ height: "15em", width: "100%" }} />
                                     <CardContent>
                                         <span>
                                             <h4 style={{ display: "inline" }}>{value.title}</h4>
-                                            <br />
-                                            <span style={{ display: "inline", float: "right" }}>
-                                                <span style={{ color: "#1DABB8" }} onClick={(event) => this.handleView(event, value)}>{''}{<Tooltip title="View Pages"><ArrowForwardIosIcon /></Tooltip>}</span>
-                                                <span style={{ color: "#1DABB8" }} onClick={(e)=>{this.handleEdit(e,value)}}>{''}{<Tooltip title="Edit Template"><EditAttributesIcon /></Tooltip>}</span>
-                                            </span>
+                                            <div style={{ display:"flex" }}>
+                                            <Tooltip title="Publish Web Template">
+                                                <span style={{float:"right"}}>
+                                                    <button className="btn btn-info" onClick={(e)=>{this.publishTemplateFunc(e,value)}}>Publish Now</button>
+                                                </span>
+                                            </Tooltip>
+                                                <Tooltip title="View Pages">
+                                                        <span onClick={(event) => this.handleView(event, value)}>
+                                                        <Lottie options={menuDefaultOptions}
+                                                        height={30}
+                                                        width={30}
+                                                        style={{ margin: "0 0 0 0" }}
+                                                        isStopped={this.state.isStopped}
+                                                        isPaused={this.state.isPaused} />
+                                                    </span>
+                                                </Tooltip>
+                                                <Tooltip title="Edit Template Details">
+                                                        <span onClick={(event) => this.handleEdit(event, value)}>
+                                                        <Lottie options={editDefaultOptions}
+                                                        height={30}
+                                                        width={30}
+                                                        style={{ margin: "0 0 0 0" }}
+                                                        isStopped={this.state.isStopped}
+                                                        isPaused={this.state.isPaused} />
+                                                    </span>
+                                                </Tooltip>
+                                                <Tooltip title="Copy Template">
+                                                <span style={{ color: "#1DABB8" }} onClick={(e) => { this.handleFileCopy(e, value) }}>
+                                                <Lottie options={copyDefaultOptions}
+                                                        height={30}
+                                                        width={30}
+                                                        style={{ margin: "0 0 0 0" }}
+                                                        isStopped={this.state.isStopped}
+                                                        isPaused={this.state.isPaused} />
+                                                </span>
+                                                </Tooltip>
+                                            </div>
                                         </span>
                                     </CardContent>
                                 </Card>
                                 <br />
                             </div>
-                    )}
+                        )}
                     </div>
                 </div>
 
@@ -132,7 +183,13 @@ class ShowBlogById extends Component {
                     <div className="panel panel-default">
                         <div className="panel-heading"><h3>Create Template
                             {this.state.loader ?
-                                <CircularProgress /> :
+                                <Lottie options={loadDefaultOptions}
+                                height={200}
+                                width={200}
+                                style={{ margin: "0 0 0 0" }}
+                                isStopped={this.state.isStopped}
+                                isPaused={this.state.isPaused} /> 
+                                :
                                 <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
                             }
                         </h3>
@@ -148,6 +205,10 @@ class ShowBlogById extends Component {
                                 })}
                                 onSubmit={async (fields, { resetForm, initialValues }) => {
                                     this.setState({ loader: true })
+                                    if (file) {
+                                        const response = await uploadImage(file)
+                                        fields.image = response.data.secure_url
+                                    }
                                     fields.username = user.username
                                     fields.id = this.state.editDetails.id
                                     const resp = await updateTemplate(fields)
@@ -167,29 +228,34 @@ class ShowBlogById extends Component {
                                                 list.push(el)
                                             }
                                         })
-                                        this.setState({file:''})
-                                    this.props.createBlog(list)
-                                }
-                                    else{
-                                    this.setState({ loader: false })
-                                    toast.success(resp.data.message)
+                                        this.setState({ file: '' })
+                                        this.props.createBlog(list)
+                                    }
+                                    else {
+                                        this.setState({ loader: false })
+                                        toast.success(resp.data.message)
                                     }
                                 }}
-                            render={({ errors, touched, setFieldValue }) => (
+                                render={({ errors, touched, setFieldValue }) => (
 
-                                <Form>
-                                    <div className="form-group">
-                                        <label htmlFor="title">Title</label>
-                                        <Field name="title" type="text" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')} />
-                                        <ErrorMessage name="title" component="div" className="invalid-feedback" />
-                                    </div>
-                                    <div className="form-group">
-                                        <button type="submit" className="btn btn-info">Edit Template</button>
-                                        &nbsp;
-                                        <button type="reset" className="btn btn-secondary">Reset</button>
-                                    </div>
-                                </Form>
-                            )}
+                                    <Form>
+                                        <div className="form-group">
+                                            <label htmlFor="title">Title</label>
+                                            <Field name="title" type="text" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')} />
+                                            <ErrorMessage name="title" component="div" className="invalid-feedback" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="title">Images</label>
+                                            <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
+                                            <img src={this.state.editDetails.image} style={{ width: "10em", height: "6em" }} />
+                                        </div>
+                                        <div className="form-group">
+                                            <button type="submit" className="btn btn-info">Edit Template</button>
+                                            &nbsp;
+                                            <button type="reset" className="btn btn-secondary">Reset</button>
+                                        </div>
+                                    </Form>
+                                )}
                             />
                         </div>
                     </div>

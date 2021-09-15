@@ -95,7 +95,7 @@ class Login extends Component {
                                             >
                                                 <ReCAPTCHA name="recap"
                                                     siz="compact"
-                                                    sitekey="6LdGeyoaAAAAAE21Zje8qUxj5-dr7vqA0R0Fsc2T"
+                                                    sitekey="6Le_5kgcAAAAANIwiif5bGdTIxqLTEF1Z3mL12ue"
                                                     onChange={(value) => setFieldValue('recap', value)}
                                                     ref={e => (this.captcha = e)}
                                                     className={(errors.recap && touched.recap ? ' is-invalid' : '')}
@@ -113,7 +113,7 @@ class Login extends Component {
                                                 >Reset</button>
                                             </div>
                                             <div className="form-group">
-                                                <Link className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}>Forgot Password?</Link>
+                                                <Link to="/forgotpass" className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }}>Forgot Password?</Link>
                                             </div>
                                             <div>
                                                 {this.state.loginError === true && <p style={{ "color": "red" }}>{this.state.loginMessage}</p>}

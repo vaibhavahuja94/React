@@ -211,17 +211,16 @@ export default function AdminLayout(props) {
         </div>
         <Divider />
         <List>
-        <ListItem onClick={()=>handleClick()} className={classes.menuItem} activeClassName={classes.activeListItem}>
+        <ListItem button component={NavLink} to="/recentWebTemplate" className={classes.menuItem} activeClassName={classes.activeListItem}>
         <ListItemIcon className={classes.menuItemIcon}>
           <Home />
         </ListItemIcon>
         <ListItemText primary="Recent" />
-        {open1 ? <IconExpandLess /> : <IconExpandMore />}
       </ListItem>
       <Collapse in={open1} timeout="auto" unmountOnExit>
         <Divider />
         <List component="div" disablePadding>
-          <ListItem button component={NavLink} to="/recentWebTemplate" className={classes.menuItem}>
+          <ListItem >
           <ListItemIcon className={classes.menuItemIcon}>
           <WebAssetIcon />
         </ListItemIcon>
@@ -236,12 +235,11 @@ export default function AdminLayout(props) {
         </List>
       </Collapse>
 
-      <ListItem onClick={()=>handleClick2()} className={classes.menuItem} activeClassName={classes.activeListItem}>
+      <ListItem  button component={NavLink} to="/savedWebTemplate" className={classes.menuItem} activeClassName={classes.activeListItem}>
         <ListItemIcon selected={true} className={classes.menuItemIcon}>
           <WebIcon />
         </ListItemIcon>
         <ListItemText primary="Template" />
-        {open2 ? <IconExpandLess /> : <IconExpandMore />}
       </ListItem>
       <Collapse in={open2} timeout="auto" unmountOnExit>
         <Divider />

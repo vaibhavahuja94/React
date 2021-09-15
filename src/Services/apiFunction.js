@@ -35,9 +35,41 @@ export function mergeTemplate(fields, username) {
     })
 }
 
+export function mergePage(fields, username) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/mergePage.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function publishTemplate(fields, username) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/publish.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
 export function addTemplate(fields, username) {
     return new Promise((resolve, reject) => {
         axios.post("https://w3bizz.com/template/classes/addTemplate.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function sendEmailOTP(fields, username) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/sendemailotp.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function sendVerifyOTP(fields, username) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/verifyotp.php", fields)
             .then((res) => resolve(res.data))
             .catch((err) => reject(err))
     })

@@ -5,8 +5,8 @@ const initialState = {
 }
 
 export default function getBlogByIdReducer(state = initialState, action) {
-    switch(action.type) {
-        case 'GETBLOGIDPENDING': 
+    switch (action.type) {
+        case 'GETBLOGIDPENDING':
             return {
                 ...state,
                 pending: true
@@ -23,14 +23,20 @@ export default function getBlogByIdReducer(state = initialState, action) {
                 pending: false,
                 allAdminBlog: action.payload
             }
+        case 'GETDEFAULTPAGESUCCESS':
+            return {
+                ...state,
+                pending: false,
+                defaultPages: action.payload
+            }
         case 'GETBLOGIDERROR':
             return {
                 ...state,
                 pending: false,
                 error: action.payload
             }
-            
-        default: 
+
+        default:
             return state;
     }
 }

@@ -15,6 +15,7 @@ import WebHome from './component/blogHome/WebHome';
 import RecentPage from './component/blogHome/RecentPage';
 import ProfileUpdate from './component/profile/ProfileUpdate';
 import AdminBlogHome from './component/blogHome/AdminBlogHome';
+import ForgotPassword from './component/about/ForgotPassword';
 
   export default class App extends Component{  
     render(){
@@ -35,6 +36,7 @@ import AdminBlogHome from './component/blogHome/AdminBlogHome';
             </Route>
            
             <ProtectedRoute exact path="/savedPageTemplate" component={AdminBlogHome}/>
+            <Route exact path="/forgotpass" component={ForgotPassword}/>
             <ProtectedRoute exact path="/savedWebTemplate" component={AdminBlogHome}/>
             <ProtectedRoute exact path="/recentWebTemplate" component={BlogHome}/>
             <ProtectedRoute exact path="/recentPageTemplate" component={BlogHome}/>

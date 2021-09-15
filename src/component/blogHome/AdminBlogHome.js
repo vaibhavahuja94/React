@@ -3,7 +3,7 @@ import Modal from 'react-modal'
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import { getAdminBlogIdSuccess } from '../../redux/actions/GetBlogByIdActions'
+import { getAdminBlogIdSuccess, defaultPagesSuccess } from '../../redux/actions/GetBlogByIdActions'
 import ShowBlogById from './ShowBlogById';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,12 +12,17 @@ import { addPage, addTemplate, getTemplate, uploadImage } from '../../Services/a
 import { CircularProgress } from '@material-ui/core'
 import AdminShowBlogById from './AdminShowBlogById';
 import moment from 'moment'
+import Lottie from 'react-lottie';
+import loadingAnimationData from './loadingV2.json'
+
 
 class BlogHome extends Component {
     state = {
         showModal: false,
         loader: true,
         file: '',
+        isPaused:true,
+        isStopped:true,
         string: window.location.pathname.split("/")[1],
     }
 
@@ -43,19 +48,32 @@ class BlogHome extends Component {
             }
         };
         Modal.setAppElement('*')
+        const loadingOptions = {
+            loop: true,
+            autoplay: true,
+            animationData: loadingAnimationData,
+        };
         const { user } = this.props;
         const { loader, file } = this.state
         const string = window.location.pathname.split("/")[1]
         const isWebPage = string.includes("Web")
         return loader ?
             (
+                <>
                 <div style={{ display: 'flex', justifyContent: 'center', paddingTop: "10%" }}>
-                    <CircularProgress size="8em" />
+                    <Lottie options={loadingOptions}
+                        height={150}
+                        width={150}
+                        style={{ margin: "0 0 0 0" }}
+                        isStopped={this.state.isStopped}
+                        isPaused={this.state.isPaused} />                
                 </div>
+                <div>Loading...</div>
+                </>
             ) :
             (
                 <>
-                    <AdminLayout title="All Templates">
+                    <AdminLayout title="Default Templates">
                         <div style={{ boxSizing: "border-box", width: "100%", height: "4em" }}>
                             {user.type == "ADMIN" &&
                                 <button style={{ float: "right", borderRadius: "6px", backgroundColor: "#1DABB8" }} className="btn text-white" onClick={() => this.setState({ showModal: true })}>Create Template</button>
@@ -69,7 +87,12 @@ class BlogHome extends Component {
                         <div className="panel panel-default">
                             <div className="panel-heading"><h3>Create Template
                                 {this.state.loader ?
-                                    <CircularProgress /> :
+                                    <Lottie options={loadingOptions}
+                                    height={150}
+                                    width={150}
+                                    style={{ margin: "0 0 0 0" }}
+                                    isStopped={this.state.isStopped}
+                                    isPaused={this.state.isPaused} /> :
                                     <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
                                 }
                             </h3>
@@ -90,19 +113,17 @@ class BlogHome extends Component {
                                             fields.image = response.data.secure_url
                                         }
                                         fields.username = user.username
-                                        fields.id = moment(new Date()).unix()
                                         fields.category = "new category"
                                         fields.type = "DEFAULT"
                                         fields.tags = "new tags"
                                         const resp = await addTemplate(fields)
-                                        if (resp) {
+                                        if (resp.STATUS == "SUCCESS") {
                                             resetForm(initialValues)
                                             toast.success("Template Created Successfully")
                                             let obj = {}
                                             obj.title = "Home Page"
                                             obj.publish_name = "New Template"
-                                            obj.template_id = fields.id
-                                            obj.id = moment(new Date()).unix()
+                                            obj.template_id = resp.TEMPLATE_ID
                                             obj.code = "new title"
                                             await addPage(obj)
                                             const tempData1 = await getTemplate(user.username)
@@ -148,13 +169,15 @@ class BlogHome extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        user: state.login && state.login.data
+        user: state.login && state.login.data,
+        defaultPages: state.getBlogById && state.getBlogById.defaultPages
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createBlog: (data) => dispatch(getAdminBlogIdSuccess(data))
+        createBlog: (data) => dispatch(getAdminBlogIdSuccess(data)),
+        defaultPages: (data) => dispatch(defaultPagesSuccess(data))
     }
 }
 
