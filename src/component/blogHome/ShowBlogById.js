@@ -1,214 +1,283 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../redux/actions/GetBlogByIdActions'
-import * as action from '../../redux/actions/BlogStatusAction'
 import Modal from 'react-modal'
-import { Formik, Field, Form, ErrorMessage} from 'formik';
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
-
-
+import { Link, withRouter } from 'react-router-dom'
+import Tooltip from '@material-ui/core/Tooltip';
+import { mergeTemplate, publishTemplate, updateHide, updateHidePage, updateTemplate, uploadImage } from '../../Services/apiFunction';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { visiblityOptions, copyDefaultOptions, editDefaultOptions, menuDefaultOptions, loadDefaultOptions } from './LottieIcon'
+import Lottie from 'react-lottie';
 
 class ShowBlogById extends Component {
-    
-    state={
-        user:JSON.parse(localStorage.getItem('user')),
-        showModal:false,
-        id:'',
-        img:'',
-        name:''
-    }
-    componentDidMount(){
-        this.props.fetchIdBlog()
-        this.props.fetchStatusBlog()
-        this.props.fetchBlogComment()
-    }
-    likeBlog = (id) => {
-        let data = {
-            user_id:this.state.user.id,
-            blog_id:id,
-            status:"like"
 
-        }   
-        
-        this.props.changeStatus(data);
-        this.componentDidMount();
+    state = {
+        user: this.props.user,
+        showModal: false,
+        id: '',
+        img: '',
+        name: '',
+        file: '',
+        template: false,
+        string: "",
+        editDetails: {},
     }
-    disLikeBlog = (id) => {
-        let data = {
-            user_id:this.state.user.id,
-            blog_id:id,
-            status:"dislike"
-        }   
-        
-        this.props.changeStatus(data);
-        this.componentDidMount();
+    handleView(event, value) {
+        this.props.history.push({ pathname: 'webTemplate', state: { template: value, type: "USER" } })
     }
-    comment = (id1,img1,name1) => {
-        this.setState({showModal:true})
-        this.setState({id:id1})
-        this.setState({img:img1})
-        this.setState({name:name1})
+
+    publishTemplateFunc = async (e, value) => {
+        let obj = {}
+        obj.username = value.username
+        obj.template_id = value.id
+        const response = await publishTemplate(obj)
+        if(response.STATUS == "SUCCESS"){
+            toast.success("Template Published Successfully")
+        }
+        else{
+            toast.error("Template Not Published")
+        }
     }
-    render(){
-       
-        if((this.props.blogStatus===undefined)&&(this.props.pending===true)){
+
+    handleHide = async (value) => {
+        let obj = {}
+        obj.username = value.username
+        obj.id = value.id
+        obj.is_hidden = (value.is_hidden === "FALSE" ? "TRUE" : "FALSE")
+        const response = await updateHide(obj)
+        if (response.STATUS == "SUCCESS") {
+            let blog = this.props.blog
+            var list = []
+            blog.forEach((el) => {
+                if (el.id == value.id) {
+                    el.is_hidden = obj.is_hidden
+                    list.push(el)
+                }
+                else {
+                    list.push(el)
+                }
+            })
+
+            this.props.createBlog(list)
+        }
+    }
+
+    handleFileCopy = async (event, value) => {
+        let obj = {}
+        obj.username = this.state.user.username
+        obj.id = value.id
+        const response = await mergeTemplate(obj)
+        if (response.STATUS == "SUCCESS") {
+            toast.success(response.MESSAGE)
+        } else {
+            toast.error(response.MESSAGE)
+        }
+        event.preventDefault()
+    }
+
+
+    handleEdit(e, value) {
+        this.setState({ editDetails: value })
+        this.setState({ showModal: true })
+        e.preventDefault()
+    }
+    render() {
+        if ((this.props.blogStatus === undefined) && (this.props.pending === true)) {
             <p>Loading...</p>
         }
-        const {blogStatus,comment} = this.props
-        const {user} = this.state
+        const { blogStatus, comment, isWebPage } = this.props
+        const { user, file } = this.state
         const customStyles = {
-            content : {
-              top                   : '50%',
-              left                  : '30%',
-              right                 : '26%',
-              bottom                : 'auto',
-              transform             : 'translate(-50%, -50%)'
+            content: {
+                top: '40%',
+                left: '40%',
+                right: '56%',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)'
             }
-          };
-          
-           Modal.setAppElement('*')
-        return(
+        };
+
+        const classes = makeStyles({
+            root: {
+                minWidth: 275,
+            },
+            bullet: {
+                display: 'inline-block',
+                margin: '0 2px',
+                transform: 'scale(0.8)',
+            },
+            title: {
+                fontSize: 14,
+            },
+            pos: {
+                marginBottom: 12,
+            },
+        });
+        Modal.setAppElement('*')
+        return (
             <>
-            <div>
-                {this.props.blog.map(value=>
-                <div className="col-sm-3">
-                <div className="panel panel-primary">
-                    <div className="panel-heading">{value.blogTitle}</div>
-                    <div className="panel-body">
-                        <img src={value.blogImgSrc} className="img-responsive photo" alt={value.blogTitle} />
-                        <br /><br />
-                        <p>Description:{value.desc}</p>
-                        
-                        <button className="btn btn-danger" onClick={()=>this.props.deleteBlog(value.id)}>Delete Blog</button>
+                <ToastContainer />
+                <div className="container-fluid">
+                    <div className="row">
+                        {this.props.blog.length > 0 && this.props.blog.map(value =>
+                            <div className="col-sm-4 col-xs-4">
+                                <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
+                                    <img src={value.image ? value.image : "/template.jpg"} style={{ height: "15em", width: "100%" }} />
+                                    <CardContent>
+                                        <span>
+                                            <h4 style={{ display: "inline" }}>{value.title}</h4>
+                                            <div style={{ display:"flex" }}>
+                                            <Tooltip title="Publish Web Template">
+                                                <span style={{float:"right"}}>
+                                                    <button className="btn btn-info" onClick={(e)=>{this.publishTemplateFunc(e,value)}}>Publish Now</button>
+                                                </span>
+                                            </Tooltip>
+                                                <Tooltip title="View Pages">
+                                                        <span onClick={(event) => this.handleView(event, value)}>
+                                                        <Lottie options={menuDefaultOptions}
+                                                        height={30}
+                                                        width={30}
+                                                        style={{ margin: "0 0 0 0" }}
+                                                        isStopped={this.state.isStopped}
+                                                        isPaused={this.state.isPaused} />
+                                                    </span>
+                                                </Tooltip>
+                                                <Tooltip title="Edit Template Details">
+                                                        <span onClick={(event) => this.handleEdit(event, value)}>
+                                                        <Lottie options={editDefaultOptions}
+                                                        height={30}
+                                                        width={30}
+                                                        style={{ margin: "0 0 0 0" }}
+                                                        isStopped={this.state.isStopped}
+                                                        isPaused={this.state.isPaused} />
+                                                    </span>
+                                                </Tooltip>
+                                                <Tooltip title="Copy Template">
+                                                <span style={{ color: "#1DABB8" }} onClick={(e) => { this.handleFileCopy(e, value) }}>
+                                                <Lottie options={copyDefaultOptions}
+                                                        height={30}
+                                                        width={30}
+                                                        style={{ margin: "0 0 0 0" }}
+                                                        isStopped={this.state.isStopped}
+                                                        isPaused={this.state.isPaused} />
+                                                </span>
+                                                </Tooltip>
+                                            </div>
+                                        </span>
+                                    </CardContent>
+                                </Card>
+                                <br />
+                            </div>
+                        )}
                     </div>
-                    <div className="panel-footer">
-                        <h3>
-                            {(blogStatus===undefined)?
-                            (<span>0 <span className="glyphicon glyphicon-thumbs-up" onClick={()=>this.likeBlog(value.id)}></span></span>):
-                            (blogStatus.filter(values=>(values.user_id===user.id)&&(values.status==="like")&&(values.blog_id===value.id)).length>0)?
-                            (<span>{blogStatus.filter(values=>(values.blog_id===value.id)&&(values.status==="like")).length}&nbsp; 
-                            <span className="glyphicon glyphicon-thumbs-up text-primary" onClick={()=>this.likeBlog(value.id)}></span></span>):
-                            (
-                            <span>{blogStatus.filter(values=>(values.blog_id===value.id)&&(values.status==="like")).length}
-                            &nbsp;<span className="glyphicon glyphicon-thumbs-up" onClick={()=>this.likeBlog(value.id)}></span>
-                            </span>
-                            )}
-                            <span id="distance">
-                            {(blogStatus===undefined)?
-                            (<span>0 <span className="glyphicon glyphicon-thumbs-up" onClick={()=>this.disLikeBlog(value.id)}></span></span>):
-                            ((blogStatus.filter(values=>(values.user_id===user.id)&&(values.status==="dislike")&&(values.blog_id===value.id)).length===0))?
-                            (<span>{blogStatus.filter(values=>(values.blog_id===value.id)&&(values.status==="dislike")).length}&nbsp; 
-                            <span className="glyphicon glyphicon-thumbs-down" onClick={()=>this.disLikeBlog(value.id)}></span></span>):
-                            (
-                            <span>{blogStatus.filter(values=>(values.blog_id===value.id)&&(values.status==="dislike")).length}
-                            &nbsp;<span className="glyphicon glyphicon-thumbs-down text-danger" onClick={()=>this.disLikeBlog(value.id)}></span>
-                            </span>
-                            )}
-                            </span>
-                            &nbsp;&nbsp;
-                            <span id="distance">
-                            {(comment===undefined)?
-                            (<span>0 <span className="glyphicon glyphicon-comment" onClick={()=>this.comment(value.id,value.blogImgSrc)} ></span></span>):
-                            (
-                            <span>{comment.filter(values=>(values.blog_id===value.id)).length}
-                            &nbsp;<span className="glyphicon glyphicon-comment" onClick={()=>this.comment(value.id,value.blogImgSrc,value.blogTitle)} ></span>
-                            </span>
-                            )}
-                            </span>
+                </div>
+
+                <Modal isOpen={this.state.showModal} style={customStyles}>
+                    <div className="panel panel-default">
+                        <div className="panel-heading"><h3>Create Template
+                            {this.state.loader ?
+                                <Lottie options={loadDefaultOptions}
+                                height={200}
+                                width={200}
+                                style={{ margin: "0 0 0 0" }}
+                                isStopped={this.state.isStopped}
+                                isPaused={this.state.isPaused} /> 
+                                :
+                                <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
+                            }
                         </h3>
-                    </div>
-                </div>
-                </div>
-                )}
-            </div>
-            {this.state.id!==''&&
-            <Modal isOpen={this.state.showModal} style={customStyles}>
-                    <div className="panel panel-default ">
-                    <div className="panel-heading">Change Profile
-                    <button className="close" onClick={()=>this.setState({showModal:false})}>&times;</button>
-                    
-                    </div>
-                    <div className="panel panel-body">
-                    <div className="col-sm-4">
-                    <img src={this.state.img} alt="profile" className="img-responsive photo2" />
-                    </div>
-                    <div className="col-sm-8 container">
-                        <div className="panel panel-default ">
-                            <div className="panel-heading">
-                                {this.state.name}
-                            </div>
-                            <div className="panel-body">
-                                {comment.filter(val=>(val.blog_id===this.state.id)).map(values=>
-                                <div className="div1">
-                                    <div style={{fontWeight:'bold'}}>{values.user_name}</div>
-                                    <div>{values.comment}</div>
-                                </div>
+                        </div>
+                        <div className="panel panel-body">
+                            <Formik
+                                initialValues={{
+                                    title: this.state.editDetails.title,
+                                }}
+                                validationSchema={Yup.object().shape({
+                                    title: Yup.string()
+                                        .required('Template Title is required'),
+                                })}
+                                onSubmit={async (fields, { resetForm, initialValues }) => {
+                                    this.setState({ loader: true })
+                                    if (file) {
+                                        const response = await uploadImage(file)
+                                        fields.image = response.data.secure_url
+                                    }
+                                    fields.username = user.username
+                                    fields.id = this.state.editDetails.id
+                                    const resp = await updateTemplate(fields)
+                                    if (resp) {
+                                        resetForm(initialValues)
+                                        toast.success("Template Updated Successfully")
+                                        this.setState({ showModal: false })
+                                        this.setState({ loader: false })
+                                        let blog = this.props.blog
+                                        var list = []
+                                        blog.forEach((el) => {
+                                            if (el.id == fields.id) {
+                                                el.title = fields.title
+                                                list.push(el)
+                                            }
+                                            else {
+                                                list.push(el)
+                                            }
+                                        })
+                                        this.setState({ file: '' })
+                                        this.props.createBlog(list)
+                                    }
+                                    else {
+                                        this.setState({ loader: false })
+                                        toast.success(resp.data.message)
+                                    }
+                                }}
+                                render={({ errors, touched, setFieldValue }) => (
+
+                                    <Form>
+                                        <div className="form-group">
+                                            <label htmlFor="title">Title</label>
+                                            <Field name="title" type="text" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')} />
+                                            <ErrorMessage name="title" component="div" className="invalid-feedback" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="title">Images</label>
+                                            <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
+                                            <img src={this.state.editDetails.image} style={{ width: "10em", height: "6em" }} />
+                                        </div>
+                                        <div className="form-group">
+                                            <button type="submit" className="btn btn-info">Edit Template</button>
+                                            &nbsp;
+                                            <button type="reset" className="btn btn-secondary">Reset</button>
+                                        </div>
+                                    </Form>
                                 )}
-                            </div>
+                            />
                         </div>
                     </div>
-                    </div>
-                    <div className="panel panel-footer">
-            <Formik
-                initialValues={{
-                    
-                    comment:''
-                }}
-                validationSchema={Yup.object().shape({
-                   comment:Yup.string().required('Please Enter Comment ')
-                })}
-                onSubmit={(fields,{resetForm,initialValues}) => {
-                    fields.blog_id = this.state.id
-                    fields.user_name = user.name
-                    this.props.createComment(fields)
-                    resetForm(initialValues)
-                    this.componentDidMount()
-                    this.setState({showModal:false})
-                }}
-                render={({ errors, touched}) => (
-                    
-                    <Form>
-                        <div className="form-group">
-                            <Field as="textarea" name="comment"
-                            className={'form-control' + (errors.comment && touched.comment ? ' is-invalid' : '')} />
-                            <ErrorMessage name="comment" component="div" className="invalid-feedback" />
-                        </div>
-                        <div className="form-group">
-                            <button type="submit" 
-                            className="btn btn-primary"
-                            >Comment</button>
-                        </div>
-                    </Form>
-                )}
-            />
-            </div>
-            </div>
-            </Modal>
-            }
+                </Modal>
             </>
         )
     }
-}     
-
-const mapStateToProps = (state) => {
-    
-    return {
-    blog: state.getBlogById.allBlog,
-    pending:state.blogStatus.pending,
-    blogStatus:state.blogStatus.blogStatus,
-    comment:state.blogStatus.comment
-    }
-  }
-
-const mapDispatchToProps = dispatch => {
-  return{
-    fetchIdBlog:()=>dispatch(actions.fetchIdBlog()),
-    fetchBlogComment:()=>dispatch(action.fetchCommentBlog()),
-    createComment:(data)=>dispatch(actions.createComment(data)),
-    fetchStatusBlog:()=>dispatch(action.fetchStatusBlog()),
-    changeStatus:(data)=>dispatch(action.changeBlogStatus(data)),
-    deleteBlog:(id)=>(dispatch(actions.deleteBlog(id)))
-  }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(ShowBlogById);
+const mapStateToProps = (state) => {
+
+    return {
+        user: state.login.data,
+        blog: state.getBlogById.allBlog,
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
+        createBlog: (data) => dispatch(actions.getBlogIdSuccess(data))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ShowBlogById));

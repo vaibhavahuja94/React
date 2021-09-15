@@ -1,0 +1,22 @@
+label {
+    width: 100%;
+}
+
+.card-input-element {
+    display: none;
+}
+
+.card-input {
+    margin: 10px;
+    padding: 00px;
+}
+
+.card-input:hover {
+    cursor: pointer;
+    border:3px solid green
+}
+
+.card-input-element:checked + .card-input {
+     border: 3px solid #1DABB8;
+ }
+

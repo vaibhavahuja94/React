@@ -2,46 +2,46 @@ import React,{Component} from 'react';
 import {
     BrowserRouter as Router,
     Switch,
-    Route
+    Route,
+    Redirect
   } from "react-router-dom";
 import Login from './component/about/Login';
 import Register from './component/about/Register';
-import AllBlog from './component/allBlog/AllBlog';
-import AllBlogTable from './component/allBlog/AllBlogTable';
 import BlogHome from './component/blogHome/BlogHome';
-import Contact from './component/contact/Contact';
 import Home from './component/home/Home';
-import PrivateContact from './component/private/PrivateContact';
+import WebTemplate from './component/blogHome/WebTemplate';
 import ProtectedRoute from './component/privateRoute/ProtectedRoute';
+import WebHome from './component/blogHome/WebHome';
+import RecentPage from './component/blogHome/RecentPage';
 import ProfileUpdate from './component/profile/ProfileUpdate';
+import AdminBlogHome from './component/blogHome/AdminBlogHome';
+import ForgotPassword from './component/about/ForgotPassword';
 
-
-  export default class App extends Component{
-      render(){
+  export default class App extends Component{  
+    render(){
     return (
       <Router>
         <div>
             {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
           <Switch>
-            <Route path="/login">
+            <Route exact path="/login">
               <Login />
             </Route>
-            <Route path="/home">
+            <Route exact path="/">
               <Home />
             </Route>
-            <Route path="/contact-us">
-              <Contact />
-            </Route>
-            <Route path="/register">
+            <Route exact path="/register">
               <Register />
             </Route>
            
-            <ProtectedRoute exact path="/bloghome" component={BlogHome} />
-            <ProtectedRoute exact path="/profile" component={ProfileUpdate} />
-            <ProtectedRoute exact path="/blogviewtable" component={AllBlogTable} />
-            <ProtectedRoute exact path="/blogview" component={AllBlog} />
-            <ProtectedRoute exact path="/blogcontact" component={PrivateContact} />
+            <ProtectedRoute exact path="/savedPageTemplate" component={AdminBlogHome}/>
+            <Route exact path="/forgotpass" component={ForgotPassword}/>
+            <ProtectedRoute exact path="/savedWebTemplate" component={AdminBlogHome}/>
+            <ProtectedRoute exact path="/recentWebTemplate" component={BlogHome}/>
+            <ProtectedRoute exact path="/recentPageTemplate" component={BlogHome}/>
+            <ProtectedRoute exact path="/webTemplate" component={RecentPage}/>
+            <ProtectedRoute exact path="/updateProfile" component={ProfileUpdate}/>
           </Switch>
         </div>
       </Router>

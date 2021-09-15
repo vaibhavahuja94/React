@@ -1,141 +1,170 @@
 import React, { Component } from 'react';
-import BlogNavBar from '../BlogNavBar';
 import Modal from 'react-modal'
-import { Formik, Field, Form, ErrorMessage} from 'formik';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import {createBlog} from '../../redux/actions/GetBlogByIdActions'
+import { getBlogIdSuccess, defaultPagesSuccess } from '../../redux/actions/GetBlogByIdActions'
 import ShowBlogById from './ShowBlogById';
-import moment from "moment"
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AdminLayout from '../AdminLayout';
+import { addPage, addTemplate, getTemplate, uploadImage } from '../../Services/apiFunction';
+import { CircularProgress } from '@material-ui/core'
+import Lottie from 'react-lottie';
+import { loadDefaultOptions } from './LottieIcon';
+import moment from 'moment'
 
 class BlogHome extends Component {
-    state={
-        showModal:false,
-        user:JSON.parse(localStorage.getItem('user'))
+    state = {
+        showModal: false,
+        loader: true,
+        file: '',
+        string: window.location.pathname.split("/")[1],
     }
-   
+
+    async componentDidMount() {
+        const response = await getTemplate(this.props.user.username)
+        if (response.STATUS == "SUCCESS") {
+            this.props.createBlog(response.USER_TEMPLATE)
+            this.props.defaultPages(response.DEFAULT_PAGES)
+            this.setState({ loader: false })
+        }
+
+    }
+
     render() {
         const customStyles = {
-            content : {
-              top                   : '40%',
-              left                  : '50%',
-              right                 : '50%',
-              bottom                : 'auto',
-              marginRight           : '-50%',
-              transform             : 'translate(-50%, -50%)'
+            content: {
+                top: '40%',
+                left: '50%',
+                right: '50%',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)'
             }
-          };
-           Modal.setAppElement('*')
-          const {user} = this.state;
-          
-        return (
-            <>
-                <BlogNavBar />
-                <div id="bloghome">
-                <button className="btn btn-primary" onClick={()=>this.setState({showModal:true})}>Create Blog</button>
+        };
+        Modal.setAppElement('*')
+        const { user } = this.props;
+        const { loader, file } = this.state
+        const string = window.location.pathname.split("/")[1]
+        const isWebPage = string.includes("Web")
+        return loader ?
+            (
+                <div style={{ display: 'flex', justifyContent: 'center', paddingTop: "10%" }}>
+                    <Lottie options={loadDefaultOptions}
+                        height={200}
+                        width={200}
+                        style={{ margin: "0 0 0 0" }}
+                        isStopped={this.state.isStopped}
+                        isPaused={this.state.isPaused} />
                 </div>
-                <div id="myblogbody">
-                    <ShowBlogById />
-                </div>
+            ) :
+            (
+                <>
+                    <AdminLayout title="All Templates">
+                        <div style={{ boxSizing: "border-box", width: "100%", height: "4em" }}>
+                            <button style={{ float: "right", borderRadius: "6px", backgroundColor: "#1DABB8" }} className="btn text-white" onClick={() => this.setState({ showModal: true })}>Create Template</button>
+                        </div>
+                        <br />
+                        <ShowBlogById />
+                    </AdminLayout>
+                    <ToastContainer />
+                    <Modal isOpen={this.state.showModal} style={customStyles}>
+                        <div className="panel panel-default">
+                            <div className="panel-heading"><h3>Create Template
+                                {this.state.loader ?
+                                    <Lottie options={loadDefaultOptions}
+                                    height={200}
+                                    width={200}
+                                    style={{ margin: "0 0 0 0" }}
+                                    isStopped={this.state.isStopped}
+                                    isPaused={this.state.isPaused} /> 
+                                    :
+                                    <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
+                                }
+                            </h3>
+                            </div>
+                            <div className="panel panel-body">
+                                <Formik
+                                    initialValues={{
+                                        title: '',
+                                    }}
+                                    validationSchema={Yup.object().shape({
+                                        title: Yup.string()
+                                            .required('Template Title is required'),
+                                    })}
+                                    onSubmit={async (fields, { resetForm, initialValues }) => {
+                                        this.setState({ loader: true })
+                                        if (file) {
+                                            const response = await uploadImage(file)
+                                            fields.image = response.data.secure_url
+                                        }
+                                        fields.username = user.username
+                                        fields.category = "new category"
+                                        fields.tags = "new tags"
+                                        fields.type = "USER"
+                                        const resp = await addTemplate(fields)
+                                        if (resp) {
+                                            resetForm(initialValues)
+                                            toast.success("Template Created Successfully")
+                                            let obj = {}
+                                            obj.title = "Home Page"
+                                            obj.publish_name = "New Template"
+                                            obj.template_id = fields.id
+                                            obj.code = "new title"
+                                            await addPage(obj)
+                                            const tempData1 = await getTemplate(user.username)
+                                            if (tempData1.STATUS == "SUCCESS") {
+                                                this.setState({ showModal: false })
+                                                this.setState({ loader: false })
+                                                this.props.createBlog(tempData1.USER_TEMPLATE)
+                                            }
+                                        }
+                                        else {
+                                            this.setState({ loader: false })
+                                            toast.success(resp.data.message)
+                                        }
+                                    }}
+                                    render={({ errors, touched, setFieldValue }) => (
 
-                <ToastContainer />
-            <Modal isOpen={this.state.showModal} style={customStyles}>
-                    <div className="panel panel-default">
-                    <div className="panel-heading"><h3>CREATE BLOG
-                    <button className="close" onClick={()=>this.setState({showModal:false})}>&times;</button>
-                    </h3>
-                    </div>
-                    <div className="panel panel-body">
-            <Formik
-                initialValues={{
-                    blogTitle: '',
-                    desc: '',
-                    blogImgSrc:''
-                }}
-                validationSchema={Yup.object().shape({
-                    blogTitle: Yup.string()
-                        .required('Blog Title is required'),
-                    desc: Yup.string()
-                        .required('Description is required'),
-                    blogImgSrc:Yup.string().required('Please Select Image')
-                })}
-                onSubmit={(fields,{resetForm,initialValues}) => {
-                    let date = (moment().format('DD-MM-YYYY'))
-                    fields.user_id = user.id
-                    fields.date = date
-                    fields.created_by = user.name 
-                   
-                    this.props.createBlog(fields)
-                    resetForm(initialValues)
-                    this.fileInput.value=""
-                    this.setState({showModal:false})
-                    setTimeout(() => {
-                        window.location.reload()
-                    }, 500);
-                }}
-                render={({ errors, touched ,setFieldValue }) => (
-                    
-                    <Form>
-                        <div className="form-group">
-                            <label htmlFor="blogTitle">BlogTitle</label>
-                            <Field name="blogTitle" type="text" className={'form-control' + (errors.blogTitle && touched.blogTitle ? ' is-invalid' : '')} />
-                            <ErrorMessage name="blogTitle" component="div" className="invalid-feedback" />
+                                        <Form>
+                                            <div className="form-group">
+                                                <label htmlFor="title">Title</label>
+                                                <Field name="title" type="text" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')} />
+                                                <ErrorMessage name="title" component="div" className="invalid-feedback" />
+                                            </div>
+                                            <div className="form-group">
+                                                <label htmlFor="title">Images</label>
+                                                <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
+                                            </div>
+                                            <div className="form-group">
+                                                <button type="submit" className="btn btn-primary">Create Page Template</button>
+                                                &nbsp;
+                                                <button type="reset" onClick={() => this.fileInput.value = ""} className="btn btn-secondary">Reset</button>
+                                            </div>
+                                        </Form>
+                                    )}
+                                />
+                            </div>
                         </div>
-                        <div className="form-group">
-                            <label htmlFor="desc">Description</label>
-                            <Field name="desc" as="textarea" className={'form-control' + (errors.desc && touched.desc ? ' is-invalid' : '')} />
-                            <ErrorMessage name="desc" component="div" className="invalid-feedback" />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="image">Blog Profile-Image</label>
-                            <input name="blogImgSrc" type="file" accept="image/*" 
-                            onChange={(event)=>{ 
-                                if (event.target.files && event.target.files[0]) {
-                                    let reader = new FileReader(event.target.files[0]);
-                                    reader.onloadend = () => {
-                                        setFieldValue('blogImgSrc',reader.result)
-                                      }
-                                    reader.readAsDataURL(event.target.files[0]);
+                    </Modal>
 
-                              }
-                              else{setFieldValue('blogImgSrc','')}
-                            }
-                        }
-                            ref={ref=> this.fileInput = ref}
-                            className={'form-control' + (errors.blogImgSrc && touched.blogImgSrc ? ' is-invalid' : '')} />
-                            <ErrorMessage name="blogImgSrc" component="div" className="invalid-feedback" />
-                        </div>
-                        <div className="form-group">
-                            <button type="submit" 
-                            className="btn btn-primary"
-                            >Create Blog</button>
-                            &nbsp;
-                            <button type="reset" onClick={()=>this.fileInput.value=""} className="btn btn-secondary">Reset</button>
-                        </div>
-                    </Form>
-                )}
-            />
-            </div>
-            </div>
-            </Modal>
-
-            </>
-        );
+                </>
+            );
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-    
+        user: state.login && state.login.data
     }
-  }
-
-const mapDispatchToProps = dispatch => {
-  return{
-    createBlog:(data)=>dispatch(createBlog(data))
-  }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(BlogHome);
+const mapDispatchToProps = dispatch => {
+    return {
+        createBlog: (data) => dispatch(getBlogIdSuccess(data)),
+        defaultPages: (data) => dispatch(defaultPagesSuccess(data))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(BlogHome);

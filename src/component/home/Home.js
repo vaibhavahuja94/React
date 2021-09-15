@@ -1,126 +1,70 @@
 import React, { Component } from 'react';
-import Navigation from '../Header';
-import { connect } from 'react-redux';
-import * as actions from '../../redux/actions/GetAllBlogActions'
-//import S1 from '../../../public/asset/img/slider1.jpg'
-//import S2 from '../../../public/asset/img/slider2.jpg'
-//import S3 from '../../../public/asset/img/slider3.jpg'
-import * as action from '../../redux/actions/BlogStatusAction'
+import './Home.css'
+import HomeNavBar from './HomeNavBar';
 
-class Home extends Component {
-  componentDidMount() {
-    this.props.fetchBlog()
-    this.props.fetchStatusBlog()
-  }
-  render() {
-
-    const { blogStatus } = this.props
-    return (
-      <>
-        <Navigation />
-
-
-
-        <div id="homebody">
-          <div id="myCarousel" className="carousel slide" data-ride="carousel">
-
-            <ol className="carousel-indicators">
-              <li key="One" data-target="#myCarousel" data-slide-to="0" className="active"></li>
-              <li key="Two" data-target="#myCarousel" data-slide-to="1"></li>
-              <li key="Three" data-target="#myCarousel" data-slide-to="2"></li>
-            </ol>
-
-
-            <div className="carousel-inner">
-
-              <div className="item active">
-                <img src="asset/img/slider1.jpg" alt="Los Angeles" />
-                <div className="carousel-caption">
-                  <h3>Los Angeles</h3>
-                  <p>LA is always so much fun!</p>
-                </div>
-              </div>
-
-              <div className="item">
-                <img src="asset/img/slider2.jpg" alt="Chicago" />
-                <div className="carousel-caption">
-                  <h3>Chicago</h3>
-                  <p>Thank you, Chicago!</p>
-                </div>
-              </div>
-
-              <div className="item">
-                <img src="asset/img/slider3.jpg" alt="New York" />
-                <div className="carousel-caption">
-                  <h3>New York</h3>
-                  <p>We love the Big Apple!</p>
-                </div>
-              </div>
-
-            </div>
-
-
-            <a className="left carousel-control" href="#myCarousel" data-slide="prev">
-              <span className="glyphicon glyphicon-chevron-left"></span>
-              <span className="sr-only">Previous</span>
-            </a>
-            <a className="right carousel-control" href="#myCarousel" data-slide="next">
-              <span className="glyphicon glyphicon-chevron-right"></span>
-              <span className="sr-only">Next</span>
-            </a>
-          </div>
-          <br />
-
-          <div>
-            {this.props.allBlog.map(value =>
-              <div className="col-sm-3">
-                <div className="panel panel-primary">
-                  <div className="panel-heading">{value.blogTitle}</div>
-                  <div className="panel-body">
-                    <img src={value.blogImgSrc} className="img-responsive photo1" alt={value.blogTitle} />
-                    <br /><br />
-                    <p>Description:{value.desc}</p>
-                  </div>
-                  <div className="panel-footer">
-                    <h3>
-                      {(blogStatus === undefined) ?
-                        (<span>0 <span className="glyphicon glyphicon-thumbs-up"></span></span>) :
-                        (<span>{blogStatus.filter(values => (values.blog_id === value.id) && (values.status === "like")).length}
-                            &nbsp;<span className="glyphicon glyphicon-thumbs-up" ></span></span>)
-                      }
-                      <span id="distance">
-                        {
-                          (blogStatus === undefined) ?
-                            (<span>0 <span className="glyphicon glyphicon-thumbs-down"></span></span>) :
-                            (<span>{blogStatus.filter(values => (values.blog_id === value.id) && (values.status === "dislike")).length}
-                            &nbsp;<span className="glyphicon glyphicon-thumbs-down"></span></span>)
-                        }
-                      </span>
-                    </h3>
+ class Home extends Component {
+   render() {
+     return (
+           <>
+           <HomeNavBar />
+           <div id="___gatsby">
+           <div style={{ outline: "none" }} tabIndex={-1} id="gatsby-focus-wrapper">
+             <div className="mt-10">
+               <section className="pt-4 pt-md-11 pb-11">
+                 <div className="container">
+                   <div className="row align-items-center">
+                     <div className="col-12 col-md-5 col-lg-6 order-md-2">
+                       <img
+                        src="/asset/hero-illustration-7c4bf8254c645949de90aed2f60618b7.svg"
+                        className="img-fluid mw-md-100 mw-lg-100 mb-6 mb-md-0"
+                        alt="all-channels"
+                      />
+                    </div>
+                    <div className="col-12 col-md-7 col-lg-6 order-md-1">
+                      <h1 className="mt-7 display-3 text-center text-md-left text-dark">
+                        The better way to talk to your customers
+                      </h1>
+                      <p className="lead text-center text-md-left text-muted mb-6 mb-lg-8">
+                        Manage conversations, build relationships and delight your
+                        customers, all from one place.
+                      </p>
+                      <div className="text-center text-md-left">
+                        <a
+                          href="https://app.chatwoot.com/app/auth/signup"
+                          className="btn btn-primary shadow lift mr-3"
+                        >
+                          Create an account
+                        </a>
+                        <a
+                          href="https://github.com/chatwoot/chatwoot"
+                          className="btn btn-outline-primary shadow lift mr-1"
+                        >
+                          <span className="fe fe-github mr-1" />
+                          Use self-hosted version
+                        </a>
+                      </div>
+                      <p className="text-muted mt-5 text-center text-md-left">
+                        To schedule a demo,
+                        <a
+                          href="https://calendly.com/chatwoot"
+                          className="ml-1"
+                          target="_blank"
+                          rel="noopener nofollow noreferrer"
+                        >
+                          Click here
+                        </a>
+                      </p>
+                    </div>
                   </div>
                 </div>
+              </section>
               </div>
-            )}
-          </div>
-        </div>
+              </div>
+              </div>
+           </>
 
-      </>
-    );
-  }
+     );
+   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    allBlog: state.getAllBlog.allBlog,
-    blogStatus: state.blogStatus.blogStatus,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchBlog: () => dispatch(actions.fetchBlog()),
-    fetchStatusBlog: () => dispatch(action.fetchStatusBlog()),
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home
