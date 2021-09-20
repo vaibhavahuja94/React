@@ -3,27 +3,19 @@ import Lottie from 'react-lottie';
 import { connect } from 'react-redux';
 import * as actions from '../../redux/actions/GetBlogByIdActions'
 import Modal from 'react-modal'
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCardText, MDBCol } from 'mdbreact';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
 import { Link, withRouter } from 'react-router-dom'
-import { Redirect } from 'react-router';
 import { updateHidePage, getTemplate, uploadImage } from '../../Services/apiFunction';
 import EditIcon from '@material-ui/icons/Edit';
 import Tooltip from '@material-ui/core/Tooltip';
-import SlideshowIcon from '@material-ui/icons/Slideshow';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import EditAttributesIcon from '@material-ui/icons/EditAttributes';
-import { CircularProgress } from '@material-ui/core'
 import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
 import { loadDefaultOptions } from './LottieIcon';
 
@@ -134,9 +126,9 @@ class ShowBlogById extends Component {
                                             <br />
                                             <br />
                                             <span style={{ display: "inline" }}>
-                                                <Tooltip title="Edit Page"><EditIcon style={{ color: "#1DABB8" }} onClick={(event) => this.handleView(event, value)} /></Tooltip>
+                                                <Tooltip title="Edit Page"><EditIcon  onClick={(event) => this.handleView(event, value)} /></Tooltip>
                                                 <span
-                                                    style={{ color: "#1DABB8" }}
+                                                    
                                                     onClick={() => {
                                                         this.handleHide(value);
                                                     }}>
@@ -144,7 +136,7 @@ class ShowBlogById extends Component {
                                                     {value.is_hidden == "FALSE" ? <Tooltip title="Hide"><VisibilityOffIcon /></Tooltip> : <Tooltip title="Show"><VisibilityIcon /></Tooltip>}
                                                 </span>
                                                 &nbsp;
-                                                <Tooltip title="Edit Page Details"><SettingsApplicationsIcon style={{ color: "#1DABB8" }} onClick={(event) => this.handleEdit(event, value)} /></Tooltip>
+                                                <Tooltip title="Edit Page Details"><SettingsApplicationsIcon  onClick={(event) => this.handleEdit(event, value)} /></Tooltip>
                                             </span>
                                         </span>
                                     </CardContent>

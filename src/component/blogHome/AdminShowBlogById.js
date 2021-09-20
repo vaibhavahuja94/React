@@ -15,29 +15,50 @@ import * as Yup from 'yup'
 import 'react-toastify/dist/ReactToastify.css';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import Tooltip from '@material-ui/core/Tooltip';
-import { CircularProgress } from '@material-ui/core';
 import Lottie from 'react-lottie';
-import { visiblityOptions, copyDefaultOptions, editDefaultOptions, menuDefaultOptions, loadDefaultOptions } from './LottieIcon'
+import LottieIcon from './LottieIco';
+import animationDataCopy from './copy.json'
+import editAnimationData from './edit.json'
+import Visiblity from './visibility-V3.json'
+import MenuIcon from './menuV2.json'
+import loadingAnimationData from './loadingV2.json'
 
 
 class ShowBlogById extends Component {
     _lottieHeartRef;
     state = {
         lottieRef:React.createRef(null),
+        lottieRef1:React.createRef(null),
         user: this.props.user,
+        copyState:true,
         template: false,
         editDetails: {},
         file: "",
         showModal: "",
         isStopped: true,
-        isPaused: true
+        isPaused: true,
+        isMouseEnter : false
     }
     
     handleClickToPause = () => {
         this.state.lottieRef?.current?.handleClickToPause?.();
     }
+
+    animateCopy = (e) => {
+        debugger
+        console.log(e.currentTarget)
+        this.setState({isMouseEnter:!this.state.isMouseEnter})
+    }
+
+    animateCopy1 = () => {
+        this.setState({isMouseEnter:!this.state.isMouseEnter})
+    }
+
+    handleClickToPause1 = () => {
+        this.state.lottieRef1?.current?.handleClickToPause1?.();
+    }
+
     handleView(event, value) {
         this.props.history.push({ pathname: 'webTemplate', state: { template: value, type: "DEFAULT" } })
     }
@@ -101,7 +122,7 @@ class ShowBlogById extends Component {
             <p>Loading...</p>
         }
         const { blogStatus, comment, isWebPage } = this.props
-        const { user, file, lottieRef } = this.state
+        const { user, file, lottieRef, lottieRef1, isMouseEnter } = this.state
         const customStyles = {
             content: {
                 top: '40%',
@@ -139,24 +160,18 @@ class ShowBlogById extends Component {
                             <>
                                 <div className="col-sm-4 col-xs-4">
                                     <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
-                                        <img src={value.image ? value.image : "/template.jpg"} style={{ height: "15em", width: "100%" }} />
+                                        <img src={value.image ? value.image : ""} style={{ height: "15em", width: "100%", background:"radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(36,189,252,1) 100%)" }} />
                                         <CardContent>
                                             <h4 style={{ display: "inline" }}>{value.title}</h4>
                                             <br />
+                                            <br />
                                             <div style={{ display: "flex" }}>
                                                 <Tooltip title="Use Now">
-                                                    <span onClick={(e) => { this.handleMergeTemplate(e, value) }}
-                                                    onMouseEnter={this.handleClickToPause}
-                                                    onMouseLeave={this.handleClickToPause}
-                                                    >
-                                                        <Lottie options={copyDefaultOptions}
-                                                            height={30}
-                                                            width={30}
-                                                            style={{ margin: "0 0 0 0" }}
-                                                            isClickToPauseDisabled
-                                                            ref={lottieRef}
-                                                            isStopped={this.state.isStopped}
-                                                            isPaused={this.state.isPaused} />
+                                                    <span onClick={(e) => { this.handleMergeTemplate(e, value) }}>
+                                                        <LottieIcon animationData={animationDataCopy} pause={this.state.copyState} 
+                                                        onMouseOver={()=>{this.setState({copyState:false})}} 
+                                                        onMouseLeave={()=>{this.setState({copyState:true})}}
+                                                        />
                                                     </span>
                                                 </Tooltip>
                                                 <div style={{ float: "right", display: "flex" }}>
@@ -165,16 +180,9 @@ class ShowBlogById extends Component {
                                                     onMouseLeave={this.handleClickToPause}
                                                     style={{ color: "#1DABB8" }} onClick={(event) => this.handleView(event, value)}>
                                                         <Tooltip title="View Pages">
-                                                            <span>
-                                                                <Lottie options={menuDefaultOptions}
-                                                                    height={30}
-                                                                    width={30}
-                                                                    isClickToPauseDisabled
-                                                                    ref={lottieRef}
-                                                                    style={{ margin: "0 0 0 0" }}
-                                                                    isStopped={this.state.isStopped}
-                                                                    isPaused={this.state.isPaused} />
-                                                            </span>
+                                                        <span>
+                                                        <LottieIcon animationData={MenuIcon} pause={this.state.copyState} />
+                                                        </span>
                                                         </Tooltip>
                                                     </span>
                                                     {user.type == "ADMIN" &&
@@ -192,13 +200,7 @@ class ShowBlogById extends Component {
                                                                     onMouseEnter={this.handleClickToPause}
                                                                     onMouseLeave={this.handleClickToPause}                
                                                                     >
-                                                                        <Lottie options={editDefaultOptions}
-                                                                            height={30}
-                                                                            width={30}
-                                                                            isClickToPauseDisabled
-                                                                            ref={lottieRef}
-                                                                            isStopped={this.state.isStopped}
-                                                                            isPaused={this.state.isPaused} />
+                                                                    <LottieIcon animationData={editAnimationData} pause={this.state.copyState} />
                                                                     </span>
                                                                 </Tooltip>
                                                             </span>
@@ -214,12 +216,7 @@ class ShowBlogById extends Component {
                                     <div className="panel panel-default">
                                         <div className="panel-heading"><h3>Create Template
                                             {this.state.loader ?
-                                                <Lottie options={loadDefaultOptions}
-                                                height={200}
-                                                width={200}
-                                                style={{ margin: "0 0 0 0" }}
-                                                isStopped={this.state.isStopped}
-                                                isPaused={this.state.isPaused} /> 
+                                                 <LottieIcon animationData={loadingAnimationData} height={50} width={50} pause={this.state.copyState} Play={true}/>
                                                 :
                                                 <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
                                             }

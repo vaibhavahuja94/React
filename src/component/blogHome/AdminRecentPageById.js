@@ -135,21 +135,27 @@ class ShowBlogById extends Component {
                         {blogdata.length > 0 && blogdata.map(value =>
                             <div className="col-sm-4 col-xs-9">
                                 <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
-                                    <img src={value.image ? value.image : "/page.png"} style={{ height: "15em", width: "100%" }} />
+                                    {value.image ?
+                                    <img src={value.image} style={{ height: "15em", width: "100%", background: "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(36,189,252,1) 100%)" }} />
+                                    :
+                                    <img style={{ height: "15em", width: "100%", background: "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(36,189,252,1) 100%)" }} />
+                                    }
+                                    <br />
                                     <CardContent>
                                         <span >
                                             <h4 style={{ display: "inline" }}>{value.page_title}</h4>
                                             <br />
+                                            <br />
                                             <span style={{ display: "inline" }}>
-                                                <Tooltip title="Preview of Page"><SlideshowIcon style={{ color: "#1DABB8" }} onClick={(e) => { this.preView(e, value.preview_link) }} /></Tooltip>
+                                                <Tooltip title="Preview of Page"><SlideshowIcon  onClick={(e) => { this.preView(e, value.preview_link) }} /></Tooltip>
                                                 {user.type == "ADMIN" &&
                                                     <>
-                                                        <Tooltip title="Edit Page"><EditIcon style={{ color: "#1DABB8" }} onClick={(event) => this.handleView(event, value)} /></Tooltip>
-                                                        <Tooltip title="Edit Page Details"><SettingsApplicationsIcon style={{ color: "#1DABB8" }} onClick={(event) => this.handleEdit(event, value)} /></Tooltip>
+                                                        <Tooltip title="Edit Page"><EditIcon  onClick={(event) => this.handleView(event, value)} /></Tooltip>
+                                                        <Tooltip title="Edit Page Details"><SettingsApplicationsIcon  onClick={(event) => this.handleEdit(event, value)} /></Tooltip>
                                                     </>
                                                 }
                                                 <span
-                                                    style={{ color: "#1DABB8" }}
+                                                    
                                                     onClick={() => {
                                                         this.handleHide(value);
                                                     }}>

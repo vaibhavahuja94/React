@@ -104,9 +104,9 @@ const useStyles = makeStyles((theme) => ({
     cursor:"default",
   },
   activeListItem: {
-    borderLeft: `4px solid ${theme.palette.primary.main}`,
+    borderLeft: `4px solid ${"lightgrey"}`,
     borderRadius: '4px',
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: "lightgrey",
     '& $listItemText': {
       color: theme.palette.text.primary
     },
@@ -186,7 +186,7 @@ export default function AdminLayout(props) {
             {props.title}
           </Typography>
           <div>
-            <img src="/humanavtar.jpg" height="75em" aria-describedby={id} variant="contained" color="info" onClick={handleClickAnchor}/>
+            <img src="/humanavtar.jpg" height="75em" aria-describedby={id} variant="contained" style={{color:"grey"}} onClick={handleClickAnchor}/>
             <Button className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }} onClick={()=>{logout()}}>Logout</Button>
           </div>
         </Toolbar>

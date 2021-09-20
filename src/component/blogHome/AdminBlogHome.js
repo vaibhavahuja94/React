@@ -13,6 +13,7 @@ import { CircularProgress } from '@material-ui/core'
 import AdminShowBlogById from './AdminShowBlogById';
 import moment from 'moment'
 import Lottie from 'react-lottie';
+import LottieIcon from './LottieIco';
 import loadingAnimationData from './loadingV2.json'
 
 
@@ -61,14 +62,8 @@ class BlogHome extends Component {
             (
                 <>
                 <div style={{ display: 'flex', justifyContent: 'center', paddingTop: "10%" }}>
-                    <Lottie options={loadingOptions}
-                        height={150}
-                        width={150}
-                        style={{ margin: "0 0 0 0" }}
-                        isStopped={this.state.isStopped}
-                        isPaused={this.state.isPaused} />                
+                <LottieIcon Play={true} animationData={loadingAnimationData} height={50} width={50} pause={this.state.copyState} />                
                 </div>
-                <div>Loading...</div>
                 </>
             ) :
             (
@@ -87,12 +82,8 @@ class BlogHome extends Component {
                         <div className="panel panel-default">
                             <div className="panel-heading"><h3>Create Template
                                 {this.state.loader ?
-                                    <Lottie options={loadingOptions}
-                                    height={150}
-                                    width={150}
-                                    style={{ margin: "0 0 0 0" }}
-                                    isStopped={this.state.isStopped}
-                                    isPaused={this.state.isPaused} /> :
+                                     <LottieIcon Play={true} animationData={loadingAnimationData} height={50} width={50} />
+                                     :
                                     <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
                                 }
                             </h3>

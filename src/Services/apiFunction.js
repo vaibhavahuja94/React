@@ -83,9 +83,73 @@ export function updateTemplate(fields) {
     })
 }
 
+export function addSlots(fields) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/addSlots.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function addTransaction(fields) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/addTransaction.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function updateTransaction(fields) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/updateTransaction.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function updateSlots(fields) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/updateSlot.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function deleteSlots(fields) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/deleteSlot.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function deleteTransaction(fields) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/deleteTransaction.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
 export function getTemplate(username) {
     return new Promise((resolve, reject) => {
         axios.get(`https://w3bizz.com/template/classes/getTemplate.php?username=${username}`)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function getTransaction(username) {
+    return new Promise((resolve, reject) => {
+        axios.get(`https://w3bizz.com/template/classes/getTransaction.php?username=${username}`)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function getSlots(username) {
+    return new Promise((resolve, reject) => {
+        axios.get(`https://w3bizz.com/template/classes/getSlot.php?username=${username}`)
             .then((res) => resolve(res.data))
             .catch((err) => reject(err))
     })

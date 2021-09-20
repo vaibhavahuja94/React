@@ -36,6 +36,12 @@ export const copyDefaultOptions = {
     animationData: animationData,
 };
 
+export const copyDefaultOptionsTrue = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+};
+
 export const visiblityOptions = {
     loop: true,
     autoplay: false,
