@@ -1,6 +1,9 @@
 const initialState = {
     pending: false,
     allBlog: [],
+    allAdminBlog:[],
+    published:[],
+    defaultPages:[],    
     error: null
 }
 
@@ -29,6 +32,12 @@ export default function getBlogByIdReducer(state = initialState, action) {
                 pending: false,
                 defaultPages: action.payload
             }
+            case 'GETPUBLISEDTEMPLATES':
+                return {
+                    ...state,
+                    pending: false,
+                    published: action.payload
+                }
         case 'GETBLOGIDERROR':
             return {
                 ...state,

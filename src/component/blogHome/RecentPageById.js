@@ -119,7 +119,7 @@ class ShowBlogById extends Component {
                         {this.props.blogData.length > 0 && this.props.blogData.map(value =>
                             <div className="col-sm-4 col-xs-9">
                                 <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
-                                    <img src={value.image ? value.image : "/page.png"} style={{ height: "15em", width: "100%" }} />
+                                    <img src={value.image ? value.image : "https://res.cloudinary.com/w3bizz-com/image/upload/c_scale,w_425/v1632246930/2_hjs08o.png"} style={{ height: "15em", width: "100%" }} />
                                     <CardContent>
                                         <span >
                                             <h4 style={{ display: "inline" }}>{value.page_title}</h4>
@@ -165,7 +165,7 @@ class ShowBlogById extends Component {
                                 initialValues={{
                                     title: this.state.editDetails.page_title,
                                     publish_name: this.state.editDetails.publish_name,
-                                    homepage: this.state.editDetails.is_homepage,
+                                    is_homepage: this.state.editDetails.is_homepage == "TRUE"?"TRUE":"FALSE",
                                     image: this.state.editDetails.image,
                                     favicon: this.state.editDetails.favicon,
                                     description: this.state.editDetails.description
@@ -246,8 +246,8 @@ class ShowBlogById extends Component {
                                             <Field name="description" type="text" className={(errors.description && touched.description ? ' is-invalid' : '')} />
                                         </div>
                                         <div className="form-group">
-                                            <label htmlFor="homepage">
-                                                <Field name="homepage" type="checkbox" className={(errors.homepage && touched.homepage ? ' is-invalid' : '')} />Is Home Page
+                                            <label htmlFor="is_homepage">
+                                                <Field name="is_homepage" type="checkbox" className={(errors.homepage && touched.homepage ? ' is-invalid' : '')} />&nbsp;Is Home Page
                                             </label>
                                         </div>
                                         <div className="form-group">

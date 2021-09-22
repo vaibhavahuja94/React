@@ -23,6 +23,12 @@ export function defaultPagesSuccess(data) {// Template Redux
     }
 }
 
+export function publishedTemplates(data) {
+    return {
+        type: 'GETPUBLISEDTEMPLATES',
+        payload: data
+    }
+}
 
 function getPageIdSuccess(data) {
     return {

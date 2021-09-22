@@ -10,7 +10,7 @@ import { patchApi } from '../../Services/apiFunction'
 import 'react-toastify/dist/ReactToastify.css';
 import { loginUserSuccess } from '../../redux/actions/LoginActions'
 import AdminLayout from '../AdminLayout';
-
+import {Accordion} from 'react-bootstrap';
 
 class ProfileUpdate extends Component {
     state = {

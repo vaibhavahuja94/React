@@ -3,7 +3,7 @@ import Modal from 'react-modal'
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import { getBlogIdSuccess, defaultPagesSuccess } from '../../redux/actions/GetBlogByIdActions'
+import { getBlogIdSuccess, defaultPagesSuccess, publishedTemplates } from '../../redux/actions/GetBlogByIdActions'
 import ShowBlogById from './ShowBlogById';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -27,6 +27,7 @@ class BlogHome extends Component {
         if (response.STATUS == "SUCCESS") {
             this.props.createBlog(response.USER_TEMPLATE)
             this.props.defaultPages(response.DEFAULT_PAGES)
+            this.props.publishTemplate(response.PUBLISHED)
             this.setState({ loader: false })
         }
 
@@ -52,8 +53,8 @@ class BlogHome extends Component {
             (
                 <div style={{ display: 'flex', justifyContent: 'center', paddingTop: "10%" }}>
                     <Lottie options={loadDefaultOptions}
-                        height={200}
-                        width={200}
+                        height={50}
+                        width={50}
                         style={{ margin: "0 0 0 0" }}
                         isStopped={this.state.isStopped}
                         isPaused={this.state.isPaused} />
@@ -94,6 +95,7 @@ class BlogHome extends Component {
                                             .required('Template Title is required'),
                                     })}
                                     onSubmit={async (fields, { resetForm, initialValues }) => {
+                                        debugger
                                         this.setState({ loader: true })
                                         if (file) {
                                             const response = await uploadImage(file)
@@ -110,8 +112,9 @@ class BlogHome extends Component {
                                             let obj = {}
                                             obj.title = "Home Page"
                                             obj.publish_name = "New Template"
-                                            obj.template_id = fields.id
+                                            obj.template_id = resp.TEMPLATE_ID
                                             obj.code = "new title"
+                                            obj.is_homepage = "TRUE"
                                             await addPage(obj)
                                             const tempData1 = await getTemplate(user.username)
                                             if (tempData1.STATUS == "SUCCESS") {
@@ -126,7 +129,6 @@ class BlogHome extends Component {
                                         }
                                     }}
                                     render={({ errors, touched, setFieldValue }) => (
-
                                         <Form>
                                             <div className="form-group">
                                                 <label htmlFor="title">Title</label>
@@ -138,9 +140,9 @@ class BlogHome extends Component {
                                                 <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
                                             </div>
                                             <div className="form-group">
-                                                <button type="submit" className="btn btn-primary">Create Page Template</button>
+                                                <button type="submit" className="btn btn-primary">Create Template</button>
                                                 &nbsp;
-                                                <button type="reset" onClick={() => this.fileInput.value = ""} className="btn btn-secondary">Reset</button>
+                                                <button type="reset" onClick={() => this.setState({file:''})} className="btn btn-secondary">Reset</button>
                                             </div>
                                         </Form>
                                     )}
@@ -148,7 +150,6 @@ class BlogHome extends Component {
                             </div>
                         </div>
                     </Modal>
-
                 </>
             );
     }
@@ -156,14 +157,15 @@ class BlogHome extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        user: state.login && state.login.data
+        user: state.login && state.login.data,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         createBlog: (data) => dispatch(getBlogIdSuccess(data)),
-        defaultPages: (data) => dispatch(defaultPagesSuccess(data))
+        defaultPages: (data) => dispatch(defaultPagesSuccess(data)),
+        publishTemplate: (data) => dispatch(publishedTemplates(data))
     }
 }
 

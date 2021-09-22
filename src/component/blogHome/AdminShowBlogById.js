@@ -160,7 +160,7 @@ class ShowBlogById extends Component {
                             <>
                                 <div className="col-sm-4 col-xs-4">
                                     <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
-                                        <img src={value.image ? value.image : ""} style={{ height: "15em", width: "100%", background:"radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(36,189,252,1) 100%)" }} />
+                                        <img src={value.image ? value.image : "https://res.cloudinary.com/w3bizz-com/image/upload/c_scale,w_425/v1632246929/1_qccloi.png"} style={{ height: "15em", width: "100%", background:"radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(36,189,252,1) 100%)" }} />
                                         <CardContent>
                                             <h4 style={{ display: "inline" }}>{value.title}</h4>
                                             <br />

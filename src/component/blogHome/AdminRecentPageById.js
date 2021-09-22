@@ -135,11 +135,7 @@ class ShowBlogById extends Component {
                         {blogdata.length > 0 && blogdata.map(value =>
                             <div className="col-sm-4 col-xs-9">
                                 <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
-                                    {value.image ?
-                                    <img src={value.image} style={{ height: "15em", width: "100%", background: "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(36,189,252,1) 100%)" }} />
-                                    :
-                                    <img style={{ height: "15em", width: "100%", background: "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(36,189,252,1) 100%)" }} />
-                                    }
+                                    <img src={value.image?value.image:"https://res.cloudinary.com/w3bizz-com/image/upload/c_scale,w_425/v1632246930/2_hjs08o.png"} style={{ height: "15em", width: "100%" }} />                
                                     <br />
                                     <CardContent>
                                         <span >
@@ -184,7 +180,7 @@ class ShowBlogById extends Component {
                                 initialValues={{
                                     title: this.state.editDetails.page_title,
                                     publish_name: this.state.editDetails.publish_name,
-                                    homepage: this.state.editDetails.is_homepage,
+                                    is_homepage: this.state.editDetails.is_homepage=="TRUE"?"TRUE":"FALSE",
                                     image: this.state.editDetails.image,
                                     favicon: this.state.editDetails.favicon,
                                     description: this.state.editDetails.description
@@ -266,7 +262,7 @@ class ShowBlogById extends Component {
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="homepage">
-                                                <Field name="homepage" type="checkbox" className={(errors.homepage && touched.homepage ? ' is-invalid' : '')} />Is Home Page
+                                                <Field name="is_homepage" type="checkbox" className={(errors.is_homepage && touched.is_homepage ? ' is-invalid' : '')} />Is Home Page
                                             </label>
                                         </div>
                                         <div className="form-group">
@@ -284,8 +280,8 @@ class ShowBlogById extends Component {
                     <div className="panel panel-default">
                         {this.state.loader ?
                             <Lottie options={loadDefaultOptions}
-                                height={200}
-                                width={200}
+                                height={50}
+                                width={50}
                                 style={{ margin: "0 0 0 0" }}
                                 isStopped={this.state.isStopped}
                                 isPaused={this.state.isPaused} /> :

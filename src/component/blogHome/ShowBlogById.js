@@ -20,8 +20,9 @@ import editAnimationData from './edit.json'
 import Visiblity from './visibility-V3.json'
 import MenuIcon from './menuV2.json'
 import loadingAnimationData from './loadingV2.json'
-import EdiText from 'react-editext'
 import EditIcon from '@material-ui/icons/Edit';
+import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
 import './BlogHome.css'
 import StripeApp from '../payment/StripeApp';
 
@@ -33,7 +34,7 @@ class ShowBlogById extends Component {
         id: '',
         img: '',
         name: '',
-        stripe:'',
+        stripe: '',
         file: '',
         template: false,
         string: "",
@@ -42,11 +43,14 @@ class ShowBlogById extends Component {
         editDetails: {},
         slotDetails: [],
         templateID: '',
+        editInput: '',
+        payModalError:'',
+        slotNumber:'',
+        planValue:''
     }
 
     AddSlotsModal = async (e, value) => {
         e.preventDefault()
-        debugger
         this.setState({ showModalPayDetails: true })
         this.setState({ showModalSlotsDetail: false })
     }
@@ -56,33 +60,64 @@ class ShowBlogById extends Component {
     }
 
     publishTemplate = async () => {
-        let obj = {}
-        obj.username = this.state.user.username
-        obj.template_id = this.state.templateID
-        const response = await publishTemplate(obj)
-        if (response.STATUS == "SUCCESS") {
-            toast.success("Template Published Successfully")
+        if (this.state.slot) {
+            let obj = {}
+            obj.username = this.state.user.username
+            obj.template_id = this.state.templateID
+            obj.slot_id = this.state.slot
+            const response = await publishTemplate(obj)
+            if (response.STATUS == "SUCCESS") {
+                toast.success("Template Published Successfully")
+            }
+            else {
+                toast.error("Template Not Published")
+            }
         }
         else {
-            toast.error("Template Not Published")
+            toast.error("Please Select Slot")
         }
     }
 
     AddPay = async (e) => {
-        e.preventDefault()
-        this.setState({stripe:true})
-        this.setState({showModalPayDetails:false})
+        if (this.state.radioValue || this.state.slotNumber) {
+            e.preventDefault()
+            let planValue = this.state.radioValue? this.state.radioValue:this.state.slotNumber
+            this.setState({planValue:planValue})
+            this.setState({ stripe: true })
+            this.setState({ showModalPayDetails: false })
+            this.setState({payModalError:""})
+        }
+        else {
+            this.setState({ payModalError: "Please Select Some Plan" })
+        }
     }
-    
+
+    AddTrialSlot = async (e) => {
+        e.preventDefault()
+
+    }
     publishTemplateFunc = async (e, value) => {
         this.setState({ templateID: value.id })
         let response = await getSlots(this.props.user.username)
         if (response.STATUS) {
-            this.setState({ slotDetails: response.DATA })
+            let list = []
+            response.DATA.map((val) => {
+                this.props.published.map((value) => {
+                    if (val.slot_id == value.slot_id) {
+                        val.isChecked = true
+                        list.push(val)
+                        this.setState({ slot: val.slot_id })
+                    }
+                    else {
+                        list.push(val)
+                    }
+                })
+            })
+            this.setState({ slotDetails: list })
         }
         this.setState({ showModalSlotsDetail: true })
     }
-    
+
     onSave = async (val) => {
         if (val != '') {
             let obj = {}
@@ -90,21 +125,36 @@ class ShowBlogById extends Component {
             obj.publish_name = val
             const response = await addSlots(obj)
             if (response.STATUS) {
-
+                this.setState({ slotDetails: [...this.state.slotDetails, obj] })
             }
         }
     }
 
-    onUpdate = async (val) => {
-        debugger
-        if (val != '') {
+    onUpdate = async (e, value) => {
+        e.preventDefault()
+        if (this.state.publish_name != '') {
             let obj = {}
             obj.username = this.state.user.username
-            obj.publish_name = val
+            obj.slot_id = value.slot_id
+            obj.publish_name = this.state.publish_name
             const response = await updateSlots(obj)
             if (response.STATUS) {
-                this.setState({ slotDetails: [...this.state.slotDetails, obj] })
+                this.setState({ editInput: false })
+                var list = []
+                this.state.slotDetails.forEach((val) => {
+                    if (val.slot_id == value.slot_id) {
+                        val.publish_name = this.state.publish_name
+                        list.push(val)
+                    }
+                    else {
+                        list.push(val)
+                    }
+                })
+                this.setState({ slotDetails: list })
+                this.setState({ publish_name: '' })
             }
+        } else {
+            toast.error("Please Enter Some Value")
         }
     }
 
@@ -144,6 +194,11 @@ class ShowBlogById extends Component {
         event.preventDefault()
     }
 
+    editText(e, value) {
+        e.preventDefault()
+        this.setState({ editInput: true })
+        this.setState({ publish_name: value.publish_name })
+    }
 
     handleEdit(e, value) {
         this.setState({ editDetails: value })
@@ -214,7 +269,7 @@ class ShowBlogById extends Component {
                         {this.props.blog.length > 0 && this.props.blog.map(value =>
                             <div className="col-sm-4 col-xs-4">
                                 <Card className={classes.root} variant="outlined" style={{ boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)" }}>
-                                    <img src={value.image ? value.image : "/template.jpg"} style={{ height: "15em", width: "100%" }} />
+                                    <img src={value.image ? value.image : "https://res.cloudinary.com/w3bizz-com/image/upload/c_scale,w_425/v1632246929/1_qccloi.png"} style={{ height: "15em", width: "100%" }} />
                                     <br />
                                     <CardContent>
                                         <span>
@@ -257,8 +312,8 @@ class ShowBlogById extends Component {
                         <div className="panel-heading"><h3>Create Template
                             {this.state.loader ?
                                 <Lottie options={loadDefaultOptions}
-                                    height={200}
-                                    width={200}
+                                    height={50}
+                                    width={50}
                                     style={{ margin: "0 0 0 0" }}
                                     isStopped={this.state.isStopped}
                                     isPaused={this.state.isPaused} />
@@ -336,11 +391,11 @@ class ShowBlogById extends Component {
 
                 <Modal isOpen={this.state.showModalSlotsDetail} style={customStylesSlot}>
                     <div className="panel panel-default">
-                        <div className="panel-heading"><h3>Avaliable Publish_Slots
+                        <div className="panel-heading"><h3>Avaliable PublishSlots
                             {this.state.loader ?
                                 <Lottie options={loadDefaultOptions}
-                                    height={200}
-                                    width={200}
+                                    height={50}
+                                    width={50}
                                     style={{ margin: "0 0 0 0" }}
                                     isStopped={this.state.isStopped}
                                     isPaused={this.state.isPaused} />
@@ -355,22 +410,24 @@ class ShowBlogById extends Component {
                                 {this.state.slotDetails.length > 0 ?
                                     <>
                                         <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Publish_Name</th>
-                                                </tr>
-                                            </thead>
                                             {this.state.slotDetails.map((value, index) => (
                                                 <tbody>
                                                     <tr>
-                                                        <td><input type="radio" name="slotDetails" onChange={(e) => { this.setState({ slot: e.target.checked }) }} /></td>
+                                                        <td><input type="radio" name="slotDetails" value={value.slot_id} checked={value.isChecked} onChange={(e) => { this.setState({ slot: e.target.value }) }} /></td>
                                                         <td>
-                                                            <EdiText
-                                                                type='text'
-                                                                value={value.publish_name}
-                                                                onSave={this.onUpdate}
-                                                            />
+                                                            {!this.state.editInput &&
+                                                                <>
+                                                                    <span>{value.publish_name}.w3bizz.com</span>
+                                                                    <EditIcon onClick={(e) => { this.editText(e, value) }} />
+                                                                </>
+                                                            }
+                                                            {this.state.editInput &&
+                                                                <>
+                                                                    <input type="text" value={this.state.publish_name} onChange={(e) => this.setState({ publish_name: e.target.value })} />.w3bizz.com
+                                                                    <CheckIcon onClick={(e) => { this.onUpdate(e, value) }} />
+                                                                    <ClearIcon onClick={(e) => this.setState({ editInput: false })} />
+                                                                </>
+                                                            }
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -380,12 +437,7 @@ class ShowBlogById extends Component {
                                     :
                                     (
                                         <>
-                                            <div>7 Days Free Trial Only</div>
-                                            <EdiText
-                                                type='text'
-                                                value={this.state.publish_name}
-                                                onSave={this.onSave}
-                                            />
+                                            <div>7 Days Free Trial Only. Please Book A Slot</div>
                                         </>
                                     )
                                 }
@@ -403,11 +455,11 @@ class ShowBlogById extends Component {
 
                 <Modal isOpen={this.state.showModalPayDetails} style={customStyles}>
                     <div className="panel panel-default">
-                        <div className="panel-heading"><h3>Purchase Slots
+                        <div className="panel-heading"><h3>{this.state.slot?"Buy More Slots":"Subscribe Slots"}
                             {this.state.loader ?
                                 <Lottie options={loadDefaultOptions}
-                                    height={200}
-                                    width={200}
+                                    height={50}
+                                    width={50}
                                     style={{ margin: "0 0 0 0" }}
                                     isStopped={this.state.isStopped}
                                     isPaused={this.state.isPaused} />
@@ -419,6 +471,7 @@ class ShowBlogById extends Component {
                         <hr />
                         <div className="panel panel-body">
                             <>
+                                {!this.state.slot &&
                                 <div className="row">
                                     <div className="col-sm-6">
                                         <label>
@@ -436,7 +489,7 @@ class ShowBlogById extends Component {
                                     </div>
                                     <div className="col-sm-6">
                                         <label>
-                                            <input type="radio" value="999" name="page" className="card-input-element" onChange={(e) => { this.setState({ radioValue: e.target.value }) }} />
+                                            <input type="radio" value="2399" name="page" className="card-input-element" onChange={(e) => { this.setState({ radioValue: e.target.value }) }} />
                                             <Card className="card-input">
                                                 <CardContent>
                                                     <h3>Pro Plan</h3>
@@ -449,18 +502,43 @@ class ShowBlogById extends Component {
                                         </label>
                                     </div>
                                 </div>
+                                }
+                                {
+                                this.state.slot &&
+                                    <>
+                                    <Card className="card-input">
+                                        <CardContent>
+                                            <h3>Extra Slots</h3>
+                                            <h2>Rs. 699</h2>
+                                            <div>
+                                            You Can Use for Publishing more Websites
+                                            </div>
+                                    </CardContent>
+                                    </Card>
+                                    <br />
+                                    <div style={{display:"flex"}}>
+                                        <h6>Please Book &nbsp;</h6><input name="number" type="text" value={this.state.slotNumber} onChange={(e)=>{this.setState({slotNumber:e.target.value})}}/><h6> &nbsp;Slots</h6>
+                                    </div>
+                                    </>
+                                }
                             </>
                         </div>
+                        <br />
+                        <div style={{color:"red"}}><h4>{this.state.payModalError}</h4></div>
                         <hr />
                         <div className="panel panel-footer">
-                        <span style={{float:"right"}}>
-                        <button className="btn btn-info" onClick={(e)=>{this.AddPay(e)}}>Pay</button>
-                        </span>
+                            <span style={{ float: "right" }}>
+                                {!this.state.slot &&
+                                <button className="btn btn-info" onClick={(e) => { this.AddTrialSlot(e) }}>7 Days Free Trial</button>
+                                }
+                                &nbsp;
+                                <button className="btn btn-info" onClick={(e) => { this.AddPay(e) }}>Buy Now</button>
+                            </span>
                         </div>
                     </div>
                 </Modal>
                 <Modal isOpen={this.state.stripe} style={customStylesPay}>
-                <div className="panel panel-default">
+                    <div className="panel panel-default">
                         <div className="panel-heading"><h3>Pay For Slots
                             {this.state.loader ?
                                 <Lottie options={loadDefaultOptions}
@@ -475,10 +553,10 @@ class ShowBlogById extends Component {
                         </h3>
                         </div>
                         <hr />
-                </div>
-                <div className="panel panel-body">
-                <StripeApp />
-                </div>
+                    </div>
+                    <div className="panel panel-body">
+                        <StripeApp planValue={this.state.planValue}/>
+                    </div>
                 </Modal>
             </>
         )
@@ -490,13 +568,15 @@ const mapStateToProps = (state) => {
     return {
         user: state.login.data,
         blog: state.getBlogById.allBlog,
+        published: state.getBlogById && state.getBlogById.published
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
-        createBlog: (data) => dispatch(actions.getBlogIdSuccess(data))
+        createBlog: (data) => dispatch(actions.getBlogIdSuccess(data)),
+        publishTemplates: (data) => dispatch(actions.publishedTemplates(data))
     }
 }
 
