@@ -34,7 +34,7 @@ class ShowBlogById extends Component {
     }
 
     handleView(event, value) {
-        window.open(`https://w3bizz.com/test/editor?${value.page_id}`)
+        window.open(`https://w3bizz.com/editor?${value.page_id}`)
     }
 
     handleHide = async (value) => {
@@ -150,8 +150,8 @@ class ShowBlogById extends Component {
                     <div className="panel panel-default">
                         {this.state.loader ?
                             <Lottie options={loadDefaultOptions}
-                                height={200}
-                                width={200}
+                                height={50}
+                                width={50}
                                 style={{ margin: "0 0 0 0" }}
                                 isStopped={this.state.isStopped}
                                 isPaused={this.state.isPaused} /> :
@@ -230,20 +230,24 @@ class ShowBlogById extends Component {
                                                 <div className="form-group">
                                                     <label htmlFor="title">Image Preview</label>
                                                     <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
+                                                    {this.state.editDetails.image &&
                                                     <img src={this.state.editDetails.image} style={{ width: "10em", height: "6em" }} />
+                                                    }
                                                 </div>
                                             </div>
                                             <div className="col-sm-6">
                                                 <div className="form-group">
                                                     <label htmlFor="title">Favicon</label>
-                                                    <input name="favicon" onChange={(e) => { this.setState({ favicon: e.target.files[0] }) }} type="file" className="form-control" />
+                                                     <input name="favicon" onChange={(e) => { this.setState({ favicon: e.target.files[0] }) }} type="file" className="form-control" />
+                                                     {this.state.editDetails.favicon &&
                                                     <img src={this.state.editDetails.favicon} style={{ width: "10em", height: "6em" }} />
-                                                </div>
+                                                    }
+                                                    </div>
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="description">Description</label>
-                                            <Field name="description" type="text" className={(errors.description && touched.description ? ' is-invalid' : '')} />
+                                            <Field name="description" type="textarea" cols="10" className="form-control" />
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="is_homepage">
@@ -251,7 +255,7 @@ class ShowBlogById extends Component {
                                             </label>
                                         </div>
                                         <div className="form-group">
-                                            <button type="submit" className="btn btn-primary">Create Page Template</button>
+                                            <button type="submit" className="btn btn-primary">Edit Page</button>
                                             &nbsp;
                                             <button type="reset" onClick={() => this.fileInput.value = ""} className="btn btn-secondary">Reset</button>
                                         </div>

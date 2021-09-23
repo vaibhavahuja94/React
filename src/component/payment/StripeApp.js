@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   CardElement,
   Elements,
@@ -7,6 +9,8 @@ import {
   useStripe
 } from "@stripe/react-stripe-js";
 import "./styles.css";
+import { addSlots, addTransaction, payMoney } from "../../Services/apiFunction";
+import moment from "moment";
 
 const CARD_OPTIONS = {
   iconStyle: "solid",
@@ -66,8 +70,7 @@ const Field = ({
 );
 
 const SubmitButton = ({ processing, error, children, disabled }) => (
-  <button
-    className={`SubmitButton ${error ? "SubmitButton--error" : ""}`}
+  <button className={`SubmitButton ${error ? "SubmitButton--error" : ""}`}
     type="submit"
     disabled={processing || disabled}
   >
@@ -102,7 +105,7 @@ const ResetButton = ({ onClick }) => (
   </button>
 );
 
-const CheckoutForm = () => {
+const CheckoutForm = (props) => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
@@ -132,19 +135,38 @@ const CheckoutForm = () => {
     if (cardComplete) {
       setProcessing(true);
     }
-
-    const payload = await stripe.createPaymentMethod({
-      type: "card",
-      card: elements.getElement(CardElement),
-      billing_details: billingDetails
-    });
-
+    let obj = {}
+    obj.amount = props.planValue
+    obj.currency = "INR"
+    const payload = await payMoney(obj)
+    console.log(payload)
+    if(payload.STATUS == "SUCCESS"){
+      let objPayData = {}
+      toast.success("Payment Successful")
+      objPayData.username = props.username
+      objPayData.amount = props.planValue
+      objPayData.tdata = payload.SECRET
+      let payRun = await addTransaction(objPayData)
+      console.log(payRun)
+      for(let i=0 ; i<props.slotNum; i++){
+        let obj = {}
+        obj.username = props.username
+        obj.publish_name = moment().unix() + "i" + i
+        obj.published = "FALSE"
+        obj.publish_date = ""
+        obj.purchase_date = moment().format("YYYY-MM-DD")
+        obj.expiry_date = ""
+        const response = await addSlots(obj)
+      }
+      toast.success("Slot Added Succesfully")
+      window.location.reload()
+    }
     setProcessing(false);
 
     if (payload.error) {
       setError(payload.error);
     } else {
-      setPaymentMethod(payload.paymentMethod);
+      
     }
   };
 
@@ -171,6 +193,7 @@ const CheckoutForm = () => {
       <ResetButton onClick={reset} />
     </div>
   ) : (
+    <>
     <form className="Form" onSubmit={handleSubmit}>
       <fieldset className="FormGroup">
         <CardField
@@ -182,9 +205,10 @@ const CheckoutForm = () => {
       </fieldset>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <SubmitButton processing={processing} error={error} disabled={!stripe}>
-        Pay $25
+        Pay INR-{props.planValue}
       </SubmitButton>
     </form>
+    </>
   );
 };
 
@@ -200,11 +224,12 @@ const ELEMENTS_OPTIONS = {
 // recreating the `Stripe` object on every render.
 const stripePromise = loadStripe("pk_test_6pRNASCoBOKtIshFeQd4XMUh");
 
-const StripeApp = () => {
+const StripeApp = (props) => {
+  console.log(props)
   return (
     <div className="AppWrapper">
       <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>
-        <CheckoutForm />
+        <CheckoutForm planValue={props.planValue} username={props.username} slotNum={props.slotNumber}/>
       </Elements>
     </div>
   );

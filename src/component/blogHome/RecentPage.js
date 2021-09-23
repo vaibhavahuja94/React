@@ -29,6 +29,7 @@ class BlogHome extends Component {
         showPageModal: false,
         loader: false,
         file: '',
+        fileSrc:'',
         favicon: '',
         radioValue: '',
         valueError: '',
@@ -36,6 +37,13 @@ class BlogHome extends Component {
         isStopped: false,
         isPaused: false,
         string: window.location.pathname.split("/")[1],
+    }
+
+    handleFile = (e) => {
+        this.setState({
+            fileSrc: URL.createObjectURL(e.target.files[0]),
+            file:e.target.files[0]
+          })
     }
 
     handleSubmit = async (event) => {
@@ -222,7 +230,7 @@ class BlogHome extends Component {
                                                 </label>
                                             </div>
                                             <div className="form-group">
-                                                <button type="submit" className="btn btn-primary">Create Page Template</button>
+                                                <button type="submit" className="btn btn-primary">Create Page</button>
                                                 &nbsp;
                                                 <button type="reset" onClick={() => this.setState({ file: "" })} className="btn btn-secondary">Reset</button>
                                             </div>
@@ -236,13 +244,13 @@ class BlogHome extends Component {
                         <div className="panel panel-default">
                             {this.state.loader ?
                                 <Lottie options={loadDefaultOptions}
-                                    height={200}
-                                    width={200}
+                                    height={50}
+                                    width={50}
                                     style={{ margin: "0 0 0 0" }}
                                     isStopped={this.state.isStopped}
                                     isPaused={this.state.isPaused} />
                                 :
-                                <div className="panel-heading"><h3>Merge Page
+                                <div className="panel-heading"><h3>Default Page
                                     <button className="close" onClick={() => this.setState({ showPageModal: false })}>&times;</button>
                                 </h3>
                                     <hr />

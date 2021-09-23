@@ -33,6 +33,14 @@ class BlogHome extends Component {
 
     }
 
+    handleFile = (e) => {
+        debugger
+        this.setState({
+            fileSrc: URL.createObjectURL(e.target.files[0]),
+            file:e.target.files[0]
+          })
+    }
+
     render() {
         const customStyles = {
             content: {
@@ -75,13 +83,13 @@ class BlogHome extends Component {
                             <div className="panel-heading"><h3>Create Template
                                 {this.state.loader ?
                                     <Lottie options={loadDefaultOptions}
-                                    height={200}
-                                    width={200}
-                                    style={{ margin: "0 0 0 0" }}
-                                    isStopped={this.state.isStopped}
-                                    isPaused={this.state.isPaused} /> 
+                                        height={50}
+                                        width={50}
+                                        style={{ margin: "0 0 0 0" }}
+                                        isStopped={this.state.isStopped}
+                                        isPaused={this.state.isPaused} />
                                     :
-                                    <button className="close" onClick={() => this.setState({ showModal: false })}>&times;</button>
+                                    <button className="close" onClick={() => this.setState({ showModal: false, file:'', fileSrc:'' })}>&times;</button>
                                 }
                             </h3>
                             </div>
@@ -95,7 +103,6 @@ class BlogHome extends Component {
                                             .required('Template Title is required'),
                                     })}
                                     onSubmit={async (fields, { resetForm, initialValues }) => {
-                                        debugger
                                         this.setState({ loader: true })
                                         if (file) {
                                             const response = await uploadImage(file)
@@ -125,7 +132,7 @@ class BlogHome extends Component {
                                         }
                                         else {
                                             this.setState({ loader: false })
-                                            toast.success(resp.data.message)
+                                            toast.error(resp.data.message)
                                         }
                                     }}
                                     render={({ errors, touched, setFieldValue }) => (
@@ -137,12 +144,15 @@ class BlogHome extends Component {
                                             </div>
                                             <div className="form-group">
                                                 <label htmlFor="title">Images</label>
-                                                <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
+                                                <input name="image" onChange={(e) =>this.handleFile(e) } type="file" className="form-control" />
+                                                {this.state.fileSrc &&
+                                                    <img src={this.state.fileSrc} style={{ width: "10em", height: "6em", marginTop: "10px" }} />
+                                                }
                                             </div>
                                             <div className="form-group">
                                                 <button type="submit" className="btn btn-primary">Create Template</button>
                                                 &nbsp;
-                                                <button type="reset" onClick={() => this.setState({file:''})} className="btn btn-secondary">Reset</button>
+                                                <button type="reset" onClick={() => this.setState({ file: '' })} className="btn btn-secondary">Reset</button>
                                             </div>
                                         </Form>
                                     )}

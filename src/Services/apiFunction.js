@@ -18,12 +18,12 @@ export function addPage(fields, username) {
 
 export function uploadImage(data) {
     let formData = new FormData()
-    formData.append("upload_preset","w3bizz_serdxz")
+    formData.append("upload_preset", "w3bizz_serdxz")
     formData.append("file", data)
     return new Promise((resolve, reject) => {
         axios.post("https://api.cloudinary.com/v1_1/w3bizz-com/image/upload", formData)
-        .then((res)=>resolve(res))
-        .catch((err)=>reject(err))
+            .then((res) => resolve(res))
+            .catch((err) => reject(err))
     })
 }
 
@@ -85,7 +85,15 @@ export function updateTemplate(fields) {
 
 export function addSlots(fields) {
     return new Promise((resolve, reject) => {
-        axios.post("https://w3bizz.com/template/classes/addSlots.php", fields)
+        axios.post("https://w3bizz.com/template/classes/addSlot.php", fields)
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
+    })
+}
+
+export function payMoney(fields) {
+    return new Promise((resolve, reject) => {
+        axios.post("https://w3bizz.com/template/classes/getIntent.php", fields)
             .then((res) => resolve(res.data))
             .catch((err) => reject(err))
     })
@@ -163,11 +171,13 @@ export function registerApi(data) {
     })
 }
 
-export function patchApi(id, data) {
+export function patchApi(data, id) {
     return new Promise((resolve, reject) => {
-        data.username = id
-        axios.post(`https://w3bizz.com/template/classes/updateUser.php`, data)
-            .then((res) => resolve(res))
+        if (id != undefined) {
+            data.username = id
+        }
+        axios.post("https://w3bizz.com/template/classes/updateUser.php", data)
+            .then((res) => resolve(res.data))
             .catch((err) => reject(err))
     })
 }
@@ -175,15 +185,15 @@ export function patchApi(id, data) {
 export function updateHide(value) {
     return new Promise((resolve, reject) => {
         axios.post("https://w3bizz.com/template/classes/updateTemplate.php", value)
-        .then((res)=> resolve(res.data))
-        .catch((err)=>reject(err))
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
     })
 }
 
 export function updateHidePage(value) {
     return new Promise((resolve, reject) => {
         axios.post("https://w3bizz.com/template/classes/updatePage.php", value)
-        .then((res)=> resolve(res.data))
-        .catch((err)=>reject(err))
+            .then((res) => resolve(res.data))
+            .catch((err) => reject(err))
     })
 }

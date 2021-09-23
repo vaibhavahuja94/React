@@ -25,6 +25,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import './BlogHome.css'
 import StripeApp from '../payment/StripeApp';
+import moment from 'moment';
 
 class ShowBlogById extends Component {
 
@@ -32,6 +33,7 @@ class ShowBlogById extends Component {
         user: this.props.user,
         showModal: false,
         id: '',
+        fileSrc: '',
         img: '',
         name: '',
         stripe: '',
@@ -44,9 +46,10 @@ class ShowBlogById extends Component {
         slotDetails: [],
         templateID: '',
         editInput: '',
-        payModalError:'',
-        slotNumber:'',
-        planValue:''
+        payModalError: '',
+        slotNumber: 1,
+        planValue: '',
+        slotsNumber: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     }
 
     AddSlotsModal = async (e, value) => {
@@ -61,6 +64,7 @@ class ShowBlogById extends Component {
 
     publishTemplate = async () => {
         if (this.state.slot) {
+            this.setState({ loader: true })
             let obj = {}
             obj.username = this.state.user.username
             obj.template_id = this.state.templateID
@@ -68,9 +72,20 @@ class ShowBlogById extends Component {
             const response = await publishTemplate(obj)
             if (response.STATUS == "SUCCESS") {
                 toast.success("Template Published Successfully")
+                let slotUpdate = this.state.slotDetails.find(val => val.slot_id == this.state.slot)
+                if (slotUpdate.published == "FALSE") {
+                    slotUpdate.publish_date = moment().format("YYYY-MM-DD")
+                    slotUpdate.expiry_date = moment().format("YYYY-MM-DD")
+                    slotUpdate.published = "TRUE"
+                    const responseUpdate = await updateSlots(slotUpdate)
+                    console.log(responseUpdate)
+                }
+                this.setState({ loader: false })
+                this.setState({ showModalSlotsDetail: false })
             }
             else {
                 toast.error("Template Not Published")
+                this.setState({ loader: false })
             }
         }
         else {
@@ -81,11 +96,14 @@ class ShowBlogById extends Component {
     AddPay = async (e) => {
         if (this.state.radioValue || this.state.slotNumber) {
             e.preventDefault()
-            let planValue = this.state.radioValue? this.state.radioValue:this.state.slotNumber
-            this.setState({planValue:planValue})
+            let planValue = this.state.radioValue ? this.state.radioValue : ((this.state.slotNumber) * 699)
+            this.setState({ planValue: planValue })
+            if (planValue == 2399) {
+                this.setState({ slotsNumber: 3 })
+            }
             this.setState({ stripe: true })
             this.setState({ showModalPayDetails: false })
-            this.setState({payModalError:""})
+            this.setState({ payModalError: "" })
         }
         else {
             this.setState({ payModalError: "Please Select Some Plan" })
@@ -94,25 +112,36 @@ class ShowBlogById extends Component {
 
     AddTrialSlot = async (e) => {
         e.preventDefault()
-
+        this.setState({ loader: true })
+        let obj = {}
+        obj.username = this.props.user.username
+        obj.publish_name = this.props.user.username + "New12"
+        obj.published = "FALSE"
+        obj.publish_date = ""
+        obj.purchase_date = moment().format("YYYY-MM-DD")
+        obj.expiry_date = ""
+        const response = await addSlots(obj)
+        if (response.STATUS == "SUCCESS") {
+            toast.success("Slot Created Successfully")
+            this.setState({ showModalPayDetails: false })
+        }
+        else {
+            toast.error("Error in Slot")
+        }
     }
+
     publishTemplateFunc = async (e, value) => {
         this.setState({ templateID: value.id })
         let response = await getSlots(this.props.user.username)
         if (response.STATUS) {
             let list = []
             response.DATA.map((val) => {
-                this.props.published.map((value) => {
-                    if (val.slot_id == value.slot_id) {
-                        val.isChecked = true
-                        list.push(val)
-                        this.setState({ slot: val.slot_id })
-                    }
-                    else {
-                        list.push(val)
-                    }
-                })
+                if (this.props.published.length > 0) {
+                    val.isInput = false
+                    list.push(val)
+                }
             })
+            list = list.length > 0 ? list : response.DATA
             this.setState({ slotDetails: list })
         }
         this.setState({ showModalSlotsDetail: true })
@@ -139,17 +168,18 @@ class ShowBlogById extends Component {
             obj.publish_name = this.state.publish_name
             const response = await updateSlots(obj)
             if (response.STATUS) {
-                this.setState({ editInput: false })
                 var list = []
                 this.state.slotDetails.forEach((val) => {
                     if (val.slot_id == value.slot_id) {
                         val.publish_name = this.state.publish_name
+                        val.isInput = false
                         list.push(val)
                     }
                     else {
                         list.push(val)
                     }
                 })
+                toast.success("Publish Name Updated Successfully")
                 this.setState({ slotDetails: list })
                 this.setState({ publish_name: '' })
             }
@@ -194,14 +224,35 @@ class ShowBlogById extends Component {
         event.preventDefault()
     }
 
-    editText(e, value) {
+    onCancel = (e, value, index) => {
         e.preventDefault()
-        this.setState({ editInput: true })
+        let slotDetails = [...this.state.slotDetails]
+        let slotDetail = { ...slotDetails[index] }
+        slotDetail.isInput = false
+        slotDetails[index] = slotDetail
+        this.setState({ slotDetails })
+        this.setState({ publish_name: " " })
+    }
+
+    editText(e, value, index) {
+        e.preventDefault()
+        let slotDetails = [...this.state.slotDetails]
+        let slotDetail = { ...slotDetails[index] }
+        slotDetail.isInput = true
+        slotDetails[index] = slotDetail
+        this.setState({ slotDetails })
         this.setState({ publish_name: value.publish_name })
     }
 
+    handleFile = (e) => {
+        this.setState({
+            fileSrc: URL.createObjectURL(e.target.files[0]),
+            file: e.target.files[0]
+        })
+    }
+
     handleEdit(e, value) {
-        this.setState({ editDetails: value })
+        this.setState({ editDetails: value, fileSrc: value.image })
         this.setState({ showModal: true })
         e.preventDefault()
     }
@@ -309,7 +360,7 @@ class ShowBlogById extends Component {
 
                 <Modal isOpen={this.state.showModal} style={customStyles}>
                     <div className="panel panel-default">
-                        <div className="panel-heading"><h3>Create Template
+                        <div className="panel-heading"><h3>Edit Template
                             {this.state.loader ?
                                 <Lottie options={loadDefaultOptions}
                                     height={50}
@@ -374,8 +425,10 @@ class ShowBlogById extends Component {
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="title">Images</label>
-                                            <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
-                                            <img src={this.state.editDetails.image} style={{ width: "10em", height: "6em" }} />
+                                            <input name="image" onChange={(e) => this.handleFile(e)} type="file" className="form-control" />
+                                            {this.state.fileSrc &&
+                                                <img src={this.state.fileSrc} style={{ width: "10em", height: "6em", marginTop: "10px" }} />
+                                            }
                                         </div>
                                         <div className="form-group">
                                             <button type="submit" className="btn btn-info">Edit Template</button>
@@ -415,17 +468,17 @@ class ShowBlogById extends Component {
                                                     <tr>
                                                         <td><input type="radio" name="slotDetails" value={value.slot_id} checked={value.isChecked} onChange={(e) => { this.setState({ slot: e.target.value }) }} /></td>
                                                         <td>
-                                                            {!this.state.editInput &&
+                                                            {!value.isInput &&
                                                                 <>
                                                                     <span>{value.publish_name}.w3bizz.com</span>
-                                                                    <EditIcon onClick={(e) => { this.editText(e, value) }} />
+                                                                    <EditIcon fontSize="small" onClick={(e) => { this.editText(e, value, index) }} />
                                                                 </>
                                                             }
-                                                            {this.state.editInput &&
+                                                            {value.isInput &&
                                                                 <>
                                                                     <input type="text" value={this.state.publish_name} onChange={(e) => this.setState({ publish_name: e.target.value })} />.w3bizz.com
                                                                     <CheckIcon onClick={(e) => { this.onUpdate(e, value) }} />
-                                                                    <ClearIcon onClick={(e) => this.setState({ editInput: false })} />
+                                                                    <ClearIcon onClick={(e) => this.onCancel(e, value, index)} />
                                                                 </>
                                                             }
                                                         </td>
@@ -455,7 +508,7 @@ class ShowBlogById extends Component {
 
                 <Modal isOpen={this.state.showModalPayDetails} style={customStyles}>
                     <div className="panel panel-default">
-                        <div className="panel-heading"><h3>{this.state.slot?"Buy More Slots":"Subscribe Slots"}
+                        <div className="panel-heading"><h3>{this.state.slotDetails ? "Buy More Slots" : "Subscribe Slots"}
                             {this.state.loader ?
                                 <Lottie options={loadDefaultOptions}
                                     height={50}
@@ -471,65 +524,73 @@ class ShowBlogById extends Component {
                         <hr />
                         <div className="panel panel-body">
                             <>
-                                {!this.state.slot &&
-                                <div className="row">
-                                    <div className="col-sm-6">
-                                        <label>
-                                            <input type="radio" value="999" name="page" className="card-input-element" onChange={(e) => { this.setState({ radioValue: e.target.value }) }} />
-                                            <Card className="card-input">
-                                                <CardContent>
-                                                    <h3>Basic Plan</h3>
-                                                    <h2>Rs. 999</h2>
-                                                    <div>
-                                                        Books 1 Slot For Publishing Website
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        </label>
+                                {!this.state.slotDetails &&
+                                    <div className="row">
+                                        <div className="col-sm-6">
+                                            <label>
+                                                <input type="radio" value="999" name="page" className="card-input-element" onChange={(e) => { this.setState({ radioValue: e.target.value }) }} />
+                                                <Card className="card-input">
+                                                    <CardContent>
+                                                        <h3>Basic Plan</h3>
+                                                        <h2>Rs. 999</h2>
+                                                        <div>
+                                                            Books 1 Slot For Publishing Website
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </label>
+                                        </div>
+                                        <div className="col-sm-6">
+                                            <label>
+                                                <input type="radio" value="2399" name="page" className="card-input-element" onChange={(e) => { this.setState({ radioValue: e.target.value }) }} />
+                                                <Card className="card-input">
+                                                    <CardContent>
+                                                        <h3>Pro Plan</h3>
+                                                        <h2>Rs. 2399</h2>
+                                                        <div>
+                                                            Books 3 Slot For Publishing Website
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </label>
+                                        </div>
                                     </div>
-                                    <div className="col-sm-6">
-                                        <label>
-                                            <input type="radio" value="2399" name="page" className="card-input-element" onChange={(e) => { this.setState({ radioValue: e.target.value }) }} />
-                                            <Card className="card-input">
-                                                <CardContent>
-                                                    <h3>Pro Plan</h3>
-                                                    <h2>Rs. 2399</h2>
-                                                    <div>
-                                                        Books 3 Slot For Publishing Website
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        </label>
-                                    </div>
-                                </div>
                                 }
                                 {
-                                this.state.slot &&
+                                    this.state.slotDetails &&
                                     <>
-                                    <Card className="card-input">
-                                        <CardContent>
-                                            <h3>Extra Slots</h3>
-                                            <h2>Rs. 699</h2>
-                                            <div>
-                                            You Can Use for Publishing more Websites
-                                            </div>
-                                    </CardContent>
-                                    </Card>
-                                    <br />
-                                    <div style={{display:"flex"}}>
-                                        <h6>Please Book &nbsp;</h6><input name="number" type="text" value={this.state.slotNumber} onChange={(e)=>{this.setState({slotNumber:e.target.value})}}/><h6> &nbsp;Slots</h6>
-                                    </div>
+                                        <br />
+                                        <div style={{ display: "flex" }}>
+                                            <h6>Buy &nbsp;</h6>
+                                            <select name="slotnumber" value={this.state.slotNumber} onChange={(e) => { this.setState({ slotNumber: e.target.value }) }}>
+                                                {this.state.slotsNumber.map((val) => (
+                                                    <option value={val}>{val}</option>
+                                                ))}
+                                            </select>
+                                            <h6> &nbsp;More Slots</h6>
+                                        </div>
+                                        <Card className="card-input">
+                                            <CardContent>
+                                                <h3>Extra Slots</h3>
+                                                <h2>Rs. 699</h2>
+                                                <div>
+                                                    You Can Use for Publishing more Websites
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                        <br />
+                                        <div><h6>Total Amount to Be Paid is {(this.state.slotNumber) * (699)}</h6></div>
                                     </>
                                 }
                             </>
                         </div>
                         <br />
-                        <div style={{color:"red"}}><h4>{this.state.payModalError}</h4></div>
+                        <div style={{ color: "red" }}><h4>{this.state.payModalError}</h4></div>
                         <hr />
                         <div className="panel panel-footer">
                             <span style={{ float: "right" }}>
-                                {!this.state.slot &&
-                                <button className="btn btn-info" onClick={(e) => { this.AddTrialSlot(e) }}>7 Days Free Trial</button>
+                                {!this.state.slotDetails &&
+                                    <button className="btn btn-info" onClick={(e) => { this.AddTrialSlot(e) }}>7 Days Free Trial</button>
                                 }
                                 &nbsp;
                                 <button className="btn btn-info" onClick={(e) => { this.AddPay(e) }}>Buy Now</button>
@@ -542,8 +603,8 @@ class ShowBlogById extends Component {
                         <div className="panel-heading"><h3>Pay For Slots
                             {this.state.loader ?
                                 <Lottie options={loadDefaultOptions}
-                                    height={200}
-                                    width={200}
+                                    height={50}
+                                    width={50}
                                     style={{ margin: "0 0 0 0" }}
                                     isStopped={this.state.isStopped}
                                     isPaused={this.state.isPaused} />
@@ -555,7 +616,7 @@ class ShowBlogById extends Component {
                         <hr />
                     </div>
                     <div className="panel panel-body">
-                        <StripeApp planValue={this.state.planValue}/>
+                        <StripeApp planValue={this.state.planValue} slotNumber={this.state.slotNumber} username={this.props.user.username} toast={toast}/>
                     </div>
                 </Modal>
             </>

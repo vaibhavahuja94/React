@@ -22,7 +22,8 @@
   }
   
   .card-Width {
-   width: 50%; 
+   width: 80%; 
+   max-width: 400px;
   }
 
   @media screen and (max-width: 600px) 

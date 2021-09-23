@@ -57,9 +57,11 @@ class Login extends Component {
     render() {
         return (
             <>
-                <div className="row container">
-                    <div className="col-sm-7" style={{ marginTop: "7%" }}></div>
-                    <div className="col-sm-5 col-xs-12" style={{ marginTop: "7%" }}>
+                <div className="row col-lg-10 mx-auto mt-5">
+                    <div className="col-sm-6 col-lg-6" >
+                    <img src="/login.jpeg" className="img-fluid"/>
+                    </div>
+                    <div className="col-sm-6 col-lg-6" >
                         <Formik
                             initialValues={{
                                 email: '',
@@ -78,7 +80,7 @@ class Login extends Component {
                             onSubmit={this.onSubmit}
                             render={({ errors, status, touched, setFieldValue }) => (
                                 <div className="card" style={{ width: "90%" }}>
-                                    <div className="card-body container" >
+                                    <div className="card-body card-Width" >
                                         <Form>
                                             <div className="form-group">
                                                 <label htmlFor="email">Email</label>

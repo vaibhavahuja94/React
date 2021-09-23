@@ -168,10 +168,7 @@ class ShowBlogById extends Component {
                                             <div style={{ display: "flex" }}>
                                                 <Tooltip title="Use Now">
                                                     <span onClick={(e) => { this.handleMergeTemplate(e, value) }}>
-                                                        <LottieIcon animationData={animationDataCopy} pause={this.state.copyState} 
-                                                        onMouseOver={()=>{this.setState({copyState:false})}} 
-                                                        onMouseLeave={()=>{this.setState({copyState:true})}}
-                                                        />
+                                                        <button className="btn btn-info">Use Now</button>
                                                     </span>
                                                 </Tooltip>
                                                 <div style={{ float: "right", display: "flex" }}>
@@ -214,7 +211,7 @@ class ShowBlogById extends Component {
                                 </div>
                                 <Modal isOpen={this.state.showModal} style={customStyles}>
                                     <div className="panel panel-default">
-                                        <div className="panel-heading"><h3>Create Template
+                                        <div className="panel-heading"><h3>Edit Template
                                             {this.state.loader ?
                                                  <LottieIcon animationData={loadingAnimationData} height={50} width={50} pause={this.state.copyState} Play={true}/>
                                                 :
@@ -276,12 +273,14 @@ class ShowBlogById extends Component {
                                                         <div className="form-group">
                                                             <label htmlFor="title">Images</label>
                                                             <input name="image" onChange={(e) => { this.setState({ file: e.target.files[0] }) }} type="file" className="form-control" />
+                                                            {this.state.editDetails.image &&
                                                             <img src={this.state.editDetails.image} style={{ width: "10em", height: "6em" }} />
-                                                        </div>
+                                                            }
+                                                            </div>
                                                         <div className="form-group">
-                                                            <button type="submit" className="btn btn-primary">Edit Page Template</button>
+                                                            <button type="submit" className="btn btn-primary">Edit Template</button>
                                                             &nbsp;
-                                                            <button type="reset" onClick={() => this.fileInput.value = ""} className="btn btn-secondary">Reset</button>
+                                                            <button type="reset" onClick={() => this.file = ""} className="btn btn-secondary">Reset</button>
                                                         </div>
                                                     </Form>
                                                 )}

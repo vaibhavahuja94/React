@@ -41,7 +41,7 @@ class ShowBlogById extends Component {
     }
 
     handleView(event, value) {
-        window.open(`https://w3bizz.com/test/editor?${value.page_id}`)
+        window.open(`https://w3bizz.com/editor?${value.page_id}`)
     }
 
     handleHide = async (value) => {
@@ -266,7 +266,7 @@ class ShowBlogById extends Component {
                                             </label>
                                         </div>
                                         <div className="form-group">
-                                            <button type="submit" className="btn btn-primary">Create Page Template</button>
+                                            <button type="submit" className="btn btn-primary">Edit Page</button>
                                             &nbsp;
                                             <button type="reset" onClick={() => this.fileInput.value = ""} className="btn btn-secondary">Reset</button>
                                         </div>

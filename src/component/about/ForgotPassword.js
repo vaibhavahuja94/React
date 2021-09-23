@@ -6,7 +6,7 @@ import ReCAPTCHA from "react-google-recaptcha"
 import { Link, Redirect, withRouter } from 'react-router-dom'
 import { loginUserError, loginUserSuccess } from '../../redux/actions/LoginActions'
 import { connect } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { postLogin, sendEmailOTP, sendVerifyOTP, patchApi } from '../../Services/apiFunction'
 import { CircularProgress, Typography } from '@material-ui/core'
@@ -48,6 +48,7 @@ class ForgotPassword extends Component {
   }
 
   onPasswordSubmit = async (fields) => {
+    debugger
     const obj = {}
     obj.email = fields.email
     obj.password = fields.password
@@ -55,14 +56,18 @@ class ForgotPassword extends Component {
     if(response.STATUS == "SUCCESS"){
       this.props.history.push('/login')
       this.setState({email:fields.email})
+    }else{
+    toast.error("Something Went Wrong")
     }
 }
     render() {
         return (
             <>
-                <div className="row container">
-                    <div className="col-sm-7" style={{ marginTop: "7%" }}></div>
-                    <div className="col-sm-5 col-xs-12" style={{ marginTop: "7%" }}>
+                <div className="row col-lg-10 mx-auto mt-5">
+                    <div className="col-lg-6">
+                    <img src="/login.jpeg" className="img-fluid"/>
+                    </div>
+                    <div className="col-lg-6 col-xs-12">
                     {!this.state.otpDisplay && !this.state.passwordDisplay &&
                       <Formik
                             initialValues={{

@@ -7,24 +7,25 @@ import { toast, ToastContainer } from 'react-toastify';
 import { registerApi } from '../../Services/apiFunction';
 import 'react-toastify/dist/ReactToastify.css';
 import {Typography} from '@material-ui/core'
+import { CircularProgress } from '@material-ui/core'
+
 
 class Register extends React.Component {
     state = {
         data: '',
+        loader:false,
         isSign: false
     }
     render() {
         if (this.state.isSign === true) {
             return <Redirect to="/login" />
         }
-        return (
+        return this.state.loader==false?(
             <>
                 <ToastContainer />
                 <br />
-                <div className="row">
-                <div className="col-sm-3">
-                </div>
-                <div className="col-sm-8" id="body" style={{ marginLeft: "15%" }}>
+                <div className="row col-lg-10 mx-auto mt-5">
+                <div className="col-sm-6 col-lg-6">
                     <Formik
                         initialValues={{
                             fname: '',
@@ -98,8 +99,14 @@ class Register extends React.Component {
                         )}
                     />
                 </div>
+                
+                <div className="col-sm-6 col-lg-6">
+                <img src="/register.jpeg" className="img-fluid"/>
+                </div>
                 </div>
             </>
+        ):(
+            <CircularProgress />
         )
     }
 }

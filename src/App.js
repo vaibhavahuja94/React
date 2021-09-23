@@ -25,10 +25,10 @@ import ForgotPassword from './component/about/ForgotPassword';
             {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
           <Switch>
-            <Route exact path="/login">
+            <Route exact path="/">
               <Login />
             </Route>
-            <Route exact path="/">
+            <Route exact path="/login">
               <Home />
             </Route>
             <Route exact path="/register">
