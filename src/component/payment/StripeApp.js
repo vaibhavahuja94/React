@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   CardElement,
@@ -9,7 +9,7 @@ import {
   useStripe
 } from "@stripe/react-stripe-js";
 import "./styles.css";
-import { addSlots, addTransaction, payMoney } from "../../Services/apiFunction";
+import { addSlots, addTransaction, payMoney, updateSlots } from "../../services/apiFunction";
 import moment from "moment";
 
 const CARD_OPTIONS = {
@@ -135,12 +135,13 @@ const CheckoutForm = (props) => {
     if (cardComplete) {
       setProcessing(true);
     }
+    
     let obj = {}
     obj.amount = props.planValue
     obj.currency = "INR"
     const payload = await payMoney(obj)
     console.log(payload)
-    if(payload.STATUS == "SUCCESS"){
+    if (payload.STATUS == "SUCCESS") {
       let objPayData = {}
       toast.success("Payment Successful")
       objPayData.username = props.username
@@ -148,17 +149,29 @@ const CheckoutForm = (props) => {
       objPayData.tdata = payload.SECRET
       let payRun = await addTransaction(objPayData)
       console.log(payRun)
-      for(let i=0 ; i<props.slotNum; i++){
-        let obj = {}
-        obj.username = props.username
-        obj.publish_name = moment().unix() + "i" + i
-        obj.published = "FALSE"
-        obj.publish_date = ""
-        obj.purchase_date = moment().format("YYYY-MM-DD")
-        obj.expiry_date = ""
-        const response = await addSlots(obj)
+      if (props.updateData && props.updateData.length > 0) {
+        for(let i=0 ; i<props.updateData.length ; i++){
+          let obj = {}
+          obj.username = props.username
+          obj.slot_id = props.updateData[i].slot_id
+          obj.expiry_date = moment(moment(props.updateData[i].expiry_date).add(1, 'y')).format("YYYY-MM-DD")
+          const resp = await updateSlots(obj)
+        }
+        toast.success("Slot Renewed Successfully")
       }
-      toast.success("Slot Added Succesfully")
+      else {
+        for (let i = 0; i < props.slotNum; i++) {
+          let obj = {}
+          obj.username = props.username
+          obj.publish_name = moment().unix() + "i" + i
+          obj.published = "FALSE"
+          obj.publish_date = ""
+          obj.purchase_date = moment().format("YYYY-MM-DD")
+          obj.expiry_date = ""
+          const response = await addSlots(obj)
+        }
+        toast.success("Slot Added Succesfully")
+      }
       window.location.reload()
     }
     setProcessing(false);
@@ -166,7 +179,7 @@ const CheckoutForm = (props) => {
     if (payload.error) {
       setError(payload.error);
     } else {
-      
+
     }
   };
 
@@ -194,20 +207,20 @@ const CheckoutForm = (props) => {
     </div>
   ) : (
     <>
-    <form className="Form" onSubmit={handleSubmit}>
-      <fieldset className="FormGroup">
-        <CardField
-          onChange={(e) => {
-            setError(e.error);
-            setCardComplete(e.complete);
-          }}
-        />
-      </fieldset>
-      {error && <ErrorMessage>{error.message}</ErrorMessage>}
-      <SubmitButton processing={processing} error={error} disabled={!stripe}>
-        Pay INR-{props.planValue}
-      </SubmitButton>
-    </form>
+      <form className="Form" onSubmit={handleSubmit}>
+        <fieldset className="FormGroup">
+          <CardField
+            onChange={(e) => {
+              setError(e.error);
+              setCardComplete(e.complete);
+            }}
+          />
+        </fieldset>
+        {error && <ErrorMessage>{error.message}</ErrorMessage>}
+        <SubmitButton processing={processing} error={error} disabled={!stripe}>
+          Pay INR-{props.planValue}
+        </SubmitButton>
+      </form>
     </>
   );
 };
@@ -229,7 +242,7 @@ const StripeApp = (props) => {
   return (
     <div className="AppWrapper">
       <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>
-        <CheckoutForm planValue={props.planValue} username={props.username} slotNum={props.slotNumber}/>
+        <CheckoutForm planValue={props.planValue} username={props.username} slotNum={props.slotNumber} updateData={props.updateData}/>
       </Elements>
     </div>
   );

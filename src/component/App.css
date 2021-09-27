@@ -32,3 +32,59 @@
       width: 90%; 
      }  
   }
+
+  .cardBox {
+    padding:10px 20px;
+    border:1px solid #aaa;
+    border-radius: 5px;
+    background-color: #fff;
+    margin-bottom: 15px;
+  }
+
+  .left-space{
+    margin-left: 20px;
+  }
+
+  .demo-heading{
+
+  }
+
+  .demo-sub{
+    display: block;
+    font-size: 15px;
+  }
+
+  .demo-div{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    text-align: center;
+  }
+
+  .demo-card:hover {
+    cursor: pointer;
+    border:3px solid green
+}
+
+  .demo-card{
+    width: 20vw;
+    flex: 1;
+    margin: 20px;
+    padding:20px 30px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #fff;
+  }
+
+  .demo-icon{
+    font-size: 150px;
+    color: cornflowerblue;
+  }
+
+  .demo-title{
+    font-size: 22px;
+    font-weight: bold;
+  }

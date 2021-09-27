@@ -1,35 +1,18 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import PageviewIcon from '@material-ui/icons/Pageview';
-import WebAssetIcon from '@material-ui/icons/WebAsset';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse'
-import IconExpandLess from '@material-ui/icons/ExpandLess'
-import IconExpandMore from '@material-ui/icons/ExpandMore'
-import WebIcon from '@material-ui/icons/Web';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import { Home } from '@material-ui/icons';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import {
+  Drawer, AppBar, Toolbar, List, CssBaseline, Typography, Divider,
+  IconButton, ListItem, ListItemIcon, ListItemText, Collapse, Popover, Button, Link
+} from '@material-ui/core';
+import {
+  Home, Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon,
+  ExpandLess as IconExpandLess, ExpandMore as IconExpandMore, Web as WebIcon, MoveToInbox as InboxIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon, WebAsset
+} from '@material-ui/icons';
 import { NavLink } from 'react-router-dom';
-import Popover from '@material-ui/core/Popover';
-import Button from '@material-ui/core/Button';
-import { Link } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { loginUserSuccess } from '../redux/actions/LoginActions'
 
@@ -89,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     display: 'flex',
     alignItems: 'center',
-    height:"5.35em",
+    height: "5.35em",
     justifyContent: 'flex-end',
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
@@ -101,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
   },
   typography: {
     padding: theme.spacing(2),
-    cursor:"default",
+    cursor: "default",
   },
   activeListItem: {
     borderLeft: `4px solid ${"lightgrey"}`,
@@ -126,6 +109,7 @@ export default function AdminLayout(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const history = useHistory()
   const dispatch = useDispatch()
+  const user = useSelector((state) => state.login.data)
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -133,7 +117,7 @@ export default function AdminLayout(props) {
 
   const openAnchor = Boolean(anchorEl);
   const id = openAnchor ? 'simple-popover' : undefined;
-  
+
   function handleClick() {
     setOpen1(!open1)
   }
@@ -151,10 +135,10 @@ export default function AdminLayout(props) {
   };
 
   const logout = () => {
-        localStorage.clear()
-        let obj = {}
-        dispatch(loginUserSuccess(obj))
-        history.push('/login')
+    localStorage.clear()
+    let obj = {}
+    dispatch(loginUserSuccess(obj))
+    history.push('/')
   }
   const handleDrawerClose = () => {
     setOpen(false);
@@ -170,7 +154,7 @@ export default function AdminLayout(props) {
           [classes.appBarShift]: open,
         })}
       >
-        <Toolbar style={{color:"#1DABB8"}}>
+        <Toolbar style={{ color: "#1DABB8" }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -182,12 +166,12 @@ export default function AdminLayout(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap style={{flex:1}}>
+          <Typography variant="h6" noWrap style={{ flex: 1 }}>
             {props.title}
           </Typography>
           <div>
-            <img src="/humanavtar.jpg" height="75em" aria-describedby={id} variant="contained" style={{color:"grey"}} onClick={handleClickAnchor}/>
-            <Button className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }} onClick={()=>{logout()}}>Logout</Button>
+            <img src="/humanavtar.jpg" height="75em" aria-describedby={id} variant="contained" style={{ color: "grey" }} onClick={handleClickAnchor} />
+            <Button className="btn text-white" style={{ borderRadius: "6px", backgroundColor: "#1DABB8" }} onClick={() => { logout() }}>Logout</Button>
           </div>
         </Toolbar>
       </AppBar>
@@ -211,13 +195,16 @@ export default function AdminLayout(props) {
         </div>
         <Divider />
         <List>
-        <ListItem button component={NavLink} to="/recentWebTemplate" className={classes.menuItem} activeClassName={classes.activeListItem}>
-        <ListItemIcon className={classes.menuItemIcon}>
-          <Home />
-        </ListItemIcon>
-        <ListItemText primary="Recent" />
-      </ListItem>
-      <Collapse in={open1} timeout="auto" unmountOnExit>
+
+          {user.type != "ADMIN" &&
+            <ListItem button component={NavLink} to="/recentWebTemplate" className={classes.menuItem} activeClassName={classes.activeListItem}>
+              <ListItemIcon className={classes.menuItemIcon}>
+                <Home />
+              </ListItemIcon>
+              <ListItemText primary="Recent" />
+            </ListItem>
+          }
+          {/* <Collapse in={open1} timeout="auto" unmountOnExit>
         <Divider />
         <List component="div" disablePadding>
           <ListItem >
@@ -233,15 +220,25 @@ export default function AdminLayout(props) {
             <ListItemText primary="Web Page" />
           </ListItem>
         </List>
-      </Collapse>
+      </Collapse> */}
 
-      <ListItem  button component={NavLink} to="/savedWebTemplate" className={classes.menuItem} activeClassName={classes.activeListItem}>
-        <ListItemIcon selected={true} className={classes.menuItemIcon}>
-          <WebIcon />
-        </ListItemIcon>
-        <ListItemText primary="Template" />
-      </ListItem>
-      <Collapse in={open2} timeout="auto" unmountOnExit>
+          <ListItem button component={NavLink} to="/savedWebTemplate" className={classes.menuItem} activeClassName={classes.activeListItem}>
+            <ListItemIcon selected={true} className={classes.menuItemIcon}>
+              <WebIcon />
+            </ListItemIcon>
+            <ListItemText primary="Template" />
+          </ListItem>
+
+
+          {user.type == "ADMIN" &&
+            <ListItem button component={NavLink} to="/savedPages" className={classes.menuItem} activeClassName={classes.activeListItem}>
+              <ListItemIcon selected={true} className={classes.menuItemIcon}>
+                <WebAsset />
+              </ListItemIcon>
+              <ListItemText primary="Default Page" />
+            </ListItem>
+          }
+          {/* <Collapse in={open2} timeout="auto" unmountOnExit>
         <Divider />
         <List component="div" disablePadding>
           <ListItem button component={NavLink} to="/savedWebTemplate" className={classes.menuItem}>
@@ -257,13 +254,14 @@ export default function AdminLayout(props) {
             <ListItemText primary="Web Page" />
           </ListItem>
         </List>
-      </Collapse>
+      </Collapse> */}
+
         </List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <div>
-        {props.children}
+          {props.children}
         </div>
       </main>
       <Popover
@@ -280,7 +278,7 @@ export default function AdminLayout(props) {
           horizontal: 'center',
         }}
       >
-        <Typography className={classes.typography} onClick={()=>{history.push('/updateProfile')}}>User-Profile</Typography>
+        <Typography className={classes.typography} onClick={() => { history.push('/updateProfile') }}>User-Profile</Typography>
       </Popover>
     </div>
   );

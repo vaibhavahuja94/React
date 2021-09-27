@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
-import Navigation from '../Header';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import ReCAPTCHA from "react-google-recaptcha"
-import { Link, Redirect, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import { loginUserError, loginUserSuccess } from '../../redux/actions/LoginActions'
 import { connect } from 'react-redux';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { postLogin, sendEmailOTP, sendVerifyOTP, patchApi } from '../../Services/apiFunction'
-import { CircularProgress, Typography } from '@material-ui/core'
+import { toast } from 'react-toastify';
+import { sendEmailOTP, sendVerifyOTP, patchApi } from '../../services/apiFunction'
+import { CircularProgress } from '@material-ui/core'
 import '../App.css'
 
 class ForgotPassword extends Component {
@@ -48,7 +45,7 @@ class ForgotPassword extends Component {
   }
 
   onPasswordSubmit = async (fields) => {
-    debugger
+    
     const obj = {}
     obj.email = fields.email
     obj.password = fields.password
@@ -173,7 +170,6 @@ class ForgotPassword extends Component {
                             )}
                         />
                         }
-                        <ToastContainer />
                     </div>
                 </div>
             </>

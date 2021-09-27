@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import Navigation from '../Header';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import ReCAPTCHA from "react-google-recaptcha"
 import { Link, Redirect, withRouter } from 'react-router-dom'
 import { loginUserError, loginUserSuccess } from '../../redux/actions/LoginActions'
 import { connect } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { postLogin } from '../../Services/apiFunction'
+import { postLogin } from '../../services/apiFunction'
 import { CircularProgress, Typography } from '@material-ui/core'
 import '../App.css'
 
@@ -132,7 +129,6 @@ class Login extends Component {
                                 </div>
                             )}
                         />
-                        <ToastContainer />
                     </div>
                 </div>
             </>

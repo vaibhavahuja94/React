@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { HeaderWithToken } from '../../Services/headerServices';
+import { HeaderWithToken } from '../../services/headerServices';
 import { toast } from 'react-toastify'
 
 export function getBlogIdSuccess(data) {// Template Redux

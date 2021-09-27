@@ -2,7 +2,7 @@ import Lottie from 'react-lottie'
 
  const LottieIcon = (props) => {
     const defaultOptions = {
-        loop: true,
+        loop: false,
         autoplay: false, 
         animationData: props.animationData,
         rendererSettings: {
@@ -10,18 +10,19 @@ import Lottie from 'react-lottie'
         }
     };
 
-    const defaultOptionsPlay = {
+    const defaultRunningOptions = {
         loop: true,
         autoplay: true, 
         animationData: props.animationData,
         rendererSettings: {
           preserveAspectRatio: 'xMidYMid slice'
         }
-    };
+    }
+
     return (
         <>
         <Lottie
-            options={props.Play?defaultOptionsPlay:defaultOptions}
+            options={props.type=="Running" ? defaultRunningOptions : defaultOptions}
             height={props.height?props.height:30}
             width={props.width?props.width:30}
             style={props.style?props.style:{ margin: "0 0 0 0" }}
