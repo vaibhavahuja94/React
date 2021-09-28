@@ -3,7 +3,7 @@ import { Tooltip, Card, CardContent, makeStyles } from '@material-ui/core';
 import { addSlots, getSlots, mergeTemplate, publishTemplate, updateHide, updateSlots } from '../../services/apiFunction';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import * as actions from '../../redux/actions/GetBlogByIdActions'
+import * as actions from '../../redux/actions/SetTemplateActions'
 import LottieIcon from '../lottieIcons/LottieIco';
 import animationDataCopy from '../lottieIcons/copy.json'
 import editAnimationData from '../lottieIcons/edit.json'
@@ -216,14 +216,14 @@ const TemplateCard = (props) => {
 const mapStateToProps = (state) => {
     return {
         user: state.login.data,
-        published: state.getBlogById.published
+        published: state.template.published
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        adminTemplate: (data) => dispatch(actions.getAdminBlogIdSuccess(data)),
-        template: (data) => dispatch(actions.getBlogIdSuccess(data))
+        adminTemplate: (data) => dispatch(actions.setAdminTemplate(data)),
+        template: (data) => dispatch(actions.setUserTemplate(data))
     }
 }
 

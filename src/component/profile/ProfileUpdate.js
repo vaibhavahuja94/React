@@ -459,8 +459,8 @@ class ProfileUpdate extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.login.data,
-        blog: state.getBlogById.allBlog,
-        published: state.getBlogById && state.getBlogById.published
+        blog: state.template.userTemplate,
+        published: state.template && state.template.published
     }
 }
 

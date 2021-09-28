@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { MDBContainer, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify';
-import * as actions from '../../redux/actions/GetBlogByIdActions'
+import * as actions from '../../redux/actions/SetTemplateActions'
 import '../../asset/Template.css'
 import {Card, CardContent, Tooltip} from '@material-ui/core';
 import '../../asset/Template.css'
@@ -92,14 +92,14 @@ const mapStateToProps = (state) => {
 
     return {
         user: state.login.data,
-        defaultPages: state.getBlogById && state.getBlogById.defaultPages
+        defaultPages: state.template && state.template.defaultPages
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createPage: (data) => dispatch(actions.getBlogIdSuccess(data)),
-        createAdminPage: (data) => dispatch(actions.getAdminBlogIdSuccess(data))
+        createPage: (data) => dispatch(actions.setUserTemplate(data)),
+        createAdminPage: (data) => dispatch(actions.setAdminTemplate(data))
     }
 }
 

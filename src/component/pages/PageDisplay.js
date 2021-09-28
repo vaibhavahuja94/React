@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal'
 import { connect } from 'react-redux';
-import { getBlogIdSuccess, getAdminBlogIdSuccess } from '../../redux/actions/GetBlogByIdActions'
+import { setUserTemplate, setAdminTemplate } from '../../redux/actions/SetTemplateActions'
 import { toast } from 'react-toastify';
 import AdminLayout from '../AdminLayout';
 import { getTemplate, mergePage } from '../../services/apiFunction';
@@ -101,16 +101,16 @@ class RecentPage extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.login && state.login.data,
-        userTemplate : state.getBlogById && state.getBlogById.allBlog,
-        adminTemplate: state.getBlogById && state.getBlogById.allAdminBlog,
-        defaultPages: state.getBlogById && state.getBlogById.defaultPages
+        userTemplate : state.template && state.template.userTemplate,
+        adminTemplate: state.template && state.template.adminTemplate,
+        defaultPages: state.template && state.template.defaultPages
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createPage: (data) => dispatch(getBlogIdSuccess(data)),
-        createAdminPage: (data) => dispatch(getAdminBlogIdSuccess(data))
+        createPage: (data) => dispatch(setUserTemplate(data)),
+        createAdminPage: (data) => dispatch(setAdminTemplate(data))
     }
 }
 

@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { toast, ToastContainer } from 'react-toastify';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
-import * as actions from '../../redux/actions/GetBlogByIdActions'
+import * as actions from '../../redux/actions/SetTemplateActions'
 import { withRouter } from 'react-router-dom'
 
 class PageModal extends Component {
@@ -217,15 +217,14 @@ class PageModal extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.login.data,
-        blog: state.getBlogById.allBlog,
+        blog: state.template.userTemplate,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createDefaultPage: (data) => dispatch(actions.defaultPagesSuccess(data)),
-        fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
-        createPage: (data) => dispatch(actions.getBlogIdSuccess(data))
+        createDefaultPage: (data) => dispatch(actions.setDefaultPages(data)),
+        createPage: (data) => dispatch(actions.setUserTemplate(data))
     }
 }
 

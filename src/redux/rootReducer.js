@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux'
-import getBlogByIdReducer from './reducer/GetBlogByIdReducers'
+import SetTemplateReducers from './reducer/SetTemplateReducers'
 import LoginReducer from './reducer/LoginReducers'
 
 export default combineReducers({
   login:LoginReducer,
-  getBlogById:getBlogByIdReducer,
+  template:SetTemplateReducers,
 })

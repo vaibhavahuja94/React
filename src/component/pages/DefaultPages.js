@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getBlogIdSuccess, getAdminBlogIdSuccess, defaultPagesSuccess } from '../../redux/actions/GetBlogByIdActions'
+import { setUserTemplate, setAdminTemplate, setDefaultPages } from '../../redux/actions/SetTemplateActions'
 import AdminLayout from '../AdminLayout';
 import { getTemplate, mergePage } from '../../services/apiFunction';
 import '../../asset/Template.css'
@@ -66,14 +66,14 @@ class DefaultPage extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.login && state.login.data,
-        pageData: state.getBlogById && state.getBlogById.defaultPages
+        pageData: state.template && state.template.defaultPages
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createDefaultPage: (data) => dispatch(defaultPagesSuccess(data)),
-        createAdminPage: (data) => dispatch(getAdminBlogIdSuccess(data))
+        createDefaultPage: (data) => dispatch(setDefaultPages(data)),
+        createAdminPage: (data) => dispatch(setAdminTemplate(data))
     }
 }
 

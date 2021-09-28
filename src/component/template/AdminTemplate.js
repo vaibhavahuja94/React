@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal'
 import { connect } from 'react-redux';
-import { getAdminBlogIdSuccess, defaultPagesSuccess } from '../../redux/actions/GetBlogByIdActions'
+import { setAdminTemplate, setDefaultPages } from '../../redux/actions/SetTemplateActions'
 import AdminLayout from '../AdminLayout';
 import { getTemplate } from '../../services/apiFunction';
 import AdminTemplateById from './AdminTemplateById';
@@ -92,14 +92,14 @@ class AdminTemplate extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.login && state.login.data,
-        defaultPages: state.getBlogById && state.getBlogById.defaultPages
+        defaultPages: state.template && state.template.defaultPages
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        AdminTemplate: (data) => dispatch(getAdminBlogIdSuccess(data)),
-        defaultPages: (data) => dispatch(defaultPagesSuccess(data))
+        AdminTemplate: (data) => dispatch(setAdminTemplate(data)),
+        defaultPages: (data) => dispatch(setDefaultPages(data))
     }
 }
 

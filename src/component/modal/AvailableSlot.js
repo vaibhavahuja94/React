@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { MDBContainer, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
 import { connect } from 'react-redux'
-import * as actions from '../../redux/actions/GetBlogByIdActions'
+import * as actions from '../../redux/actions/SetTemplateActions'
 import { toast } from 'react-toastify';
 import '../../asset/Template.css'
 import { updateSlots, publishTemplate } from '../../services/apiFunction';
@@ -191,14 +191,13 @@ const mapStateToProps = (state) => {
 
     return {
         user: state.login.data,
-        blog: state.getBlogById.allBlog,
+        blog: state.template.userTemplate,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
-        createBlog: (data) => dispatch(actions.getBlogIdSuccess(data))
+        createBlog: (data) => dispatch(actions.setUserTemplate(data))
     }
 }
 

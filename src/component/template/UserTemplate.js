@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getBlogIdSuccess, defaultPagesSuccess } from '../../redux/actions/GetBlogByIdActions'
+import { setUserTemplate, setDefaultPages } from '../../redux/actions/SetTemplateActions'
 import UserTemplateById from './UserTemplateById';
 import { ToastContainer } from 'react-toastify';
 import AdminLayout from '../AdminLayout';
@@ -52,7 +52,7 @@ class UserTemplate extends Component {
                             <button style={{ float: "right", borderRadius: "6px", backgroundColor: "#1DABB8" }} className="btn text-white" onClick={() => this.setState({ showModal: true })}>Create Template</button>
                         </div>
                         <br />
-                        <UserTemplateById />
+                        <UserTemplateById toggle={this.toggle}/>
                         <ModalPage modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Create Template"} Add={true} data={""} />
                     </AdminLayout>
                     <ToastContainer />
@@ -69,8 +69,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        createBlog: (data) => dispatch(getBlogIdSuccess(data)),
-        defaultPages: (data) => dispatch(defaultPagesSuccess(data))
+        createBlog: (data) => dispatch(setUserTemplate(data)),
+        defaultPages: (data) => dispatch(setDefaultPages(data))
     }
 }
 

@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { toast, ToastContainer } from 'react-toastify';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup'
-import * as actions from '../../redux/actions/GetBlogByIdActions'
+import * as actions from '../../redux/actions/SetTemplateActions'
 import { withRouter } from 'react-router-dom'
 
 class ModalPage extends Component {
@@ -170,16 +170,15 @@ const mapStateToProps = (state) => {
 
     return {
         user: state.login.data,
-        blog: state.getBlogById.allBlog,
-        adminBlog: state.getBlogById.allAdminBlog,
+        blog: state.template.userTemplate,
+        adminBlog: state.template.adminTemplate,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchIdBlog: (data) => dispatch(actions.fetchIdTemplate(data)),
-        createBlog: (data) => dispatch(actions.getBlogIdSuccess(data)),
-        createAdminTemplate: (data) => dispatch(actions.getAdminBlogIdSuccess(data))
+        createBlog: (data) => dispatch(actions.setUserTemplate(data)),
+        createAdminTemplate: (data) => dispatch(actions.setAdminTemplate(data))
     }
 }
 

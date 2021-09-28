@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as actions from '../../redux/actions/GetBlogByIdActions'
+import * as actions from '../../redux/actions/SetTemplateActions'
 import { withRouter } from 'react-router-dom'
 import TemplateCard from '../cardComponent/TemplateCard';
 
@@ -35,13 +35,13 @@ class AdminTemplateById extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.login.data,
-        adminTemplate: state.getBlogById.allAdminBlog,
+        adminTemplate: state.template.adminTemplate,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchIdBlog: (data) => dispatch(actions.getAdminBlogIdSuccess(data)),
+        fetchIdBlog: (data) => dispatch(actions.setAdminTemplate(data)),
     }
 }
 

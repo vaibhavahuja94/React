@@ -3,7 +3,7 @@ import { Tooltip, Card, CardContent, makeStyles } from '@material-ui/core';
 import { getTemplate, updateHidePage } from '../../services/apiFunction';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import * as actions from '../../redux/actions/GetBlogByIdActions'
+import * as actions from '../../redux/actions/SetTemplateActions'
 import '../../asset/Template.css'
 import { useHistory } from 'react-router';
 import loadingAnimationData from '../lottieIcons/LottieIco'
@@ -26,7 +26,7 @@ const PageCard = (props) => {
     const [isPaused, setIsPaused] = useState(false)
     
     const handleView = (event, value) => {
-        window.open(`http://localhost:8080?${value.page_id}`)
+        window.open(`https://w3bizz.com/editor?${value.page_id}`)
     }
 
     const handleHide = async (value) => {
@@ -139,16 +139,16 @@ const PageCard = (props) => {
 const mapStateToProps = (state) => {
     return {
         user: state.login.data,
-        template: state.getBlogById.allBlog,
-        published: state.getBlogById.published,
-        adminTemplate: state.getBlogById.allAdminBlog
+        template: state.template.userTemplate,
+        published: state.template.published,
+        adminTemplate: state.template.adminTemplate
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        template: (data) => dispatch(actions.getBlogIdSuccess(data)),
-        adminTemplate: (data) => dispatch(actions.getAdminBlogIdSuccess(data)),
+        template: (data) => dispatch(actions.setUserTemplate(data)),
+        adminTemplate: (data) => dispatch(actions.setAdminTemplate(data)),
     }
 }
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ModalPage from '../modal/Template'
 import { connect } from 'react-redux';
-import * as actions from '../../redux/actions/GetBlogByIdActions'
+import * as actions from '../../redux/actions/SetTemplateActions'
 import {Tooltip, Card, CardContent} from '@material-ui/core';
 import { withRouter } from 'react-router-dom'
 import '../../asset/Template.css'
@@ -14,14 +14,6 @@ class UserTemplateById extends Component {
         editDetails:'',
         showModal: false,
     }
-
-
-    toggle = () => {
-        this.setState({
-            showModal: !this.state.showModal,
-        });
-    }
-
 
     render() {
         const {template} = this.props
@@ -46,7 +38,7 @@ class UserTemplateById extends Component {
                                 <h6 className="demo-title">Template</h6>                                    
                                 <span className="demo-sub">Choose from our pre-defined templates curated for your website.</span> 
                                 </Card>
-                                <Card className="demo-card" onClick={(e) => this.toggle()}>
+                                <Card className="demo-card" onClick={(e) => this.props.toggle()}>
                                 <WebAsset style={{fontSize:120}} className="demo-icon"/>
                                 <h6 className="demo-title">Create New Template</h6>
                                 <span className="demo-sub">You can create a new blank template in few clicks and build your website from scratch.</span>                                  
@@ -63,7 +55,7 @@ class UserTemplateById extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        template: state.getBlogById.allBlog
+        template: state.template.userTemplate
     }
 }
 

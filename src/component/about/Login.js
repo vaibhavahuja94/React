@@ -29,7 +29,12 @@ class Login extends Component {
                     this.props.loginUsersSuccess(user1)
                     localStorage.setItem('login', JSON.stringify(true))
                     localStorage.setItem('token', (res.data.token))
-                    this.props.history.push('/recentWebTemplate')
+                    if (user1.type == "DEFAULT") {
+                        this.props.history.push('/recentWebTemplate')
+                    }
+                    else{
+                        this.props.history.push('/savedWebTemplate')
+                    }
                 }
                 else {
                     this.setState({ loginError: true })
@@ -56,7 +61,7 @@ class Login extends Component {
             <>
                 <div className="row col-lg-10 mx-auto mt-5">
                     <div className="col-sm-6 col-lg-6" >
-                    <img src="/login.jpeg" className="img-fluid"/>
+                        <img src="/login.jpeg" className="img-fluid" />
                     </div>
                     <div className="col-sm-6 col-lg-6" >
                         <Formik
@@ -90,7 +95,7 @@ class Login extends Component {
                                                 <ErrorMessage name="password" component="div" className="invalid-feedback" />
                                             </div>
                                             <div className="form-group"
-                                            style = {{transform:"scale(0.77)",webkiTransform:"scale(0.77)",transformOrigin:"0 0",webkitTransformOrigin:"0 0"}}
+                                                style={{ transform: "scale(0.77)", webkiTransform: "scale(0.77)", transformOrigin: "0 0", webkitTransformOrigin: "0 0" }}
                                             >
                                                 <ReCAPTCHA name="recap"
                                                     siz="compact"
