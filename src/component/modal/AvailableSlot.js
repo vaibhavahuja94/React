@@ -120,7 +120,6 @@ class AvailableSlot extends Component {
 
 
     render() {
-        console.log(this.state.slotDetails)
         return (
             <>
                 <MDBContainer>
@@ -162,6 +161,9 @@ class AvailableSlot extends Component {
                                         {this.props.user.trial_used == "" &&
                                         <div>7 Days Free Trial Only. Please Book A Slot</div>
                                         }
+                                        {this.props.user.trial_used == "TRUE" &&
+                                        <div>7 Days Free Trial Already Used. Please Book A Slot</div>
+                                        }
                                         {this.props.expiredSlots.length > 0 &&
                                         <div><button className="btn btn-info" onClick={()=>this.props.history.push('/profileUpdate')}>Renew Slots</button></div>
                                         }
@@ -191,15 +193,8 @@ const mapStateToProps = (state) => {
 
     return {
         user: state.login.data,
-        blog: state.template.userTemplate,
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        createBlog: (data) => dispatch(actions.setUserTemplate(data))
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(AvailableSlot))
+export default connect(mapStateToProps, null)(withRouter(AvailableSlot))
 

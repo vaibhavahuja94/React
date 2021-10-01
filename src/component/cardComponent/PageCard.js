@@ -6,8 +6,6 @@ import { connect } from 'react-redux';
 import * as actions from '../../redux/actions/SetTemplateActions'
 import '../../asset/Template.css'
 import { useHistory } from 'react-router';
-import loadingAnimationData from '../lottieIcons/LottieIco'
-import LottieIcon from '../lottieIcons/LottieIco';
 import PageModal from '../modal/Page'
 import {
     Edit as EditIcon,
@@ -16,7 +14,7 @@ import {
     VisibilityOff as VisibilityOffIcon,
     SettingsApplications as SettingsApplicationsIcon,
 } from '@material-ui/icons';
-
+import '../../asset/PageCard.css'
 
 const PageCard = (props) => {
     const history = useHistory()
@@ -87,13 +85,8 @@ const PageCard = (props) => {
     });
 
 
-    console.log(props.page)
-    return loader ? 
-    (
-        <>
-        <LottieIcon animationData={loadingAnimationData} type="Running"  height={50} width={50}/>
-        </>
-    ):(
+    console.log(loader)
+    return (
         <>
             <div className="container-fluid">
                 <div className="row">
@@ -107,7 +100,7 @@ const PageCard = (props) => {
                                         <h4 style={{ display: "inline" }}>{value.page_title}</h4>
                                         <br />
                                         <br />
-                                        <span style={{ display: "flex" }}>
+                                        <span style={{ display: "flex" }} className="mouseCursor">
                                             {props.Preview == true &&
                                                 <Tooltip title="Preview of Page"><SlideshowIcon onClick={(e) => { preView(e, value.preview_link) }} /></Tooltip>
                                             }
@@ -131,7 +124,7 @@ const PageCard = (props) => {
                     )}
                 </div>
             </div>
-            <PageModal modal={showModal} loader={toggleLoader} toggle={toggle} title={"Edit Page"} Add={false} editData={editDetails} type={props.type}/>
+            <PageModal modal={showModal} loader={props.loader} toggle={toggle} title={"Edit Page"} Add={false} editData={editDetails} type={props.type}/>
         </>
     )
 }

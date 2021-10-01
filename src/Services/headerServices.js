@@ -9,7 +9,7 @@ export const HeaderWithToken=()=>{
     }
 }
 
-export const HeaderForBlog=()=>{
+export const HeaderForTemplate=()=>{
     const token = localStorage.getItem('token')
 
     return{

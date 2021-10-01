@@ -8,7 +8,6 @@ import Modal from 'react-modal'
 import { connect } from 'react-redux'
 import { ToastContainer, toast } from 'react-toastify';
 import { getSlots, patchApi, updateSlots } from '../../services/apiFunction'
-import 'react-toastify/dist/ReactToastify.css';
 import { loginUserSuccess } from '../../redux/actions/LoginActions'
 import AdminLayout from '../AdminLayout';
 import Accordion from '@material-ui/core/Accordion';
@@ -66,7 +65,7 @@ class ProfileUpdate extends Component {
         if (this.props.published && this.props.published.length > 0) {
             let slotPublished = this.props.published.find(val => val.slot_id == value.slot_id)
             if (slotPublished) {
-                let tempValue = this.props.blog.find(val => val.id == slotPublished.template_id)
+                let tempValue = this.props.userTemplate.find(val => val.id == slotPublished.template_id)
                 this.props.history.push({ pathname: 'webTemplate', state: { template: tempValue, type: "USER" } })
             }
             else {
@@ -188,7 +187,6 @@ class ProfileUpdate extends Component {
                 obj.email = fields.email
                 obj.address = fields.address
                 obj.pincode = fields.pincode
-                obj.publish_name = fields.publish_name
                 this.props.loginUsersSuccess(obj)
             })
     }
@@ -238,7 +236,6 @@ class ProfileUpdate extends Component {
                                                     email: data.email,
                                                     address: data.address,
                                                     pincode: data.pincode,
-                                                    publish_name: data.publish_name
                                                 }}
                                                 validationSchema={Yup.object().shape({
                                                     fname: Yup.string()
@@ -310,10 +307,6 @@ class ProfileUpdate extends Component {
                                                                 <div className="form-group">
                                                                     <label htmlFor="pincode">PinCode</label>
                                                                     <Field name="pincode" type="text" className={'form-control' + (errors.pincode && touched.pincode ? ' is-invalid' : '')} />
-                                                                </div>
-                                                                <div className="form-group">
-                                                                    <label htmlFor="publishname">Publish Name</label>
-                                                                    <Field name="publishname" type="text" className={'form-control' + (errors.publishname && touched.publishname ? ' is-invalid' : '')} />
                                                                 </div>
                                                                 <div className="form-group">
                                                                     <button type="submit" className="btn btn-primary mr-2">Update</button>
@@ -459,7 +452,7 @@ class ProfileUpdate extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.login.data,
-        blog: state.template.userTemplate,
+        userTemplate: state.template.userTemplate,
         published: state.template && state.template.published
     }
 }

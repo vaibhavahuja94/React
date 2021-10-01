@@ -13,7 +13,7 @@ import '../../asset/Template.css'
 import { VisibilityOff as VisibilityOffIcon, Visibility as VisibilityIcon } from '@material-ui/icons';
 import { useHistory } from 'react-router';
 import AvailableSlot from '../modal/AvailableSlot';
-import ModalPage from '../modal/Template'
+import TemplateModal from '../modal/Template'
 import moment from 'moment';
 
 const TemplateCard = (props) => {
@@ -120,13 +120,16 @@ const TemplateCard = (props) => {
         e.preventDefault()
     }
 
-    const handleMergeTemplate = async (event, value) => {
+    const handleMergeTemplate = async (event, value, usenow) => {
         let obj = {}
         obj.username = props.user.username
         obj.id = value.id
         const response = await mergeTemplate(obj)
         if (response.STATUS == "SUCCESS") {
             toast.success(response.MESSAGE)
+            if(usenow == true){
+                history.push('/recentWebTemplate')
+            }
         } else {
             toast.error(response.MESSAGE)
         }
@@ -163,7 +166,7 @@ const TemplateCard = (props) => {
                                                     }
                                                     {props.UseNow == true &&
                                                         <Tooltip title="Use Now">
-                                                            <span onClick={(e) => { handleMergeTemplate(e, value) }}>
+                                                            <span onClick={(e) => { handleMergeTemplate(e, value, true) }}>
                                                                 <button className="btn btn-info">Use Now</button>
                                                             </span>
                                                         </Tooltip>
@@ -189,7 +192,7 @@ const TemplateCard = (props) => {
                                                     }
                                                     {props.CopyTemplate == true &&
                                                         <Tooltip title="Copy Template">
-                                                            <span style={{ color: "#1DABB8" }} onClick={(e) => { handleMergeTemplate(e, value) }}>
+                                                            <span style={{ color: "#1DABB8" }} onClick={(e) => { handleMergeTemplate(e, value, false) }}>
                                                                 <LottieIcon animationData={animationDataCopy} pause={isPaused} stop={isStopped} />
                                                             </span>
                                                         </Tooltip>
@@ -203,12 +206,11 @@ const TemplateCard = (props) => {
                             )}
                     </div>
                 </div>
-                {slotDetails.length > 0 &&
+                
                     <AvailableSlot modal={showModal} title={"Available Slots"} toggle={toggle} slotDetails={slotDetails} templateID={templateID} expiredSlots={expiredSlots} />
-                }
-                {editShowModal &&
-                    <ModalPage modal={editShowModal} loader={toggleLoader} toggle={editToggle} title={editDetails.length > 0 ? "Edit Template" : "Create Template"} add={editDetails.length > 0 ? false : true} data={editDetails} />
-                }
+                
+                        <TemplateModal modal={editShowModal} loader={toggleLoader} toggle={editToggle} title={"Edit Template"} Add={false} data={editDetails} />
+                
             </>
         )
 }

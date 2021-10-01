@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ModalPage from '../modal/Template'
+import TemplateModal from '../modal/Template'
 import { connect } from 'react-redux';
 import * as actions from '../../redux/actions/SetTemplateActions'
 import {Tooltip, Card, CardContent} from '@material-ui/core';

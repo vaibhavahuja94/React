@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { loginUserSuccess } from '../../redux/actions/LoginActions'
+import {connect} from 'react-redux'
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import {
   CardElement,
   Elements,
@@ -9,7 +10,7 @@ import {
   useStripe
 } from "@stripe/react-stripe-js";
 import "./styles.css";
-import { addSlots, addTransaction, payMoney, updateSlots } from "../../services/apiFunction";
+import { addSlots, addTransaction, patchApi, payMoney, updateSlots } from "../../services/apiFunction";
 import moment from "moment";
 
 const CARD_OPTIONS = {
@@ -170,6 +171,16 @@ const CheckoutForm = (props) => {
           obj.expiry_date = ""
           const response = await addSlots(obj)
         }
+        let objUser = {}
+            objUser.id = props.username
+            objUser.trial_used = "TRUE"
+            await patchApi(objUser.id, objUser)
+            .then((val)=>{
+                let obj = {}
+                obj = this.props.user
+                obj.approved = "PAID"
+                this.props.loginSuccess(obj)
+            })
         toast.success("Slot Added Succesfully")
       }
       window.location.reload()
@@ -242,10 +253,16 @@ const StripeApp = (props) => {
   return (
     <div className="AppWrapper">
       <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>
-        <CheckoutForm planValue={props.planValue} username={props.username} slotNum={props.slotNumber} updateData={props.updateData}/>
+        <CheckoutForm planValue={props.planValue} loginSuccess={props.loginUserSuccess} username={props.username} slotNum={props.slotNumber} updateData={props.updateData}/>
       </Elements>
     </div>
   );
 };
 
-export default StripeApp;
+
+const mapDispatchToProps = dispatch => {
+  return {
+      loginUsersSuccess: (data) => dispatch(loginUserSuccess(data))
+  }
+}
+export default connect(null, mapDispatchToProps)(StripeApp);

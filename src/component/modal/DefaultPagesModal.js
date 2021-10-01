@@ -48,7 +48,7 @@ class DefaultPageModal extends Component {
         const { defaultPages } = this.props
         return (
             <>
-                <MDBContainer>
+                <MDBContainer style={{overflowX: "scroll", overflow: "auto"}}>
                     <MDBModal size="lg" centered isOpen={this.props.modal} toggle={this.props.toggle}>
                         <MDBModalHeader toggle={this.props.toggle}>{this.props.title}</MDBModalHeader>
                         <MDBModalBody>

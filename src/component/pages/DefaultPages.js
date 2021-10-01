@@ -4,7 +4,7 @@ import { setUserTemplate, setAdminTemplate, setDefaultPages } from '../../redux/
 import AdminLayout from '../AdminLayout';
 import { getTemplate, mergePage } from '../../services/apiFunction';
 import '../../asset/Template.css'
-import loadingAnimationData from '../lottieIcons/LottieIco'
+import loadingAnimationData from '../lottieIcons/loadingV2.json'
 import LottieIcon from '../lottieIcons/LottieIco';
 import PageModal from '../modal/Page'
 import PageCard from '../cardComponent/PageCard';
@@ -52,10 +52,10 @@ class DefaultPage extends Component {
                         </div>
                         <br />
                         {pageData && pageData.length > 0 &&//Template Type
-                            <PageCard page={pageData} EditCode={true} EditPage={true} ShowHide={true} type={"DEFAULT"}/>
+                            <PageCard page={pageData} EditCode={true} EditPage={true} ShowHide={true} type={"DEFAULT"} loader={this.toggleLoader}/>
                         }
                         {this.state.showModal &&
-                            <PageModal modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Add Page"} add={true} editData={""} type={"DEFAULT"} />
+                            <PageModal modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Add Page"} Add={true} editData={""} type={"DEFAULT"} />
                         }
                     </AdminLayout>
                 </>

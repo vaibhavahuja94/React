@@ -8,7 +8,7 @@ import * as Yup from 'yup'
 import * as actions from '../../redux/actions/SetTemplateActions'
 import { withRouter } from 'react-router-dom'
 
-class ModalPage extends Component {
+class TemplateModal extends Component {
     state = {
         modal: false,
         file: '',
@@ -35,36 +35,36 @@ class ModalPage extends Component {
         fields.tags = "new tags"
         fields.type = this.props.type == "DEFAULT" ? "DEFAULT" : "USER"
         const resp = await addTemplate(fields)
-        if (resp) {
+        if (resp.STATUS == "SUCCESS") {
             toast.success("Template Created Successfully")
             let obj = {}
             obj.title = "Home Page"
             obj.publish_name = "New Template"
             obj.template_id = resp.TEMPLATE_ID
             obj.is_homepage = "TRUE"
-            obj.code = "new title"
+            fields.type = "USER"
+            obj.code = ""
             await addPage(obj)
             const tempData1 = await getTemplate(this.props.user.username)
             if (tempData1.STATUS == "SUCCESS") {
                 this.setState({ file: '', fileSrc: '' })
-                this.props.loader()
                 this.props.toggle()
+                this.props.loader()
                 if (this.props.type == "DEFAULT") {
                     this.props.createAdminTemplate(tempData1.DEFAULT_TEMPLATE)
                 }
                 else {
-                    this.props.createBlog(tempData1.USER_TEMPLATE)
+                    this.props.createUserTemplate(tempData1.USER_TEMPLATE)
                 }
             }
         }
         else {
             this.props.loader()
-            toast.success(resp.data.message)
+            toast.error(resp.data.message)
         }
     }
 
     onEdit = async (fields) => {
-        this.props.loader()
         if (this.state.file) {
             const response = await uploadImage(this.state.file)
             fields.image = response.data.secure_url
@@ -75,9 +75,9 @@ class ModalPage extends Component {
         if (resp) {
             toast.success("Template Updated Successfully")
             this.setState({ loader: false })
-            let blog = this.props.type == "DEFAULT" ? this.props.adminBlog : this.props.blog
+            let template = this.props.user.type == "ADMIN" ? this.props.adminTemplate : this.props.userTemplate
             var list = []
-            blog.forEach((el) => {
+            template.forEach((el) => {
                 if (el.id == fields.id) {
                     el.title = fields.title
                     list.push(el)
@@ -87,19 +87,16 @@ class ModalPage extends Component {
                 }
             })
             this.props.toggle()
-            this.props.loader()
             this.setState({ file: '', fileSrc: '' })
-            if (this.props.type == "DEFAULT") {
+            if (this.props.user.type == "ADMIN") {
                 this.props.createAdminTemplate(list)
-
             }
             else {
-                this.props.createBlog(list)
+                this.props.createUserTemplate(list)
             }
         }
         else {
-            this.props.loader()
-            toast.success(resp.data.message)
+            toast.error(resp.data.message)
         }
     }
 
@@ -126,7 +123,6 @@ class ModalPage extends Component {
                                     .required('Template Title is required'),
                             })}
                             onSubmit={async (fields, { resetForm, initialValues }) => {
-                                resetForm(initialValues)
                                 if (this.props.Add == true) {
                                     this.onAdd(fields)
                                 } else {
@@ -154,7 +150,7 @@ class ModalPage extends Component {
                                     <div className="form-group">
                                         <button type="submit" className="btn btn-primary">{this.props.title}</button>
                                         &nbsp;
-                                        <button type="reset" onClick={() => this.fileInput.value = ""} className="btn btn-secondary">Reset</button>
+                                        <button type="reset" onClick={() => this.setState({file:""})} className="btn btn-secondary">Reset</button>
                                     </div>
                                 </Form>
                             )}
@@ -170,16 +166,16 @@ const mapStateToProps = (state) => {
 
     return {
         user: state.login.data,
-        blog: state.template.userTemplate,
-        adminBlog: state.template.adminTemplate,
+        userTemplate: state.template.userTemplate,
+        adminTemplate: state.template.adminTemplate,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createBlog: (data) => dispatch(actions.setUserTemplate(data)),
+        createUserTemplate: (data) => dispatch(actions.setUserTemplate(data)),
         createAdminTemplate: (data) => dispatch(actions.setAdminTemplate(data))
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ModalPage));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(TemplateModal));

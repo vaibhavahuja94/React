@@ -5,11 +5,8 @@ import { withRouter } from 'react-router-dom'
 import TemplateCard from '../cardComponent/TemplateCard';
 
 class AdminTemplateById extends Component {
-    state = {
-        loader: false
-    }
-
     render() {
+        debugger
         const { user, adminTemplate } = this.props
         return (
             <>
@@ -18,10 +15,10 @@ class AdminTemplateById extends Component {
                         {adminTemplate.length > 0 &&
                             <>
                                 {user.type == "ADMIN" &&
-                                    <TemplateCard ViewPages={true} EditTemplate={true} ShowHide={true} userTemplate={adminTemplate} />
+                                    <TemplateCard toggle={this.props.loader} ViewPages={true} EditTemplate={true} ShowHide={true} userTemplate={adminTemplate} />
                                 }
                                 {user.type == "DEFAULT" &&
-                                    <TemplateCard ViewPages={true} UseNow={true} userTemplate={adminTemplate}/>
+                                    <TemplateCard toggle={this.props.loader} ViewPages={true} UseNow={true} userTemplate={adminTemplate}/>
                                 }
                             </>
                         }
@@ -39,10 +36,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        fetchIdBlog: (data) => dispatch(actions.setAdminTemplate(data)),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(AdminTemplateById));
+export default connect(mapStateToProps, null)(withRouter(AdminTemplateById));

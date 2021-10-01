@@ -5,7 +5,7 @@ import UserTemplateById from './UserTemplateById';
 import { ToastContainer } from 'react-toastify';
 import AdminLayout from '../AdminLayout';
 import { getTemplate } from '../../services/apiFunction';
-import ModalPage from '../modal/Template'
+import TemplateModal from '../modal/Template'
 import LottieIcon from '../lottieIcons/LottieIco';
 import loadingAnimationData from '../lottieIcons/loadingV2.json'
 
@@ -20,7 +20,7 @@ class UserTemplate extends Component {
     async componentDidMount() {
         const response = await getTemplate(this.props.user.username)
         if (response.STATUS == "SUCCESS") {
-            this.props.createBlog(response.USER_TEMPLATE)
+            this.props.createUserTemplate(response.USER_TEMPLATE)
             this.props.defaultPages(response.DEFAULT_PAGES)
             this.setState({ loader: false })
         }
@@ -53,7 +53,7 @@ class UserTemplate extends Component {
                         </div>
                         <br />
                         <UserTemplateById toggle={this.toggle}/>
-                        <ModalPage modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Create Template"} Add={true} data={""} />
+                        <TemplateModal modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Create Template"} Add={true} data={""} />
                     </AdminLayout>
                     <ToastContainer />
                 </>
@@ -69,7 +69,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        createBlog: (data) => dispatch(setUserTemplate(data)),
+        createUserTemplate: (data) => dispatch(setUserTemplate(data)),
         defaultPages: (data) => dispatch(setDefaultPages(data))
     }
 }

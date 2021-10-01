@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import Modal from 'react-modal'
 import { connect } from 'react-redux';
 import { setUserTemplate, setAdminTemplate } from '../../redux/actions/SetTemplateActions'
-import { toast } from 'react-toastify';
 import AdminLayout from '../AdminLayout';
-import { getTemplate, mergePage } from '../../services/apiFunction';
-import {Card, CardContent, Tooltip} from '@material-ui/core';
+import {Tooltip} from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import '../../asset/Template.css'
-import loadingAnimationData from '../lottieIcons/LottieIco'
+import loadingAnimationData from '../lottieIcons/loadingV2.json'
 import LottieIcon from '../lottieIcons/LottieIco';
 import PageModal from '../modal/Page'
 import PageCard from '../cardComponent/PageCard';
@@ -48,6 +45,7 @@ class RecentPage extends Component {
     }
 
     render() {
+        debugger
         const { user, adminTemplate, userTemplate } = this.props
         const { template, type } = this.props.location.state;
         let templateData;
@@ -68,8 +66,15 @@ class RecentPage extends Component {
             }
         }
         return this.state.loader ? (
-            <LottieIcon animationData={loadingAnimationData} type="Running" height={50} width={50}/>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop:'20%' }}>
+                    <LottieIcon animationData={loadingAnimationData} type="Running" height={50} width={50}/>
+            </div>
         ) :
+        this.state.showPageModal ? (    
+            <>
+            <DefaultPagesModal modal={this.state.showPageModal} loader={this.toggleLoader} toggle={this.togglePageModal} title={"Default Pages"} templateData={template} />
+            </>
+        ):
             (
                 <>
                     <AdminLayout title={templateData.title}>
@@ -83,16 +88,15 @@ class RecentPage extends Component {
                         <br />
                         {templateData && type == "DEFAULT" ?//Template Type
                             user.type == "ADMIN" ?//User Type
-                            <PageCard page={templateData.pageData} Preview={true} EditCode={true} EditPage={true} ShowHide={true} />:
-                            <PageCard page={templateData.pageData}  Preview={true} ShowHide={true} />
+                            <PageCard page={templateData.pageData} Preview={true} EditCode={true} EditPage={true} ShowHide={true} loader={this.toggleLoader}/>:
+                            <PageCard page={templateData.pageData}  Preview={true} ShowHide={true} loader={this.toggleLoader}/>
                             :
-                            <PageCard page={templateData.pageData} EditCode={true} EditPage={true} ShowHide={true} />
+                            <PageCard page={templateData.pageData} EditCode={true} EditPage={true} ShowHide={true} loader={this.toggleLoader}/>
                         }
                         {this.state.showModal &&
-                            <PageModal modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Add Page"} Add={true} editData={""} />
+                            <PageModal modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Add Page"} Add={true} editData={""} template_id={templateData.id}/>
                         }
                         </AdminLayout>
-                        <DefaultPagesModal modal={this.state.showPageModal} loader={this.toggleLoader} toggle={this.togglePageModal} title={"Default Pages"} templateData={template} />
                 </>
             );
     }

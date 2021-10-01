@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { MDBContainer, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter } from 'mdbreact';
 import { connect } from 'react-redux'
 import { toast } from 'react-toastify';
-import * as actions from '../../redux/actions/SetTemplateActions'
+import { loginUserSuccess } from '../../redux/actions/LoginActions'
 import {Card, CardContent} from '@material-ui/core';
 import '../../asset/Template.css'
 import StripeApp from '../payment/StripeApp';
-import { addSlots } from '../../services/apiFunction';
+import { addSlots, patchApi } from '../../services/apiFunction';
 import moment from 'moment';
 
 class SlotModal extends Component {
@@ -31,7 +31,7 @@ class SlotModal extends Component {
     AddPay = async (e) => {
         if (this.state.radioValue || this.state.slotNumber) {
             e.preventDefault()
-            let planValue = this.state.radioValue ? this.state.radioValue : ((this.state.slotNumber) * 699)
+            let planValue = this.state.radioValue ? this.state.radioValue : ((this.state.slotsNumber) * 699)
             this.setState({ planValue: planValue })
             if (planValue == 2399) {
                 this.setState({ slotsNumber: 3 })
@@ -57,6 +57,16 @@ class SlotModal extends Component {
         obj.expiry_date = moment(moment(obj.purchase_date).add(7,'d')).format('YYYY-MM-DD')
         const response = await addSlots(obj)
         if (response.STATUS == "SUCCESS") {
+            let objUser = {}
+            objUser.id = this.props.user.username
+            objUser.trial_used = "TRUE"
+            await patchApi(objUser.id, objUser)
+            .then((val)=>{
+                let obj = {}
+                obj = this.props.user
+                obj.trial_used = "TRUE"
+                this.props.loginUsersSuccess(obj)
+            })
             toast.success("Slot Created Successfully")
             this.props.toggle()
         }
@@ -71,9 +81,9 @@ class SlotModal extends Component {
             <>
                 <MDBContainer>
                     <MDBModal centered isOpen={this.props.modal} toggle={this.props.toggle}>
-                        <MDBModalHeader toggle={this.props.toggle}>{this.props.title}</MDBModalHeader>
+                        <MDBModalHeader toggle={this.props.toggle}>{this.props.user.approved == ""? "Purchase Slot":"Buy More Slots"}</MDBModalHeader>
                         <MDBModalBody>
-                            {this.props.slotDetails.length==0 && this.props.expiredSlots.length==0 &&
+                            {((this.props.user.approved == "")) && 
                                 <div className="row">
                                     <div className="col-sm-6">
                                         <label>
@@ -106,7 +116,7 @@ class SlotModal extends Component {
                                 </div>
                             }
                             {
-                                ((this.props.slotDetails.length > 0)||(this.props.expiredSlots.length > 0)) &&
+                                this.props.user.approved == "PAID" &&
                                 <>
                                     <br />
                                     <div style={{ display: "flex" }}>
@@ -134,7 +144,7 @@ class SlotModal extends Component {
                         </MDBModalBody>
                         <MDBModalFooter>
                             <span style={{ float: "right" }}>
-                                {this.props.slotDetails.length == 0 &&
+                                {this.props.user.approved == "" || this.props.user.trial_used == "" &&
                                     <button className="btn btn-info" onClick={(e) => { this.AddTrialSlot(e) }}>7 Days Free Trial</button>
                                 }
                                 &nbsp;
@@ -146,7 +156,7 @@ class SlotModal extends Component {
                     <MDBModal centered isOpen={this.state.stripeModal} toggle={this.toggle}>
                         <MDBModalHeader toggle={this.toggle}>Pay Order</MDBModalHeader>
                         <MDBModalBody>
-                            <StripeApp planValue={this.state.planValue} slotNumber={this.state.slotNumber} username={this.props.user.username} toast={toast} />
+                            <StripeApp planValue={this.state.planValue} slotNumber={this.state.slotsNumber} username={this.props.user.username} toast={toast} />
                         </MDBModalBody>
                     </MDBModal>
 
@@ -160,13 +170,12 @@ const mapStateToProps = (state) => {
 
     return {
         user: state.login.data,
-        blog: state.template.userTemplate,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        createBlog: (data) => dispatch(actions.setUserTemplate(data))
+        loginUsersSuccess: (data) => dispatch(loginUserSuccess(data))
     }
 }
 

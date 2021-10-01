@@ -7,7 +7,7 @@ import { getTemplate } from '../../services/apiFunction';
 import AdminTemplateById from './AdminTemplateById';
 import LottieIcon from '../lottieIcons/LottieIco';
 import loadingAnimationData from '../lottieIcons/loadingV2.json'
-import ModalPage from '../modal/Template'
+import TemplateModal from '../modal/Template'
 import PageModal from '../modal/Page'
 
 class AdminTemplate extends Component {
@@ -80,8 +80,8 @@ class AdminTemplate extends Component {
                             }
                         </div>
                         <br />
-                        <AdminTemplateById />
-                        <ModalPage modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Create Template"} add={true} data={""} type={"DEFAULT"} />
+                        <AdminTemplateById loader={this.toggleLoader}/>
+                        <TemplateModal modal={this.state.showModal} loader={this.toggleLoader} toggle={this.toggle} title={"Create Template"} Add={true} data={""} type={"DEFAULT"} />
                         <PageModal modal={this.state.showPageModal} loader={this.toggleLoader} toggle={this.togglePage} title={"Add Default Page"} add={true} editData={""} type={"DEFAULT"} />
                     </AdminLayout>
                 </>
