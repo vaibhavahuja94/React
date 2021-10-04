@@ -110,7 +110,6 @@ class TemplateModal extends Component {
     }
 
     render() {
-        console.log(this.props.data)
         return (
             <MDBContainer>
                 <MDBModal centered isOpen={this.props.modal} toggle={this.props.toggle}>

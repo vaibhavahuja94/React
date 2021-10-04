@@ -85,7 +85,6 @@ class SlotModal extends Component {
     }
 
     render() {
-        console.log(this.props.slotDetails)
         return (
             <>
                 <MDBContainer>

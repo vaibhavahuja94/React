@@ -122,7 +122,6 @@ const CheckoutForm = (props) => {
     obj.amount = props.planValue;
     obj.currency = "INR";
     const payload = await payMoney(obj);
-    console.log(payload);
     if (payload.STATUS == "SUCCESS") {
       let objPayData = {};
       toast.success("Payment Successful");
@@ -130,7 +129,6 @@ const CheckoutForm = (props) => {
       objPayData.amount = props.planValue;
       objPayData.tdata = payload.SECRET;
       let payRun = await addTransaction(objPayData);
-      console.log(payRun);
       if (props.updateData && props.updateData.length > 0) {
         for (let i = 0; i < props.updateData.length; i++) {
           let obj = {};
@@ -232,7 +230,6 @@ const ELEMENTS_OPTIONS = {
 const stripePromise = loadStripe("pk_test_6pRNASCoBOKtIshFeQd4XMUh");
 
 const StripeApp = (props) => {
-  console.log(props);
   return (
     <div className="AppWrapper">
       <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>

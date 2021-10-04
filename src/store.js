@@ -14,7 +14,7 @@ export default function configureStore(initialState = {}, history) {
     const store = createStore(
         rootReducer,
         persistedState,
-        composeEnhancer(applyMiddleware(thunk, logger))
+        composeEnhancer(applyMiddleware(thunk))
     )
     
     store.subscribe(

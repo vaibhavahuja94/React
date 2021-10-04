@@ -135,7 +135,6 @@ class PageModal extends Component {
   };
 
   render() {
-    console.log(this.props.editData);
     return (
       <MDBContainer>
         <MDBModal centered isOpen={this.props.modal} toggle={this.toggle}>

@@ -93,7 +93,6 @@ const PageCard = (props) => {
     });
 
 
-    console.log(loader)
     return (
         <>
             <div className="container-fluid">

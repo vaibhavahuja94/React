@@ -40,7 +40,6 @@ class AvailableSlot extends Component {
   };
 
   AddSlotsModal = async (e, value) => {
-    console.log(this.state.slotDetails);
     e.preventDefault();
     this.props.toggle();
     this.setState({ showModalPayDetails: true });
@@ -86,7 +85,6 @@ class AvailableSlot extends Component {
           ).format("YYYY-MM-DD");
           slotUpdate.published = "TRUE";
           const responseUpdate = await updateSlots(slotUpdate);
-          console.log(responseUpdate);
         }
         window.location.reload();
       } else {
