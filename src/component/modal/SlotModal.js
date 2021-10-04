@@ -29,23 +29,31 @@ class SlotModal extends Component {
     }
 
     AddPay = async (e) => {
-        if (this.state.radioValue || this.state.slotNumber) {
-            e.preventDefault()
-            let planValue = this.state.radioValue ? this.state.radioValue : ((this.state.slotsNumber) * 699)
+        e.preventDefault()
+        if (this.props.user.approved == '' && this.state.radioValue!='') {
+            let planValue = this.state.radioValue
             this.setState({ planValue: planValue })
             if (planValue == 2399) {
-                this.setState({ slotsNumber: 3 })
+                this.setState({ slotNumber: 3 })
             }
+            this.setState({ stripeModal: true })
+            this.props.toggle()
+            this.setState({ payModalError: "" })
+        }else if(this.state.slotNumber && this.props.user.approved != ""){
+            let planValue = ((this.state.slotNumber) * 699)
+            this.setState({ planValue: planValue })
             this.setState({ stripeModal: true })
             this.props.toggle()
             this.setState({ payModalError: "" })
         }
         else {
+            toast.error("Please Select Some Plan To Buy")
             this.setState({ payModalError: "Please Select Some Plan" })
         }
     }
 
     AddTrialSlot = async (e) => {
+        
         e.preventDefault()
         this.props.loader()
         let obj = {}
@@ -59,8 +67,9 @@ class SlotModal extends Component {
         if (response.STATUS == "SUCCESS") {
             let objUser = {}
             objUser.id = this.props.user.username
+            objUser.email = this.props.user.email
             objUser.trial_used = "TRUE"
-            await patchApi(objUser.id, objUser)
+            await patchApi(objUser, objUser.id)
             .then((val)=>{
                 let obj = {}
                 obj = this.props.user
@@ -144,7 +153,7 @@ class SlotModal extends Component {
                         </MDBModalBody>
                         <MDBModalFooter>
                             <span style={{ float: "right" }}>
-                                {this.props.user.approved == "" || this.props.user.trial_used == "" &&
+                                {this.props.user.trial_used == "" && this.props.user.approved == "" &&
                                     <button className="btn btn-info" onClick={(e) => { this.AddTrialSlot(e) }}>7 Days Free Trial</button>
                                 }
                                 &nbsp;
@@ -156,7 +165,7 @@ class SlotModal extends Component {
                     <MDBModal centered isOpen={this.state.stripeModal} toggle={this.toggle}>
                         <MDBModalHeader toggle={this.toggle}>Pay Order</MDBModalHeader>
                         <MDBModalBody>
-                            <StripeApp planValue={this.state.planValue} slotNumber={this.state.slotsNumber} username={this.props.user.username} toast={toast} />
+                            <StripeApp planValue={this.state.planValue} slotNumber={this.state.slotNumber} username={this.props.user.username} toast={toast} />
                         </MDBModalBody>
                     </MDBModal>
 

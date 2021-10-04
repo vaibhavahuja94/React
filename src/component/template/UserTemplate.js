@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { setUserTemplate, setDefaultPages } from '../../redux/actions/SetTemplateActions'
+import { setUserTemplate, setDefaultPages, publishedTemplates } from '../../redux/actions/SetTemplateActions'
 import UserTemplateById from './UserTemplateById';
 import { ToastContainer } from 'react-toastify';
 import AdminLayout from '../AdminLayout';
@@ -22,6 +22,7 @@ class UserTemplate extends Component {
         if (response.STATUS == "SUCCESS") {
             this.props.createUserTemplate(response.USER_TEMPLATE)
             this.props.defaultPages(response.DEFAULT_PAGES)
+            this.props.publishedTemplates(response.PUBLISHED)
             this.setState({ loader: false })
         }
 
@@ -70,7 +71,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
     return {
         createUserTemplate: (data) => dispatch(setUserTemplate(data)),
-        defaultPages: (data) => dispatch(setDefaultPages(data))
+        defaultPages: (data) => dispatch(setDefaultPages(data)),
+        publishedTemplates: (data) => dispatch(publishedTemplates(data))
     }
 }
 

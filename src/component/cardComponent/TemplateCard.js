@@ -121,6 +121,7 @@ const TemplateCard = (props) => {
     }
 
     const handleMergeTemplate = async (event, value, usenow) => {
+        setLoader(true)
         let obj = {}
         obj.username = props.user.username
         obj.id = value.id
@@ -129,10 +130,13 @@ const TemplateCard = (props) => {
             toast.success(response.MESSAGE)
             if(usenow == true){
                 history.push('/recentWebTemplate')
+            }else{
+            window.location.reload()
             }
         } else {
             toast.error(response.MESSAGE)
         }
+        setLoader(false)
         event.preventDefault()
     }
 
@@ -209,7 +213,7 @@ const TemplateCard = (props) => {
                 
                     <AvailableSlot modal={showModal} title={"Available Slots"} toggle={toggle} slotDetails={slotDetails} templateID={templateID} expiredSlots={expiredSlots} />
                 
-                        <TemplateModal modal={editShowModal} loader={toggleLoader} toggle={editToggle} title={"Edit Template"} Add={false} data={editDetails} />
+                    <TemplateModal modal={editShowModal} loader={toggleLoader} toggle={editToggle} title={"Edit Template"} Add={false} data={editDetails} />
                 
             </>
         )

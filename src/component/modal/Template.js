@@ -33,6 +33,7 @@ class TemplateModal extends Component {
         fields.username = this.props.user.username
         fields.category = "new category"
         fields.tags = "new tags"
+        fields.is_hidden = "FALSE"
         fields.type = this.props.type == "DEFAULT" ? "DEFAULT" : "USER"
         const resp = await addTemplate(fields)
         if (resp.STATUS == "SUCCESS") {
@@ -42,7 +43,8 @@ class TemplateModal extends Component {
             obj.publish_name = "New Template"
             obj.template_id = resp.TEMPLATE_ID
             obj.is_homepage = "TRUE"
-            fields.type = "USER"
+            obj.is_hidden = "FALSE"
+            obj.type = "USER"
             obj.code = ""
             await addPage(obj)
             const tempData1 = await getTemplate(this.props.user.username)

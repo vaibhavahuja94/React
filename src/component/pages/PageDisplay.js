@@ -45,7 +45,7 @@ class RecentPage extends Component {
     }
 
     render() {
-        debugger
+        
         const { user, adminTemplate, userTemplate } = this.props
         const { template, type } = this.props.location.state;
         let templateData;

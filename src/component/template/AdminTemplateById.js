@@ -6,7 +6,7 @@ import TemplateCard from '../cardComponent/TemplateCard';
 
 class AdminTemplateById extends Component {
     render() {
-        debugger
+        
         const { user, adminTemplate } = this.props
         return (
             <>

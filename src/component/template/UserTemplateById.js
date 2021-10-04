@@ -16,7 +16,7 @@ class UserTemplateById extends Component {
     }
 
     render() {
-        const {template} = this.props
+        const {template , loader} = this.props
         return (
             <>
                 <div className="container-fluid">
@@ -24,7 +24,7 @@ class UserTemplateById extends Component {
                         {template.length > 0 ? 
                         (
                         <>
-                        <TemplateCard Publish={true} ViewPages={true} EditTemplate={true} CopyTemplate={true} userTemplate={template} />
+                        <TemplateCard Publish={true} ViewPages={true} EditTemplate={true} CopyTemplate={true} userTemplate={template} loader={loader}/>
                         </>
                         ):(
                             <div>

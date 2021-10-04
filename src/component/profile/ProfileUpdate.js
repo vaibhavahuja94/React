@@ -62,6 +62,7 @@ class ProfileUpdate extends Component {
     }
 
     goToTemplate = (event, value) => {
+        
         if (this.props.published && this.props.published.length > 0) {
             let slotPublished = this.props.published.find(val => val.slot_id == value.slot_id)
             if (slotPublished) {
@@ -73,7 +74,7 @@ class ProfileUpdate extends Component {
             }
         }
         else {
-            toast.error("No Slot is Published By You")
+            toast.error("No Slot is Purchased By You")
         }
     }
 
@@ -332,7 +333,7 @@ class ProfileUpdate extends Component {
                             </AccordionSummary>
                             <AccordionDetails>
                                 <label>
-                                    <input type="checkbox" name="Prefrence" onChange={(e) => { localStorage.setItem("freeEditor", e.target.checked) }} /> &nbsp;Free Form Editor
+                                    <input type="checkbox" defaultChecked={(localStorage.getItem("freeEditor") == "true" ? true : false)} name="Prefrence" onChange={(e) => { localStorage.setItem("freeEditor", e.target.checked) }} /> &nbsp;Free Form Editor
                                 </label>
                             </AccordionDetails>
                         </Accordion>

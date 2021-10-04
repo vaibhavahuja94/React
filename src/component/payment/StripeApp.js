@@ -1,16 +1,22 @@
 import React, { useState } from "react";
-import { loginUserSuccess } from '../../redux/actions/LoginActions'
-import {connect} from 'react-redux'
+import { loginUserSuccess } from "../../redux/actions/LoginActions";
+import { connect, useDispatch } from "react-redux";
 import { loadStripe } from "@stripe/stripe-js";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import {
   CardElement,
   Elements,
   useElements,
-  useStripe
+  useStripe,
 } from "@stripe/react-stripe-js";
 import "./styles.css";
-import { addSlots, addTransaction, patchApi, payMoney, updateSlots } from "../../services/apiFunction";
+import {
+  addSlots,
+  addTransaction,
+  patchApi,
+  payMoney,
+  updateSlots,
+} from "../../services/apiFunction";
 import moment from "moment";
 
 const CARD_OPTIONS = {
@@ -24,17 +30,17 @@ const CARD_OPTIONS = {
       fontSize: "16px",
       fontSmoothing: "antialiased",
       ":-webkit-autofill": {
-        color: "#fce883"
+        color: "#fce883",
       },
       "::placeholder": {
-        color: "#87bbfd"
-      }
+        color: "#87bbfd",
+      },
     },
     invalid: {
       iconColor: "#ffc7ee",
-      color: "#ffc7ee"
-    }
-  }
+      color: "#ffc7ee",
+    },
+  },
 };
 
 const CardField = ({ onChange }) => (
@@ -43,35 +49,9 @@ const CardField = ({ onChange }) => (
   </div>
 );
 
-const Field = ({
-  label,
-  id,
-  type,
-  placeholder,
-  required,
-  autoComplete,
-  value,
-  onChange
-}) => (
-  <div className="FormRow">
-    <label htmlFor={id} className="FormRowLabel">
-      {label}
-    </label>
-    <input
-      className="FormRowInput"
-      id={id}
-      type={type}
-      placeholder={placeholder}
-      required={required}
-      autoComplete={autoComplete}
-      value={value}
-      onChange={onChange}
-    />
-  </div>
-);
-
 const SubmitButton = ({ processing, error, children, disabled }) => (
-  <button className={`SubmitButton ${error ? "SubmitButton--error" : ""}`}
+  <button
+    className={`SubmitButton ${error ? "SubmitButton--error" : ""}`}
     type="submit"
     disabled={processing || disabled}
   >
@@ -113,10 +93,11 @@ const CheckoutForm = (props) => {
   const [cardComplete, setCardComplete] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
+  const dispatch = useDispatch()
   const [billingDetails, setBillingDetails] = useState({
     email: "vaibhavsilkmills@gmail.com",
     phone: "9998565689",
-    name: "Vaibhav"
+    name: "Vaibhav",
   });
 
   const handleSubmit = async (event) => {
@@ -137,60 +118,62 @@ const CheckoutForm = (props) => {
       setProcessing(true);
     }
     
-    let obj = {}
-    obj.amount = props.planValue
-    obj.currency = "INR"
-    const payload = await payMoney(obj)
-    console.log(payload)
+    let obj = {};
+    obj.amount = props.planValue;
+    obj.currency = "INR";
+    const payload = await payMoney(obj);
+    console.log(payload);
     if (payload.STATUS == "SUCCESS") {
-      let objPayData = {}
-      toast.success("Payment Successful")
-      objPayData.username = props.username
-      objPayData.amount = props.planValue
-      objPayData.tdata = payload.SECRET
-      let payRun = await addTransaction(objPayData)
-      console.log(payRun)
+      let objPayData = {};
+      toast.success("Payment Successful");
+      objPayData.username = props.username;
+      objPayData.amount = props.planValue;
+      objPayData.tdata = payload.SECRET;
+      let payRun = await addTransaction(objPayData);
+      console.log(payRun);
       if (props.updateData && props.updateData.length > 0) {
-        for(let i=0 ; i<props.updateData.length ; i++){
-          let obj = {}
-          obj.username = props.username
-          obj.slot_id = props.updateData[i].slot_id
-          obj.expiry_date = moment(moment(props.updateData[i].expiry_date).add(1, 'y')).format("YYYY-MM-DD")
-          const resp = await updateSlots(obj)
+        for (let i = 0; i < props.updateData.length; i++) {
+          let obj = {};
+          obj.username = props.username;
+          obj.slot_id = props.updateData[i].slot_id;
+          obj.expiry_date = moment(
+            moment(props.updateData[i].expiry_date).add(1, "y")
+          ).format("YYYY-MM-DD");
+          const resp = await updateSlots(obj);
         }
-        toast.success("Slot Renewed Successfully")
-      }
-      else {
+        toast.success("Slot Renewed Successfully");
+      } else {
         for (let i = 0; i < props.slotNum; i++) {
-          let obj = {}
-          obj.username = props.username
-          obj.publish_name = moment().unix() + "i" + i
-          obj.published = "FALSE"
-          obj.publish_date = ""
-          obj.purchase_date = moment().format("YYYY-MM-DD")
-          obj.expiry_date = ""
-          const response = await addSlots(obj)
+          let obj = {};
+          obj.username = props.username;
+          obj.publish_name = moment().unix() + "i" + i;
+          obj.published = "FALSE";
+          obj.publish_date = "";
+          obj.purchase_date = moment().format("YYYY-MM-DD");
+          obj.expiry_date = "";
+          const response = await addSlots(obj);
         }
-        let objUser = {}
-            objUser.id = props.username
-            objUser.trial_used = "TRUE"
-            await patchApi(objUser.id, objUser)
-            .then((val)=>{
-                let obj = {}
-                obj = this.props.user
-                obj.approved = "PAID"
-                this.props.loginSuccess(obj)
-            })
-        toast.success("Slot Added Succesfully")
+        if (props.planValue == 2399 || props.planValue == 999) {
+          let objUser = {};
+          objUser.id = props.username;
+          objUser.email = props.user.email;
+          objUser.approved = "PAID";
+          await patchApi(objUser, objUser.id).then((val) => {
+            let obj = {};
+            obj = props.user;
+            obj.approved = "PAID";
+            dispatch(loginUserSuccess(obj));
+          });
+        }
+        toast.success("Slot Added Succesfully");
       }
-      window.location.reload()
+      window.location.reload();
     }
     setProcessing(false);
 
     if (payload.error) {
       setError(payload.error);
     } else {
-
     }
   };
 
@@ -201,7 +184,7 @@ const CheckoutForm = (props) => {
     setBillingDetails({
       email: "",
       phone: "",
-      name: "Vaibhav"
+      name: "Vaibhav",
     });
   };
 
@@ -239,9 +222,9 @@ const CheckoutForm = (props) => {
 const ELEMENTS_OPTIONS = {
   fonts: [
     {
-      cssSrc: "https://fonts.googleapis.com/css?family=Roboto"
-    }
-  ]
+      cssSrc: "https://fonts.googleapis.com/css?family=Roboto",
+    },
+  ],
 };
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
@@ -249,20 +232,31 @@ const ELEMENTS_OPTIONS = {
 const stripePromise = loadStripe("pk_test_6pRNASCoBOKtIshFeQd4XMUh");
 
 const StripeApp = (props) => {
-  console.log(props)
+  console.log(props);
   return (
     <div className="AppWrapper">
       <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>
-        <CheckoutForm planValue={props.planValue} loginSuccess={props.loginUserSuccess} username={props.username} slotNum={props.slotNumber} updateData={props.updateData}/>
+        <CheckoutForm
+          planValue={props.planValue}
+          user={props.user}
+          username={props.username}
+          slotNum={props.slotNumber}
+          updateData={props.updateData}
+        />
       </Elements>
     </div>
   );
 };
 
-
-const mapDispatchToProps = dispatch => {
+const mapStateToProps = (state) => {
   return {
-      loginUsersSuccess: (data) => dispatch(loginUserSuccess(data))
-  }
-}
-export default connect(null, mapDispatchToProps)(StripeApp);
+    user: state.login.data,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loginUsersSuccess: (data) => dispatch(loginUserSuccess(data)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(StripeApp);

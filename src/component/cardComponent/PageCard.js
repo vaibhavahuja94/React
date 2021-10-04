@@ -24,7 +24,15 @@ const PageCard = (props) => {
     const [isPaused, setIsPaused] = useState(false)
     
     const handleView = (event, value) => {
-        window.open(`https://w3bizz.com/editor?${value.page_id}`)
+        let editor
+        let freeEdit = localStorage.getItem('freeEditor')
+        if(freeEdit){
+            editor = (freeEdit == "true") ? true  : false
+        }
+        else{
+            editor=false
+        }
+        window.open(`https://w3bizz.com/editor?pageid=${value.page_id}&block=${editor}`)
     }
 
     const handleHide = async (value) => {

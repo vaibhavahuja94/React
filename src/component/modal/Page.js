@@ -52,7 +52,7 @@ class PageModal extends Component {
     }
     if (this.state.favicon) {
       const response = await uploadImage(this.state.favicon);
-      fields.favicon = response.data.secure_url;
+      fields.fav_icon = response.data.secure_url;
     }
 
     const resp = await updateHidePage(fields);
@@ -88,13 +88,14 @@ class PageModal extends Component {
     } else {
       fields.is_homepage = "FALSE";
     }
+    fields.is_hidden = "FALSE"
     if (this.state.file) {
       const response = await uploadImage(this.state.file);
       fields.image = response.data.secure_url;
     }
     if (this.state.favicon) {
       const response = await uploadImage(this.state.favicon);
-      fields.favicon = response.data.secure_url;
+      fields.fav_icon = response.data.secure_url;
     }
     const resp = await addPage(fields);
     if (resp.STATUS == "SUCCESS") {
@@ -172,7 +173,7 @@ class PageModal extends Component {
               })}
               onSubmit={async (fields, { resetForm, initialValues }) => {
                 this.props.loader();
-                debugger
+                
                 if(this.props.editData.is_homepage == "TRUE" && fields.homepage == false){
                   toast.error("Any of Page Should be selected as HomePage")
                   this.props.loader();
