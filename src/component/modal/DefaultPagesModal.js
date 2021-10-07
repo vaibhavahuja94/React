@@ -29,7 +29,7 @@ class DefaultPageModal extends Component {
             this.setState({ showPageModal: false })
             const template = await getTemplate(this.props.user.username)
             if (template.STATUS == "SUCCESS") {
-                if (type != "DEFAULT") {
+                if (type == "DEFAULT") {
                     this.props.createPage(template.USER_TEMPLATE)
                     window.location.reload()
                 }

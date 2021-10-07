@@ -265,7 +265,7 @@ class PageModal extends Component {
                           <img
                             src={
                               this.props.editData.favicon
-                                ? this.props.editData.favicon
+                                ? this.props.editData.fav_icon
                                 : this.state.faviconSrc
                             }
                             style={{ width: "10em", height: "6em" }}

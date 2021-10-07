@@ -32,13 +32,13 @@ const PageCard = (props) => {
         else{
             editor=false
         }
-        window.open(`https://w3bizz.com/editor?pageid=${value.page_id}&block=${editor}`)
+        window.open(`http://localhost:8080?pageid=${value.page_id}&block=${editor}`)
     }
 
     const handleHide = async (value) => {
         let obj = {}
         obj.id = value.page_id
-        obj.is_hidden = (value.is_hidden === "FALSE" ? "TRUE" : "FALSE")
+        obj.is_hidden = ((value.is_hidden === "FALSE" || value.is_hidden==="") ? "TRUE" : "FALSE")
         const response = await updateHidePage(obj)
         if (response.STATUS == "SUCCESS") {
             let list = []

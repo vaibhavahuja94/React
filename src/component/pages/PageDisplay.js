@@ -57,7 +57,7 @@ class RecentPage extends Component {
                 let tempPage = []
                 if(templateData && templateData.pageData.length>0){
                     templateData.pageData.map((val)=>{
-                        if(val.is_hidden == "FALSE"){
+                        if(val.is_hidden == "FALSE" || val.is_hidden==""){
                             tempPage.push(val)
                         }
                     })
@@ -78,6 +78,8 @@ class RecentPage extends Component {
             (
                 <>
                     <AdminLayout title={templateData.title}>
+                    {templateData && type == "DEFAULT" ?
+                        user.type == "ADMIN" &&
                         <div style={{ boxSizing: "border-box", width: "100%", height: "4em" }}>
                             <Tooltip title="Add Default Page">
                                 <span style={{ float: "right", marginRight: "10px" }} onClick={(e) => { this.openModal(e, templateData) }}>
@@ -85,6 +87,15 @@ class RecentPage extends Component {
                                 </span></Tooltip>
                             <button style={{ float: "right", borderRadius: "3px", marginRight: "10px", backgroundColor: "#1DABB8" }} className="btn text-white" onClick={() => this.setState({ showModal: true })}>Create Page</button>
                         </div>
+                        :
+                        <div style={{ boxSizing: "border-box", width: "100%", height: "4em" }}>
+                            <Tooltip title="Add Default Page">
+                                <span style={{ float: "right", marginRight: "10px" }} onClick={(e) => { this.openModal(e, templateData) }}>
+                                    <AddCircleOutlineIcon />
+                                </span></Tooltip>
+                            <button style={{ float: "right", borderRadius: "3px", marginRight: "10px", backgroundColor: "#1DABB8" }} className="btn text-white" onClick={() => this.setState({ showModal: true })}>Create Page</button>
+                        </div>
+                        }
                         <br />
                         {templateData && type == "DEFAULT" ?//Template Type
                             user.type == "ADMIN" ?//User Type

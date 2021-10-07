@@ -152,7 +152,7 @@ class SlotModal extends Component {
                         </MDBModalBody>
                         <MDBModalFooter>
                             <span style={{ float: "right" }}>
-                                {this.props.user.trial_used == "" && this.props.user.approved == "" &&
+                                {(this.props.user.trial_used == "" && this.props.user.approved == "") &&
                                     <button className="btn btn-info" onClick={(e) => { this.AddTrialSlot(e) }}>7 Days Free Trial</button>
                                 }
                                 &nbsp;

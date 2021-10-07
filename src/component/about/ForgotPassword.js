@@ -51,7 +51,7 @@ class ForgotPassword extends Component {
     obj.password = fields.password
     const response = await patchApi(obj)
     if(response.STATUS == "SUCCESS"){
-      this.props.history.push('/login')
+      this.props.history.push('/')
       this.setState({email:fields.email})
     }else{
     toast.error("Something Went Wrong")

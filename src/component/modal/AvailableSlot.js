@@ -7,10 +7,10 @@ import {
   MDBModalFooter,
 } from "mdbreact";
 import { connect } from "react-redux";
-import * as actions from "../../redux/actions/SetTemplateActions";
+import * as actions from "../../redux/actions/LoginActions";
 import { toast } from "react-toastify";
 import "../../asset/Template.css";
-import { updateSlots, publishTemplate } from "../../services/apiFunction";
+import { updateSlots, publishTemplate, addSlots, patchApi } from "../../services/apiFunction";
 import moment from "moment";
 import {
   Edit as EditIcon,
@@ -67,6 +67,7 @@ class AvailableSlot extends Component {
 
   publishTemplate = async () => {
     if (this.state.slot) {
+      debugger
       this.setState({ loader: true });
       let obj = {};
       obj.username = this.props.user.username;
@@ -75,18 +76,18 @@ class AvailableSlot extends Component {
       const response = await publishTemplate(obj);
       if (response.STATUS == "SUCCESS") {
         toast.success("Template Published Successfully");
-        let slotUpdate = this.state.slotDetails.find(
-          (val) => val.slot_id == this.state.slot
-        );
-        if (slotUpdate.published == "FALSE") {
-          slotUpdate.publish_date = moment().format("YYYY-MM-DD");
-          slotUpdate.expiry_date = moment(
-            moment(slotUpdate.publish_date).add(1, "y")
-          ).format("YYYY-MM-DD");
-          slotUpdate.published = "TRUE";
-          const responseUpdate = await updateSlots(slotUpdate);
+        let slotUpdate = this.state.slotDetails.find((val) => val.slot_id == this.state.slot);
+        if (slotUpdate.published == "FALSE" && slotUpdate.expiry_date == "0000-00-00") {
+          let obj1 = {}
+          obj1.publish_date = moment().format("YYYY-MM-DD");
+          let expiredate = moment(obj1.publish_date).add(1,'y')
+          obj1.expiry_date = moment(expiredate).format("YYYY-MM-DD");
+          obj1.published = "TRUE";
+          obj1.slot_id = slotUpdate.slot_id
+          obj1.username = slotUpdate.username
+          const responseUpdate = await updateSlots(obj1);
         }
-        window.location.reload();
+        this.props.toggle()
       } else {
         toast.error("Template Not Published");
         this.setState({ loader: false });
@@ -123,6 +124,38 @@ class AvailableSlot extends Component {
       toast.error("Please Enter Some Value");
     }
   };
+
+  AddTrialSlot = async (e) => {   
+    debugger    
+    e.preventDefault()
+    this.setState({ loader: true });
+    let obj = {}
+    obj.username = this.props.user.username
+    obj.publish_name = this.props.user.lname + Math.floor(100000 + Math.random() * 900000)
+    obj.published = "FALSE"
+    obj.publish_date = ""
+    obj.purchase_date = moment().format("YYYY-MM-DD")
+    obj.expiry_date = moment(moment(obj.purchase_date).add(7,'d')).format('YYYY-MM-DD')
+    const response = await addSlots(obj)
+    if (response.STATUS == "SUCCESS") {
+        let objUser = {}
+        objUser.id = this.props.user.username
+        objUser.email = this.props.user.email
+        objUser.trial_used = "TRUE"
+        await patchApi(objUser, objUser.id)
+        .then((val)=>{
+            let obj = {}
+            obj = this.props.user
+            obj.trial_used = "TRUE"
+            this.props.loginUsersSuccess(obj)
+        })
+        toast.success("Slot Created Successfully")
+        this.props.toggle()
+    }
+    else {
+        toast.error("Error in Slot")
+    }
+}
 
   render() {
     if (this.state.slotDetails.length !== this.props.slotDetails.length) {
@@ -255,8 +288,7 @@ class AvailableSlot extends Component {
                 </button>
                 <br />
                 <br />
-                {this.props.user.trial_used == "" &&
-                  this.props.user.approved == "" && (
+                {(this.props.user.trial_used !== "TRUE" && this.props.user.approved != "PAID") && (
                     <button
                       className="btn btn-info w-100"
                       onClick={(e) => {
@@ -289,4 +321,10 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, null)(withRouter(AvailableSlot));
+const mapDispatchToProps = dispatch => {
+  return {
+      loginUsersSuccess: (data) => dispatch(actions.loginUserSuccess(data))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(AvailableSlot));

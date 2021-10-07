@@ -128,15 +128,14 @@ const CheckoutForm = (props) => {
       objPayData.username = props.username;
       objPayData.amount = props.planValue;
       objPayData.tdata = payload.SECRET;
+      
       let payRun = await addTransaction(objPayData);
       if (props.updateData && props.updateData.length > 0) {
         for (let i = 0; i < props.updateData.length; i++) {
           let obj = {};
           obj.username = props.username;
           obj.slot_id = props.updateData[i].slot_id;
-          obj.expiry_date = moment(
-            moment(props.updateData[i].expiry_date).add(1, "y")
-          ).format("YYYY-MM-DD");
+          obj.expiry_date = moment(moment(props.updateData[i].expiry_date).add(1, "y")).format("YYYY-MM-DD");
           const resp = await updateSlots(obj);
         }
         toast.success("Slot Renewed Successfully");
