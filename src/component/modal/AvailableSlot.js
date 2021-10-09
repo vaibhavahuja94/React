@@ -66,8 +66,8 @@ class AvailableSlot extends Component {
   }
 
   publishTemplate = async () => {
-    if (this.state.slot) {
-      debugger
+    let slotUpdate = this.state.slotDetails.find((val) => val.slot_id == this.state.slot);
+    if (this.state.slot && slotUpdate.isInput == false && slotUpdate.isExpired == false) {
       this.setState({ loader: true });
       let obj = {};
       obj.username = this.props.user.username;
@@ -76,15 +76,17 @@ class AvailableSlot extends Component {
       const response = await publishTemplate(obj);
       if (response.STATUS == "SUCCESS") {
         toast.success("Template Published Successfully");
-        let slotUpdate = this.state.slotDetails.find((val) => val.slot_id == this.state.slot);
-        if (slotUpdate.published == "FALSE" && slotUpdate.expiry_date == "0000-00-00") {
+        if (slotUpdate.published == "FALSE") {
           let obj1 = {}
+          if(slotUpdate.expiry_date != "0000-00-00"){
           obj1.publish_date = moment().format("YYYY-MM-DD");
           let expiredate = moment(obj1.publish_date).add(1,'y')
           obj1.expiry_date = moment(expiredate).format("YYYY-MM-DD");
+          }
           obj1.published = "TRUE";
           obj1.slot_id = slotUpdate.slot_id
           obj1.username = slotUpdate.username
+          
           const responseUpdate = await updateSlots(obj1);
         }
         this.props.toggle()
@@ -92,7 +94,14 @@ class AvailableSlot extends Component {
         toast.error("Template Not Published");
         this.setState({ loader: false });
       }
-    } else {
+    }
+    else if(slotUpdate.isInput == true){
+      toast.error("Please Update Slot Name First")
+    }
+    else if(slotUpdate.isExpired == true){
+      toast.error("Slot is Expired, please select other slot")
+    } 
+    else {
       toast.error("Please Select Slot");
     }
   };
@@ -105,7 +114,7 @@ class AvailableSlot extends Component {
       obj.slot_id = value.slot_id;
       obj.publish_name = this.state.publish_name;
       const response = await updateSlots(obj);
-      if (response.STATUS) {
+      if (response.STATUS == "SUCCESS") {
         var list = [];
         this.props.slotDetails.forEach((val) => {
           if (val.slot_id == value.slot_id) {
@@ -120,13 +129,15 @@ class AvailableSlot extends Component {
         this.setState({ slotDetails: list });
         this.setState({ publish_name: "" });
       }
+      else{
+        toast.error(response.MESSAGE)
+      }
     } else {
       toast.error("Please Enter Some Value");
     }
   };
 
   AddTrialSlot = async (e) => {   
-    debugger    
     e.preventDefault()
     this.setState({ loader: true });
     let obj = {}
@@ -157,6 +168,12 @@ class AvailableSlot extends Component {
     }
 }
 
+toggleModal = (e) => {
+  e.preventDefault()
+  this.setState({slotDetails:[]})
+  this.props.toggle()
+}
+
   render() {
     if (this.state.slotDetails.length !== this.props.slotDetails.length) {
       this.setState({ slotDetails: this.props.slotDetails });
@@ -164,12 +181,8 @@ class AvailableSlot extends Component {
     return (
       <>
         <MDBContainer>
-          <MDBModal
-            centered
-            isOpen={this.props.modal}
-            toggle={this.props.toggle}
-          >
-            <MDBModalHeader toggle={this.props.toggle}>
+          <MDBModal centered isOpen={this.props.modal}>
+            <MDBModalHeader toggle={(e)=>this.toggleModal(e)}>
               {this.props.title}
             </MDBModalHeader>
             <MDBModalBody>
@@ -185,9 +198,7 @@ class AvailableSlot extends Component {
                               name="slotDetails"
                               value={value.slot_id}
                               checked={value.isChecked}
-                              onChange={(e) => {
-                                this.setState({ slot: e.target.value });
-                              }}
+                              onChange={(e) => {this.setState({ slot: e.target.value })}}
                             />
                           </td>
                           <td>

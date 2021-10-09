@@ -117,7 +117,6 @@ const CheckoutForm = (props) => {
     if (cardComplete) {
       setProcessing(true);
     }
-    
     let obj = {};
     obj.amount = props.planValue;
     obj.currency = "INR";
@@ -143,11 +142,9 @@ const CheckoutForm = (props) => {
         for (let i = 0; i < props.slotNum; i++) {
           let obj = {};
           obj.username = props.username;
-          obj.publish_name = moment().unix() + "i" + i;
+          obj.publish_name = props.user.lname + Math.floor(100000 + Math.random() * 900000) +"i"+i
           obj.published = "FALSE";
-          obj.publish_date = "";
           obj.purchase_date = moment().format("YYYY-MM-DD");
-          obj.expiry_date = "";
           const response = await addSlots(obj);
         }
         if (props.planValue == 2399 || props.planValue == 999) {

@@ -121,17 +121,31 @@ class PageModal extends Component {
   };
 
   handleFile = (e) => {
+    if(e.target.files[0]){
     this.setState({
       fileSrc: URL.createObjectURL(e.target.files[0]),
       file: e.target.files[0],
     });
+  }else{
+    this.setState({
+      fileSrc:'' , file:''
+    })
+  }
   };
 
   handleFavicon = (e) => {
+    if(e.target.files[0]){
     this.setState({
       faviconSrc: URL.createObjectURL(e.target.files[0]),
       favicon: e.target.files[0],
     });
+  }
+    else{
+      this.setState({
+        faviconSrc: '',
+        favicon: '',
+      });
+    }
   };
 
   render() {
@@ -241,9 +255,7 @@ class PageModal extends Component {
                         {(this.props.editData.image || this.state.fileSrc) && (
                           <img
                             src={
-                              this.props.editData.image
-                                ? this.props.editData.image
-                                : this.state.fileSrc
+                              this.state.fileSrc ? this.state.fileSrc : this.props.editData.image 
                             }
                             style={{ width: "10em", height: "6em" }}
                           />
@@ -260,13 +272,10 @@ class PageModal extends Component {
                           className="form-control"
                         />
                         <br />
-                        {(this.state.faviconSrc ||
-                          this.props.editData.favicon) && (
+                        {(this.state.faviconSrc || this.props.editData.fav_icon) && (
                           <img
                             src={
-                              this.props.editData.favicon
-                                ? this.props.editData.fav_icon
-                                : this.state.faviconSrc
+                              this.state.faviconSrc ? this.state.faviconSrc : this.props.editData.fav_icon
                             }
                             style={{ width: "10em", height: "6em" }}
                           />
